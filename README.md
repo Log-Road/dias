@@ -1,4 +1,4 @@
-# DAU
+# DAU ![Static Badge](https://img.shields.io/badge/version-0.0.1-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
 
 D-Auth : Authorization & Authentication Service for DSM
 
@@ -8,18 +8,12 @@ This project is open source, so you can contribute with `pull request` whenever 
 
 ## System Required
 
-- Node Version >= 18.17.0
-
+- Node Version >= 20.8.1
+- pnpm Version >= 8.10.3
 
 ## Installation
 
 ```bash
-$ npm i
-
-# or
-$ yarn install
-
-# or
 $ pnpm i
 ```
 
