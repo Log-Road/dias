@@ -1,10 +1,18 @@
-# DAU ![Static Badge](https://img.shields.io/badge/version-0.0.1-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
+# Dauth ![Static Badge](https://img.shields.io/badge/version-0.0.1-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
+
+<p style="text-align: center;">
+
+\<Logo>
+
+***Access all on-campus services with one account!***
+
+</p>
+
+## Description
 
 D-Auth : Authorization & Authentication Service for DSM
 
 This project is open source, so you can contribute with `pull request` whenever you want.
-
----
 
 ## System Required
 
@@ -33,40 +41,26 @@ $ pnpm run dev
 ### Test
 
 ```bash
-$ pnpm run test
+$ pnpm run test # Unit Test
+
+$ pnpm run test:e2e # E2E Test
+
+$ pnpm run test:cov # Coverage
 ```
 
-## How to contribute
+## Commit Rule
 
-### Fork repository
+```
+$ git add [files]
 
-You have to fork this repository. And then, you can clone on your forked repository.
+$ git commit -m "[feat | fix | docs | set] : [description]"
 
-```bash
-$ git clone https://github.com/iixanx/dau.git
-$ cd dau
+$ git push origin [branch name]
 ```
 
-### Commit your changes
+## Contributors
 
-Now you can modify the code of repository.
-Modify where you want. And commit them.
-
-```bash
-# if run this script, and there's no RED WORD - it means you passed test!
-$ pnpm run test
-```
-
-```bash
-# github commit
-$ git add .
-$ git commit -m "[your description]"
-$ git push origin master
-```
-
-### Open Pull Request
-
-Now you can open a new pull request. Open the pull request, and when I check, I'll merge them.
+<a href="https://github.com/Log-road/dauth/graphs/contributors"><img src="https://opencollective.com/log-road/contributors.svg?width=720"></a>
 
 ## License
 
