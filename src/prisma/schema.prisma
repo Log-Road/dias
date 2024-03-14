@@ -1,27 +1,90 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DB_URL")
+  url      = env("DATABASE_URL")
 }
 
-model People {
-  peopleId  BigInt @id @default(autoincrement())
+model User {
+  id        Int     @id @default(autoincrement())
+  userId    String  @unique
   name      String
-  contact   String @unique
-  status    Status
-  birth     DateTime @db.Date
+  email     String  @unique
+  password  String
+  isStudent Boolean @default(true)
+  number    Int?
+  Fav       Fav[]
+  Like      Like[]
+  Post      Post[]
+  Vote      Vote[]
 }
 
-enum Status {
-  PARENT
-  TEACHER
-  STAFF
-  ALUMNI
-  STUDENT
+model Manager {
+  id Int @id @default(autoincrement())
+}
+
+model Fav {
+  userNumId Int
+  postId    Int
+  post      Post @relation(fields: [postId], references: [id])
+  user      User @relation(fields: [userNumId], references: [id])
+
+  @@id([userNumId, postId])
+  @@index([postId], map: "Fav_postId_fkey")
+}
+
+model Like {
+  userNumId Int
+  postId    Int
+  post      Post @relation(fields: [postId], references: [id])
+  user      User @relation(fields: [userNumId], references: [id])
+
+  @@id([userNumId, postId])
+  @@index([postId], map: "Like_postId_fkey")
+}
+
+model Post {
+  id            Int         @id @default(autoincrement())
+  userNumId     Int
+  competitionId Int
+  Fav           Fav[]
+  Like          Like[]
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  user          User        @relation(fields: [userNumId], references: [id])
+  Queue         Queue?
+  Vote          Vote[]
+
+  @@index([competitionId], map: "Post_competitionId_fkey")
+  @@index([userNumId], map: "Post_userNumId_fkey")
+}
+
+model Vote {
+  userNumId Int
+  postId    Int
+  post      Post @relation(fields: [postId], references: [id])
+  user      User @relation(fields: [userNumId], references: [id])
+
+  @@id([userNumId, postId])
+  @@index([postId], map: "Vote_postId_fkey")
+}
+
+model Competition {
+  id          Int      @id @default(autoincrement())
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
+  winnerCount Int
+  Post        Post[]
+}
+
+model Queue {
+  id     Int  @id @default(autoincrement())
+  postId Int  @unique
+  post   Post @relation(fields: [postId], references: [id])
+}
+
+model Photo {
+  id  Int    @id @default(autoincrement())
+  url String
 }

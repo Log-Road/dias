@@ -1,15 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { winstonLogger } from './utils/winston.util';
 import { CorsOptions } from './utils/corsOption.util';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './http.exception/http.exception.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { WinstonModule } from 'nest-winston';
+import { WinstonInstance } from './utils/winston.util';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: CorsOptions,
-    logger: winstonLogger,
+    logger: WinstonModule.createLogger({
+      instance: WinstonInstance,
+    }),
   });
 
   const docs = SwaggerModule.createDocument(
@@ -30,14 +33,17 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, docs);
 
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    forbidUnknownValues: true,
-    disableErrorMessages: process.env.NODE_ENV === 'prod' ? true : false
-  }))
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      forbidUnknownValues: true,
+      disableErrorMessages: process.env.NODE_ENV === 'prod' ? true : false,
+    }),
+  );
 
-  await app.listen(process.env.PORT);
+  console.log(process.env.PORT)
+  await app.listen(process.env.PORT ?? 8888);
 }
 bootstrap();
