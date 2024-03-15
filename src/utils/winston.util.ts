@@ -1,4 +1,4 @@
-import winston, { createLogger, format } from 'winston';
+import winston, { createLogger, format, transports } from 'winston';
 
 export const levAndColor = {
   levels: {
@@ -22,9 +22,13 @@ export const levAndColor = {
 export const WinstonInstance = createLogger({
   levels: levAndColor.levels,
   exitOnError: false,
-  // transports: [
-  // ],
-  format: format.printf(({level, message}) => `[${level}] ${new Date().toISOString()} [DAUTH] - ${message}`)
+  transports: [
+    new transports.File({ filename: 'warn.log', level: 'warn' }),
+    new transports.File({ filename: 'error.log', level: 'error' }),
+    new transports.File({ filename: 'crit.log', level: 'crit' }),
+    new transports.Console({ format: format.printf(({level, message}) => `[${level}] ${new Date().toISOString()} [DAUTH] - ${message}`),})
+  ],
+  format: format.printf(({level, message}) => `[${level}] ${new Date().toISOString()} [DAUTH] - ${message}`),
 });
 
 // Syslog format refer : https://yeonfamily.tistory.com/22
