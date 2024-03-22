@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { mockDeep } from 'jest-mock-extended';
 import { BadRequestException, ConflictException, Logger } from '@nestjs/common';
-import { SignUpReq } from 'src/dtos/signUp.dto';
+import { SignUpReq } from '../dtos/signUp.dto';
 
 describe('UserService', () => {
   let service: UserService;
