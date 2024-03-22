@@ -1,9 +1,4 @@
-import {
-  INestApplication,
-  Injectable,
-  OnModuleDestroy,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
@@ -45,6 +40,12 @@ export class PrismaService
   async findUserByEmail(email: string) {
     return await this.user.findUnique({
       where: { email },
+    });
+  }
+
+  async findUserByNumber(number?: number) {
+    return await this.user.findUnique({
+      where: { number : number ?? null },
     });
   }
 }

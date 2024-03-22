@@ -1,7 +1,7 @@
 import { Optional } from "@nestjs/common"
 import { IsBoolean, IsEmail, IsNumber, IsString, Matches, Max, Min } from "class-validator"
 
-export class SignInReq {
+export class SignUpReq {
     // @IsString()
     name: string
 

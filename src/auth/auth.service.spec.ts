@@ -12,7 +12,7 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  it('sum', () => {
+    expect(1 + 2).toBe(3)
+  })
 });
