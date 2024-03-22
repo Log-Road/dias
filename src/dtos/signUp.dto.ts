@@ -2,27 +2,27 @@ import { Optional } from "@nestjs/common"
 import { IsBoolean, IsEmail, IsNumber, IsString, Matches, Max, Min } from "class-validator"
 
 export class SignUpReq {
-    // @IsString()
+    @IsString()
     name: string
 
-    // @IsString()
-    // @Max(15)
+    @IsString()
+    @Max(15)
     userId: string
 
-    // @IsString()
-    // @IsEmail()
+    @IsString()
+    @IsEmail()
     email: string
 
-    // @Optional()
-    // @IsNumber()
-    // @Min(1101)
-    // @Max(3420)
+    @Optional()
+    @IsNumber()
+    @Min(1101)
+    @Max(3420)
     number?: number
 
-    // @IsString()
-    // @Matches(/^(?=.*[a-zA-Z])(?=.*[!// @#$%^*+=-])(?=.*[0-9]).{8,15}$/g)
+    @IsString()
+    @Matches(/^(?=.*[a-zA-Z])(?=.*[!//@#$%^*+=-])(?=.*[0-9]).{8,15}$/g)
     password: string
 
-    // @IsBoolean()
+    @IsBoolean()
     isStudent: boolean = true
 }
