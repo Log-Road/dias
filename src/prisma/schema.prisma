@@ -14,7 +14,7 @@ model User {
   email     String  @unique
   password  String
   isStudent Boolean @default(true)
-  number    Int?
+  number    Int?    @unique
   Fav       Fav[]
   Like      Like[]
   Post      Post[]

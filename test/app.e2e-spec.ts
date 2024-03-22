@@ -14,11 +14,14 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
   });
-
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  describe('/user', async () => {
+    it('/signup (POST)', () => {
+      return request(app.getHttpServer())
+      .post('/user/signup').expect(201, {
+        data: null,
+        statusCode: 201,
+        statusMsg: 'OK',
+      });
+    });
   });
 });

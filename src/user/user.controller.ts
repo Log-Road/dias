@@ -1,7 +1,7 @@
 import { Body, Controller, Inject, Logger, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { SignInReq } from 'src/dtos/signIn.dto';
-import { Res } from 'src/dtos/response.dto';
+import { SignUpReq } from '../dtos/signUp.dto';
+import { Res } from '../dtos/response.dto';
 
 @Controller('user')
 export class UserController {
@@ -11,9 +11,8 @@ export class UserController {
   ) {}
 
   @Post('signup')
-  async signUp(@Body() request): Promise<Res> {
-    console.log(request);
-    await this.service.signIn(request);
+  async signUp(@Body() request: SignUpReq): Promise<Res> {
+    await this.service.signUp(request);
 
     return {
       data: null,

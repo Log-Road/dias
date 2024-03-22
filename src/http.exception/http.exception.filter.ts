@@ -22,7 +22,7 @@ export class HttpExceptionFilter<Error> implements ExceptionFilter {
     if (!(exception instanceof HttpException))
       exception = new InternalServerErrorException() as any;
 
-    this.logger.warn(`[error] ${new Date().toISOString()} [DAUTH] - ${req.originalUrl} : ${(exception as HttpException).getStatus()} "${(exception as HttpException).message}"`)
+    this.logger.warn(`${req.originalUrl} : ${(exception as HttpException).getStatus()} "${(exception as HttpException).message}"`)
     // <priority>[timestamp] [hostname] [processname] [message]
 
     return res.status((exception as HttpException).getStatus()).json({

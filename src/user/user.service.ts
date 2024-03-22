@@ -1,6 +1,12 @@
-import { ConflictException, Inject, Injectable, Logger } from '@nestjs/common';
-import { SignInReq } from 'src/dtos/signIn.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { SignUpReq } from '../dtos/signUp.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
@@ -9,28 +15,37 @@ export class UserService {
     private prisma: PrismaService,
   ) {}
 
-  async signIn(request: SignInReq): Promise<null> {
-    this.logger.debug(request)
-    const { name, userId, email, password, isStudent } = request;
-    const number = request.number ?? null;
+  async signUp(request: SignUpReq): Promise<null> {
+    this.logger.log('try signUp');
+    const { name, userId, email, password, isStudent, number } = request;
 
-    const isExistUserId = await this.prisma.findUserByStrId(userId);
-    if (isExistUserId) throw new ConflictException('이미 존재하는 Id');
+    if (
+      (isStudent == false && number != null) ||
+      (isStudent == true && number == null)
+    ) {
+      throw new BadRequestException('제약조건 위반');
+    }
 
-    const isExistUserEmail = await this.prisma.findUserByEmail(email);
-    if (isExistUserEmail) throw new ConflictException('이미 존재하는 이메일');
+    if (await this.prisma.findUserByStrId(userId))
+      throw new ConflictException('이미 존재하는 Id');
+
+    if (await this.prisma.findUserByEmail(email))
+      throw new ConflictException('이미 존재하는 이메일');
+
+    if (isStudent && await this.prisma.findUserByNumber(number))
+      throw new ConflictException('이미 존재하는 학번');
 
     await this.prisma.user.create({
-        data: {
-            name,
-            userId,
-            email,
-            password,
-            isStudent,
-            number,
-        }
+      data: {
+        name,
+        userId,
+        email,
+        password,
+        isStudent,
+        number,
+      },
     });
-    
+
     return null;
   }
 }
