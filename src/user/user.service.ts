@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -40,7 +41,7 @@ export class UserService {
         name,
         userId,
         email,
-        password,
+        password: await hash(password, Number(process.env.SALT)),
         isStudent,
         number,
       },
