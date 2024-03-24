@@ -6,8 +6,18 @@ import { HttpExceptionFilter } from './http.exception/http.exception.filter';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import { WinstonInstance } from './utils/winston.util';
+import { configDotenv } from 'dotenv';
 
 async function bootstrap() {
+  configDotenv({
+    path:
+      process.env.NODE_ENV == 'prod'
+        ? '../.env.prod'
+        : process.env.NODE_ENV == 'dev'
+        ? '../.env.dev'
+        : '../.env.local',
+  });
+
   const app = await NestFactory.create(AppModule, {
     cors: CorsOptions,
     logger: WinstonModule.createLogger({
