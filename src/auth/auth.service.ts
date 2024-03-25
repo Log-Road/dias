@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { SignInReq } from 'src/dtos/signIn.dto';
+import { SignInReq } from '../dtos/signIn.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';

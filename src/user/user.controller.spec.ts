@@ -82,6 +82,12 @@ describe('UserController', () => {
       jest
         .spyOn(prisma, 'findUserByNumber')
         .mockImplementationOnce(async () => Object.assign(request, { id: 1 }));
+      jest
+        .spyOn(prisma, 'findUserByEmail')
+        .mockImplementationOnce(async () => null);
+      jest
+        .spyOn(prisma, 'findUserByStrId')
+        .mockImplementationOnce(async () => null);
 
       await expect(async () => await controller.signUp(request)).rejects.toThrowError(
         new ConflictException('이미 존재하는 학번'),
@@ -93,6 +99,12 @@ describe('UserController', () => {
       jest
         .spyOn(prisma, 'findUserByStrId')
         .mockImplementationOnce(async () => Object.assign(request, { id: 1 }));
+      jest
+        .spyOn(prisma, 'findUserByNumber')
+        .mockImplementationOnce(async () => null);
+      jest
+        .spyOn(prisma, 'findUserByEmail')
+        .mockImplementationOnce(async () => null);
 
       const request = {
         name: '홍길동',
@@ -113,6 +125,12 @@ describe('UserController', () => {
       jest
         .spyOn(prisma, 'findUserByEmail')
         .mockImplementationOnce(async () => Object.assign(request, { id: 1 }));
+      jest
+        .spyOn(prisma, 'findUserByNumber')
+        .mockImplementationOnce(async () => null);
+      jest
+        .spyOn(prisma, 'findUserByStrId')
+        .mockImplementationOnce(async () => null);
 
       const request = {
         name: '홍길동',

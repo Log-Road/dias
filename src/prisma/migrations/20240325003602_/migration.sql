@@ -10,6 +10,7 @@ CREATE TABLE `User` (
 
     UNIQUE INDEX `User_userId_key`(`userId`),
     UNIQUE INDEX `User_email_key`(`email`),
+    UNIQUE INDEX `User_number_key`(`number`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -25,6 +26,7 @@ CREATE TABLE `Fav` (
     `userNumId` INTEGER NOT NULL,
     `postId` INTEGER NOT NULL,
 
+    INDEX `Fav_postId_fkey`(`postId`),
     PRIMARY KEY (`userNumId`, `postId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -33,6 +35,7 @@ CREATE TABLE `Like` (
     `userNumId` INTEGER NOT NULL,
     `postId` INTEGER NOT NULL,
 
+    INDEX `Like_postId_fkey`(`postId`),
     PRIMARY KEY (`userNumId`, `postId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -42,6 +45,8 @@ CREATE TABLE `Post` (
     `userNumId` INTEGER NOT NULL,
     `competitionId` INTEGER NOT NULL,
 
+    INDEX `Post_competitionId_fkey`(`competitionId`),
+    INDEX `Post_userNumId_fkey`(`userNumId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -50,6 +55,7 @@ CREATE TABLE `Vote` (
     `userNumId` INTEGER NOT NULL,
     `postId` INTEGER NOT NULL,
 
+    INDEX `Vote_postId_fkey`(`postId`),
     PRIMARY KEY (`userNumId`, `postId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -81,28 +87,28 @@ CREATE TABLE `Photo` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Fav` ADD CONSTRAINT `Fav_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Fav` ADD CONSTRAINT `Fav_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Like` ADD CONSTRAINT `Like_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Fav` ADD CONSTRAINT `Fav_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Like` ADD CONSTRAINT `Like_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Post` ADD CONSTRAINT `Post_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Like` ADD CONSTRAINT `Like_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Post` ADD CONSTRAINT `Post_competitionId_fkey` FOREIGN KEY (`competitionId`) REFERENCES `Competition`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Vote` ADD CONSTRAINT `Vote_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Post` ADD CONSTRAINT `Post_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Vote` ADD CONSTRAINT `Vote_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Vote` ADD CONSTRAINT `Vote_userNumId_fkey` FOREIGN KEY (`userNumId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Queue` ADD CONSTRAINT `Queue_postId_fkey` FOREIGN KEY (`postId`) REFERENCES `Post`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
