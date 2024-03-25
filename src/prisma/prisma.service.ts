@@ -45,7 +45,7 @@ export class PrismaService
 
   async findUserByNumber(number?: number) {
     return await this.user.findUnique({
-      where: { number : number ?? null },
+      where: { number: number ?? null },
     });
   }
 }
