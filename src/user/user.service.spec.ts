@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { mockDeep } from 'jest-mock-extended';
-import { BadRequestException, ConflictException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 
 describe('UserService', () => {
@@ -23,8 +28,8 @@ describe('UserService', () => {
 
   afterEach(async () => {});
 
-  describe('signUp Success', () => {
-    it('success - student', async () => {
+  describe('signUp', () => {
+    it('[200] 학생 회원가입 성공', async () => {
       jest
         .spyOn(prisma, 'findUserByEmail')
         .mockImplementation(async (email: string) => null);
@@ -42,12 +47,10 @@ describe('UserService', () => {
         isStudent: true,
       };
 
-      expect(
-        await service.signUp(request),
-      ).toBeNull();
+      expect(await service.signUp(request)).toBeNull();
     });
 
-    it('success - teacher', async () => {
+    it('[200] 선생님 회원가입 성공', async () => {
       jest
         .spyOn(prisma, 'findUserByEmail')
         .mockImplementation(async (email: string) => null);
@@ -68,13 +71,9 @@ describe('UserService', () => {
         isStudent: false,
       };
 
-      expect(
-        await service.signUp(request),
-      ).toBeNull();
+      expect(await service.signUp(request)).toBeNull();
     });
-  });
 
-  describe('signUp Failed', () => {
     it('[400] 필수 요소 불충족', async () => {
       const request = {
         name: '홍길동',
@@ -202,6 +201,37 @@ describe('UserService', () => {
       await expect(
         async () => await service.signUp(request),
       ).rejects.toThrowError(new ConflictException('이미 존재하는 학번'));
+    });
+  });
+
+  describe('findId', () => {
+    const request = {
+      email: 'dongil@dsm.hs.kr',
+    };
+
+    it('[200] success find Id', async () => {
+      jest.spyOn(prisma, 'findUserByEmail').mockImplementationOnce(
+        async () =>
+          await {
+            id: 1,
+            name: '홍길동',
+            userId: 'honGil',
+            email: 'dongil@dsm.hs.kr',
+            number: 1111,
+            password: 'thisIsTest1!',
+            isStudent: true,
+          },
+      );
+
+      await expect(service.findId(request)).resolves.toStrictEqual('honGil');
+    });
+
+    it('[404] 존재하지 않는 유저', async () => {
+      jest.spyOn(prisma, 'findUserByEmail').mockImplementationOnce(null);
+
+      await expect(
+        async () => await service.findId(request),
+      ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
     });
   });
 });

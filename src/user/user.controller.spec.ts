@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { ConflictException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -89,9 +94,9 @@ describe('UserController', () => {
         .spyOn(prisma, 'findUserByStrId')
         .mockImplementationOnce(async () => null);
 
-      await expect(async () => await controller.signUp(request)).rejects.toThrowError(
-        new ConflictException('이미 존재하는 학번'),
-      );
+      await expect(
+        async () => await controller.signUp(request),
+      ).rejects.toThrowError(new ConflictException('이미 존재하는 학번'));
     });
 
     it('[409] 이미 존재하는 아이디', async () => {
@@ -115,9 +120,9 @@ describe('UserController', () => {
         isStudent: true,
       };
 
-      await expect(async () => await controller.signUp(request)).rejects.toThrowError(
-        new ConflictException('이미 존재하는 Id'),
-      );
+      await expect(
+        async () => await controller.signUp(request),
+      ).rejects.toThrowError(new ConflictException('이미 존재하는 Id'));
     });
 
     it('[409] 이미 존재하는 이메일 주소', async () => {
@@ -144,6 +149,38 @@ describe('UserController', () => {
       await expect(
         async () => await controller.signUp(request),
       ).rejects.toThrowError(new ConflictException('이미 존재하는 이메일'));
+    });
+  });
+
+  describe('findId', () => {
+    const request = {
+      email: 'donGil@dsm.hs.kr',
+    };
+
+    it('[200]', async () => {
+      jest.spyOn(prisma, 'findUserByEmail').mockImplementationOnce(async () => await {
+        id: 1,
+        name: '홍길동',
+        userId: 'honGil',
+        email: 'dongil@dsm.hs.kr',
+        number: 1111,
+        password: 'thisIsTest1!',
+        isStudent: true,
+      })
+
+      await expect(controller.findId(request)).resolves.toStrictEqual({
+        data: "honGil",
+        statusCode: 201,
+        statusMsg: "OK"
+      })
+    });
+
+    it('[404] 존재하지 않는 유저', async () => {
+      jest.spyOn(prisma, 'findUserByEmail').mockImplementationOnce(null);
+
+      await expect(
+        async () => await controller.findId(request),
+      ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
     });
   });
 });

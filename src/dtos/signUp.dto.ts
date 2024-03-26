@@ -30,7 +30,7 @@ export class SignUpReq {
   @IsEmail(
     {},
     {
-      message: 'Email 형식 지켜야 함',
+      message: '이메일 형식 위반',
     },
   )
   email: string;

@@ -47,7 +47,7 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       forbidNonWhitelisted: true,
-      disableErrorMessages: process.env.NODE_ENV === 'prod' ? true : false,
+      disableErrorMessages: process.env.NODE_ENV === ('prod' || 'dev') ? true : false,
     }),
   );
 

@@ -4,10 +4,13 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
+  Post,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { hash } from 'bcrypt';
+import { FindIdReq } from '../dtos/findId.dto';
 
 @Injectable()
 export class UserService {
@@ -16,6 +19,7 @@ export class UserService {
     private prisma: PrismaService,
   ) {}
 
+  @Post('/signup')
   async signUp(request: SignUpReq): Promise<null> {
     this.logger.log('try signUp');
     const { name, userId, email, password, isStudent, number } = request;
@@ -33,7 +37,7 @@ export class UserService {
     if (await this.prisma.findUserByEmail(email))
       throw new ConflictException('이미 존재하는 이메일');
 
-    if (isStudent && await this.prisma.findUserByNumber(number))
+    if (isStudent && (await this.prisma.findUserByNumber(number)))
       throw new ConflictException('이미 존재하는 학번');
 
     await this.prisma.user.create({
@@ -48,5 +52,16 @@ export class UserService {
     });
 
     return null;
+  }
+
+  @Post('/id')
+  async findId(request: FindIdReq): Promise<string> {
+    const { email } = request;
+
+    const thisUser = await this.prisma.findUserByEmail(email);
+
+    if (!thisUser) throw new NotFoundException('존재하지 않는 유저');
+
+    return thisUser.userId;
   }
 }
