@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -51,6 +52,8 @@ export class AuthService {
   }
 
   async signIn(req: SignInReq): Promise<Object> {
+    this.logger.log('Try to signIn');
+
     const { userId, password } = req;
 
     const thisUser = await this.prisma.findUserByStrId(userId);
@@ -66,5 +69,21 @@ export class AuthService {
       await this.genAccessToken(thisUser.id),
       await this.genRefreshToken(thisUser.id),
     );
+  }
+
+  async verifyToken(req: string): Promise<Object> {
+    const userId = await this.jwt.verifyAsync(req.split(' ')[1], {
+      secret: this.config.get<string>('JWT_SECRET'),
+      publicKey: this.config.get<string>('JWT_PRIVATE'),
+    });
+
+    if (!userId) throw new InternalServerErrorException('JWT 오류');
+    if (!(await this.prisma.findUserById(userId.id)))
+      throw new NotFoundException('존재하지 않는 유저');
+
+    const accessToken = await this.genAccessToken(userId);
+    const refreshToken = await this.genRefreshToken(userId);
+
+    return Object.assign(accessToken, refreshToken);
   }
 }
