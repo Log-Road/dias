@@ -23,7 +23,6 @@ export class UserService {
     private config: ConfigService,
   ) {}
 
-  @Post('/signup')
   async signUp(request: SignUpReq): Promise<null> {
     this.logger.log('try signUp');
     const { name, userId, email, password, isStudent, number } = request;
@@ -58,7 +57,6 @@ export class UserService {
     return null;
   }
 
-  @Post('/id')
   async findId(request: FindIdReq): Promise<string> {
     const { email } = request;
 
@@ -69,7 +67,6 @@ export class UserService {
     return thisUser.userId;
   }
 
-  @Patch('/find')
   async findPassword(request: FindPasswordReq): Promise<object> {
     const { userId } = request;
 
