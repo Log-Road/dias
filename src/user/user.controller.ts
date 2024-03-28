@@ -1,8 +1,9 @@
-import { Body, Controller, Inject, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Logger, Patch, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { Res } from '../dtos/response.dto';
 import { FindIdReq } from '../dtos/findId.dto';
+import { FindPasswordReq } from '../dtos/findPassword.dto';
 
 @Controller('user')
 export class UserController {
@@ -29,6 +30,17 @@ export class UserController {
     return {
       data,
       statusCode: 201,
+      statusMsg: 'OK',
+    };
+  }
+
+  @Patch('/find')
+  async findPassword(@Body() request: FindPasswordReq): Promise<Res> {
+    const data = await this.service.findPassword(request);
+
+    return {
+      data,
+      statusCode: 200,
       statusMsg: 'OK',
     };
   }

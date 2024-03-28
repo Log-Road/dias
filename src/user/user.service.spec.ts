@@ -9,6 +9,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
+import { ConfigService } from '@nestjs/config';
+import { genSalt, hash } from 'bcrypt';
 
 describe('UserService', () => {
   let service: UserService;
@@ -16,7 +18,7 @@ describe('UserService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, PrismaService, Logger],
+      providers: [UserService, PrismaService, Logger, ConfigService],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaService>())
@@ -231,6 +233,66 @@ describe('UserService', () => {
 
       await expect(
         async () => await service.findId(request),
+      ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
+    });
+  });
+
+  describe('findPassword', () => {
+    const request = {
+      userId: 'honGil',
+    };
+
+    (genSalt as jest.Mock) = jest.fn().mockResolvedValue('Th^Isi@SS_Alt');
+    (hash as jest.Mock) = jest.fn().mockResolvedValue(null);
+
+    it('[200] 요청 성공', async () => {
+      jest.spyOn(prisma, 'findUserByStrId').mockImplementation(
+        async () =>
+          await {
+            id: 1,
+            name: '홍길동',
+            userId: 'honGil',
+            email: 'dongil@dsm.hs.kr',
+            number: 1111,
+            password: 'thisIsTest1!',
+            isStudent: true,
+          },
+      );
+      jest.spyOn(prisma, 'updateUserPassword').mockImplementation(null);
+
+      await expect(service.findPassword(request)).resolves.toStrictEqual({
+        temporary: 'Th^Isi@SS_Alt',
+      });
+    });
+
+    it('[400] 비밀번호 수정 실패', async () => {
+      jest.spyOn(prisma, 'findUserByStrId').mockImplementation(
+        async () =>
+          await {
+            id: 1,
+            name: '홍길동',
+            userId: 'honGil',
+            email: 'dongil@dsm.hs.kr',
+            number: 1111,
+            password: 'thisIsTest1!',
+            isStudent: true,
+          },
+      );
+      jest.spyOn(prisma, 'updateUserPassword').mockImplementationOnce(() => {
+        throw new BadRequestException();
+      });
+
+      await expect(
+        async () => await service.findPassword(request),
+      ).rejects.toThrowError(new BadRequestException('비밀번호 수정 실패'));
+    });
+
+    it('[404] 존재하지 않는 유저', async () => {
+      jest.spyOn(prisma, 'findUserByStrId').mockImplementation(null);
+      jest.spyOn(prisma, 'updateUserPassword').mockImplementation(null);
+
+      await expect(
+        async () => await service.findPassword(request),
       ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
     });
   });

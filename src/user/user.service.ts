@@ -5,18 +5,22 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { hash } from 'bcrypt';
+import { genSalt, hash } from 'bcrypt';
 import { FindIdReq } from '../dtos/findId.dto';
+import { FindPasswordReq } from '../dtos/findPassword.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
+    private config: ConfigService,
   ) {}
 
   @Post('/signup')
@@ -63,5 +67,24 @@ export class UserService {
     if (!thisUser) throw new NotFoundException('존재하지 않는 유저');
 
     return thisUser.userId;
+  }
+
+  @Patch('/find')
+  async findPassword(request: FindPasswordReq): Promise<object> {
+    const { userId } = request;
+
+    const thisUser = await this.prisma.findUserByStrId(userId);
+    if (!thisUser) throw new NotFoundException('존재하지 않는 유저');
+
+    const temporary = await genSalt(this.config.get<number>('SALT'));
+    const password = await hash(temporary, this.config.get<number>('SALT'));
+
+    try {
+      await this.prisma.updateUserPassword(userId, password);
+    } catch (error) {
+      throw new BadRequestException('비밀번호 수정 실패');
+    }
+
+    return { temporary };
   }
 }

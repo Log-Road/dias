@@ -1,4 +1,9 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
@@ -44,8 +49,24 @@ export class PrismaService
   }
 
   async findUserByNumber(number?: number) {
+    if (!number) throw new BadRequestException('학번 필요');
+
     return await this.user.findUnique({
-      where: { number: number ?? null },
+      where: { number },
+    });
+  }
+
+  async updateUserPassword(userId: string, password: string) {
+    await this.user.update({
+      where: {
+        userId,
+      },
+      select: {
+        password: true,
+      },
+      data: {
+        password,
+      },
     });
   }
 }
