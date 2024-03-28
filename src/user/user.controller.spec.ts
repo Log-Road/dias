@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { genSalt, hash } from 'bcrypt';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -158,21 +159,24 @@ describe('UserController', () => {
     };
 
     it('[200]', async () => {
-      jest.spyOn(prisma, 'findUserByEmail').mockImplementationOnce(async () => await {
-        id: 1,
-        name: '홍길동',
-        userId: 'honGil',
-        email: 'dongil@dsm.hs.kr',
-        number: 1111,
-        password: 'thisIsTest1!',
-        isStudent: true,
-      })
+      jest.spyOn(prisma, 'findUserByEmail').mockImplementationOnce(
+        async () =>
+          await {
+            id: 1,
+            name: '홍길동',
+            userId: 'honGil',
+            email: 'dongil@dsm.hs.kr',
+            number: 1111,
+            password: 'thisIsTest1!',
+            isStudent: true,
+          },
+      );
 
       await expect(controller.findId(request)).resolves.toStrictEqual({
-        data: "honGil",
+        data: 'honGil',
         statusCode: 201,
-        statusMsg: "OK"
-      })
+        statusMsg: 'OK',
+      });
     });
 
     it('[404] 존재하지 않는 유저', async () => {
@@ -180,6 +184,69 @@ describe('UserController', () => {
 
       await expect(
         async () => await controller.findId(request),
+      ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
+    });
+  });
+
+  describe('findPassword', () => {
+    const request = {
+      userId: 'honGil',
+    };
+
+    (genSalt as jest.Mock) = jest.fn().mockResolvedValue('Th^Isi@SS_Alt');
+    (hash as jest.Mock) = jest.fn().mockResolvedValue(null);
+
+    it('[200] 요청 성공', async () => {
+      jest.spyOn(prisma, 'findUserByStrId').mockImplementation(
+        async () =>
+          await {
+            id: 1,
+            name: '홍길동',
+            userId: 'honGil',
+            email: 'dongil@dsm.hs.kr',
+            number: 1111,
+            password: 'thisIsTest1!',
+            isStudent: true,
+          },
+      );
+      jest.spyOn(prisma, 'updateUserPassword').mockImplementation(null);
+
+      await expect(controller.findPassword(request)).resolves.toStrictEqual({
+        data: {
+          temporary : 'Th^Isi@SS_Alt'
+        },
+        statusCode: 200,
+        statusMsg: 'OK',
+      });
+    });
+
+    it('[400] 비밀번호 수정 실패', async () => {
+      jest.spyOn(prisma, 'findUserByStrId').mockImplementation(
+        async () =>
+          await {
+            id: 1,
+            name: '홍길동',
+            userId: 'honGil',
+            email: 'dongil@dsm.hs.kr',
+            number: 1111,
+            password: 'thisIsTest1!',
+            isStudent: true,
+          },);
+      jest.spyOn(prisma, 'updateUserPassword').mockImplementation(() => {
+        throw new BadRequestException('비밀번호 수정 실패')
+      });
+
+      await expect(
+        async () => await controller.findPassword(request),
+      ).rejects.toThrowError(new BadRequestException('비밀번호 수정 실패'));
+    });
+
+    it('[404] 존재하지 않는 유저', async () => {
+      jest.spyOn(prisma, 'findUserByStrId').mockImplementation(null);
+      jest.spyOn(prisma, 'updateUserPassword').mockImplementation(null);
+
+      await expect(
+        async () => await controller.findPassword(request),
       ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
     });
   });
