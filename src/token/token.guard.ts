@@ -26,7 +26,7 @@ export class TokenGuard implements CanActivate {
 
     const { id } = await this.jwt.decode(token.split(' ')[1]);
 
-    const thisUser = await this.prisma.findUserById(id.id);
+    const thisUser = await this.prisma.findUserById(id);
     if (!thisUser) throw new NotFoundException('존재하지 않는 유저');
 
     req.user = thisUser;
