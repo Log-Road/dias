@@ -10,6 +10,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { genSalt, hash } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -23,7 +24,7 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [UserService, Logger, PrismaService, ConfigService],
+      providers: [UserService, Logger, PrismaService, ConfigService, JwtService],
     }).compile();
 
     controller = module.get<UserController>(UserController);

@@ -5,20 +5,31 @@ import { mockDeep } from 'jest-mock-extended';
 import {
   BadRequestException,
   ConflictException,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { ConfigService } from '@nestjs/config';
-import { genSalt, hash } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { PASSWORD_REGEXP } from '../utils/newPassword.util';
 
 describe('UserService', () => {
   let service: UserService;
   let prisma: PrismaService;
+  let jwt: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, PrismaService, Logger, ConfigService],
+      providers: [
+        UserService,
+        PrismaService,
+        Logger,
+        ConfigService,
+        JwtService,
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaService>())
@@ -26,9 +37,8 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     prisma = module.get<PrismaService>(PrismaService);
+    jwt = module.get<JwtService>(JwtService);
   });
-
-  afterEach(async () => {});
 
   describe('signUp', () => {
     it('[200] 학생 회원가입 성공', async () => {
@@ -296,4 +306,162 @@ describe('UserService', () => {
       ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
     });
   });
+/* TODO : Have to repair test cases
+  describe('modifyPassword', () => {
+    it('[200] 비밀번호 수정 성공', async () => {
+      const reqObj = {
+        user: {
+          id: 1,
+          name: '홍길동',
+          userId: 'honGil',
+          email: 'dongil@dsm.hs.kr',
+          number: 1111,
+          password: 'th!i@Ist!@$2',
+          isStudent: true,
+        },
+      };
+      const header = {
+        verifyToken: 'Bearer Ab35jck6h.doaek8wnkd.kjf57oejqon29',
+      };
+
+      const request = {
+        newPassword: 'tHisIsnEwPassW0Rd!',
+      };
+
+      (PASSWORD_REGEXP.test as jest.Mock) = jest
+        .fn()
+        .mockImplementationOnce(() => true);
+      jest.spyOn(jwt, 'decode').mockImplementationOnce(() => ({
+        id: 1,
+        iat: 12345678,
+        exp: 87654321,
+      }));
+      jest.spyOn(Date, 'now').mockReturnValue(12345679);
+      (prisma.updateUserPassword as jest.Mock) = jest.fn();
+
+      await expect(
+        await service.modifyPassword(header, request, reqObj),
+      ).resolves.toStrictEqual(null);
+    });
+
+    it('[400] 비밀번호 규칙 위반', async () => {
+      const reqObj = {
+        user: {
+          id: 1,
+          name: '홍길동',
+          userId: 'honGil',
+          email: 'dongil@dsm.hs.kr',
+          number: 1111,
+          password: 'th!i@Ist!@$2',
+          isStudent: true,
+        },
+      };
+      const header = {
+        verifyToken: 'Bearer Ab35jck6h.doaek8wnkd.kjf57oejqon29',
+      };
+
+      const request = {
+        newPassword: 'helloiamlog',
+      };
+
+      (new RegExp(/^(?=.*[a-zA-Z])(?=.*[!\/@#$%^*+=-])(?=.*[0-9]).{8,15}$/g)
+        .test as jest.Mock) = jest.fn().mockReturnValueOnce(false);
+
+      await expect(
+        async () => await service.modifyPassword(header, request, reqObj),
+      ).rejects.toThrowError(new BadRequestException('비밀번호 제약조건 위반'));
+    });
+
+    it('[401] Unauthorized', async () => {
+      const reqObj = {
+        user: {
+          id: 1,
+          name: '홍길동',
+          userId: 'honGil',
+          email: 'dongil@dsm.hs.kr',
+          number: 1111,
+          password: 'th!i@Ist!@$2',
+          isStudent: true,
+        },
+      };
+      const header = {
+        verifyToken: 'Bearer Ab35jck6h.doaek8wnkd.kjf57oejqon29',
+      };
+
+      const request = {
+        newPassword: 'tHisIsnEwPassW0Rd!',
+      };
+
+      (PASSWORD_REGEXP.test as jest.Mock) = jest.fn().mockReturnValueOnce(true);
+      (compare as jest.Mock) = jest.fn(() => true);
+      jest.spyOn(Date, 'now').mockReturnValue(12345679);
+
+      await expect(
+        async () => await service.modifyPassword(header, request, reqObj),
+      ).rejects.toThrowError(new UnauthorizedException());
+    });
+
+    it('[409] Conflict', async () => {
+      const reqObj = {
+        user: {
+          id: 1,
+          name: '홍길동',
+          userId: 'honGil',
+          email: 'dongil@dsm.hs.kr',
+          number: 1111,
+          password: 'th!i@Ist!@$2',
+          isStudent: true,
+        },
+      };
+      const header = {
+        verifyToken: 'Bearer Ab35jck6h.doaek8wnkd.kjf57oejqon29',
+      };
+
+      const request = {
+        newPassword: 'tHisIsnEwPassW0Rd!',
+      };
+
+      (new RegExp(/^(?=.*[a-zA-Z])(?=.*[!\/@#$%^*+=-])(?=.*[0-9]).{8,15}$/g)
+        .test as jest.Mock) = jest.fn().mockReturnValueOnce(true);
+      reqObj.user.password = 'th!i@Ist!@$2';
+      (compare as jest.Mock) = jest.fn(() => true);
+
+      await expect(
+        async () => await service.modifyPassword(header, request, reqObj),
+      ).rejects.toThrowError(new ConflictException('기존 비밀번호와 동일'));
+    });
+
+    it('[500] Internal Server Error Exception', async () => {
+      const reqObj = {
+        user: {
+          id: 1,
+          name: '홍길동',
+          userId: 'honGil',
+          email: 'dongil@dsm.hs.kr',
+          number: 1111,
+          password: 'th!i@Ist!@$2',
+          isStudent: true,
+        },
+      };
+      const header = {
+        verifyToken: 'Bearer Ab35jck6h.doaek8wnkd.kjf57oejqon29',
+      };
+
+      const request = {
+        newPassword: 'tHisIsnEwPassW0Rd!',
+      };
+
+      (PASSWORD_REGEXP.test as jest.Mock) = jest.fn().mockReturnValue(true);
+      (compare as jest.Mock) = jest.fn(() => true);
+      jest.spyOn(Date, 'now').mockReturnValue(12345679);
+      (prisma.updateUserPassword as jest.Mock) = jest.fn(async () => {
+        throw new InternalServerErrorException('DB 오류');
+      });
+
+      await expect(
+        async () => await service.modifyPassword(header, request, reqObj),
+      ).rejects.toThrowError(new InternalServerErrorException('DB 오류'));
+    });
+  });
+  */
 });
