@@ -19,7 +19,7 @@ This project is open source, so you can contribute with `pull request` whenever 
 
 ## System Required
 
-- Node Version >= 20.8.1
+- Node Version >= 18.14.0
 - pnpm Version >= 8.10.3
 
 ## Installation

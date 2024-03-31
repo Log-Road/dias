@@ -1,8 +1,13 @@
-FROM node:18
+FROM node:18.14.0
+
 RUN mkdir -p /var/app
 WORKDIR /var/app
+
+RUN apt-get update 
+RUN npm i -g pnpm
+
 COPY . .
 RUN pnpm install
-RUN pnpm start
+
 EXPOSE 8080
-CMD [ "node", "dist/main.js" ]
+CMD [ "pnpm", "start:prod" ]
