@@ -16,7 +16,7 @@ export class PrismaService
     super({
       datasources: {
         db: {
-          url: configService.get('DATABASE_URL'),
+          url: configService.get('POSTGRESQL_DB_URL'),
         },
       },
     });

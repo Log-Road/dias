@@ -39,3 +39,7 @@ lerna-debug.log*
 .env.local
 .env.dev
 .env.prod
+
+# pem
+src/prisma/ap-northeast-2-bundle.pem
+Log-Road-Key.pem
