@@ -1,0 +1,1 @@
+{"name":"Local: test","url":"/Users/xii/Desktop/iixanx/dauth/test.py","tests":[{"id":1711205763679,"input":"3\nNever gonna give you up\nNever gonna say goodbye\nLet you down","output":"Yes"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/Users/xii/Desktop/iixanx/dauth/test.py","group":"local","local":true}

@@ -1,5 +1,5 @@
 import {
-  INestApplication,
+  BadRequestException,
   Injectable,
   OnModuleDestroy,
   OnModuleInit,
@@ -16,7 +16,7 @@ export class PrismaService
     super({
       datasources: {
         db: {
-          url: configService.get('DATABASE_URL'),
+          url: configService.get('POSTGRESQL_DB_URL'),
         },
       },
     });
@@ -45,6 +45,28 @@ export class PrismaService
   async findUserByEmail(email: string) {
     return await this.user.findUnique({
       where: { email },
+    });
+  }
+
+  async findUserByNumber(number?: number) {
+    if (!number) throw new BadRequestException('학번 필요');
+
+    return await this.user.findUnique({
+      where: { number },
+    });
+  }
+
+  async updateUserPassword(userId: string, password: string) {
+    await this.user.update({
+      where: {
+        userId,
+      },
+      select: {
+        password: true,
+      },
+      data: {
+        password,
+      },
     });
   }
 }
