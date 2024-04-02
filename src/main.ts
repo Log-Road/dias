@@ -30,7 +30,7 @@ async function bootstrap() {
     new DocumentBuilder()
       .setTitle('Dauth')
       .setVersion('0.0.1')
-      .setDescription('Dauth - DSM Intergrated Account Solution')
+      .setDescription('Dauth - DSM Integrated Account Solution')
       .addBearerAuth({
         type: 'http',
         in: 'header',
@@ -47,7 +47,7 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       forbidNonWhitelisted: true,
-      disableErrorMessages: process.env.NODE_ENV === ('prod' || 'dev') ? true : false,
+      disableErrorMessages: process.env.NODE_ENV === ('prod' || 'dev'),
     }),
   );
 
