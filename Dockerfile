@@ -13,4 +13,4 @@ RUN cd /app/src
 RUN pnpm prisma generate
 RUN cd ..
 
-CMD [ "pnpm", "start" ]
+CMD [ "pnpm", "start:prod" ]
