@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -14,10 +13,6 @@ import { compare, genSalt, hash } from 'bcrypt';
 import { FindIdReq } from '../dtos/findId.dto';
 import { FindPasswordReq } from '../dtos/findPassword.dto';
 import { ConfigService } from '@nestjs/config';
-import {
-  ModifyPasswordHeader,
-  ModifyPasswordReq,
-} from '../dtos/modifyPassword.dto';
 import { JwtService } from '@nestjs/jwt';
 import { PASSWORD_REGEXP } from '../utils/newPassword.util';
 
@@ -92,14 +87,11 @@ export class UserService {
     return { temporary };
   }
 
-  async modifyPassword(
-    request: ModifyPasswordReq,
-    reqObj: Request | any,
-  ): Promise<null> {
+  async modifyPassword(request): Promise<null> {
     this.logger.log("Trying modify one's password");
 
     const { newPassword } = request;
-    const thisUser = reqObj.body.user;
+    const thisUser = request.user;
 
     if (PASSWORD_REGEXP.test(newPassword) == false)
       throw new BadRequestException('비밀번호 제약조건 위반');
@@ -121,7 +113,17 @@ export class UserService {
     return null;
   }
 
-  async getInform() {
+  async modifyInform(request): Promise<null> {
+    this.logger.log("Trying modify One's information");
 
+    const thisUser = request.user;
+
+    try {
+      await this.prisma.updateUserInform(thisUser.id, request.email);
+    } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+
+    return null;
   }
 }

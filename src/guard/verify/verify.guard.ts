@@ -5,20 +5,23 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as process from "process";
 
 @Injectable()
 export class VerifyGuard implements CanActivate {
-  private jwt: JwtService;
+  constructor(private jwt: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = await context.switchToHttp().getRequest();
-    const verifyToken: string = await req.headers['verifyToken'];
+    const verifyToken: string = await req.headers['verifytoken'];
 
     if (!verifyToken) throw new UnauthorizedException('토큰 필요');
-    if (!verifyToken.includes(' '))
+    if (!verifyToken.includes('Verify '))
       throw new UnauthorizedException('토큰 형식 오류');
 
-    const isValidReq = await this.jwt.decode(verifyToken);
+    const isValidReq = await this.jwt.verify(verifyToken.split(' ')[1], {
+      secret: process.env.JWT_SECRET,
+    });
 
     if (
       new Date(isValidReq.iat).getMilliseconds() + 1000 * 60 * 5 <
