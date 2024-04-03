@@ -31,19 +31,19 @@ export class PrismaService
   }
 
   async findUserByStrId(userId: string) {
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { userId },
     });
   }
 
   async findUserById(id: number) {
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { id },
     });
   }
 
   async findUserByEmail(email: string) {
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { email },
     });
   }
@@ -51,7 +51,7 @@ export class PrismaService
   async findUserByNumber(number?: number) {
     if (!number) throw new BadRequestException('학번 필요');
 
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { number },
     });
   }
@@ -67,6 +67,14 @@ export class PrismaService
       data: {
         password,
       },
+    });
+  }
+
+  async updateUserInform(id: number, email: string) {
+    await this.user.update({
+      where: { id },
+      select: { email: true },
+      data: { email },
     });
   }
 }
