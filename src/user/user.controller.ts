@@ -18,7 +18,8 @@ import {
   ModifyPasswordHeader,
   ModifyPasswordReq,
 } from '../dtos/modifyPassword.dto';
-import { TokenGuard } from '../token/token.guard';
+import { AuthGuard } from '../guard/auth/auth.guard';
+import { VerifyGuard } from "../guard/verify/verify.guard";
 
 @Controller('user')
 export class UserController {
@@ -61,13 +62,14 @@ export class UserController {
   }
 
   @Patch('/modify')
-  @UseGuards(TokenGuard)
+  @UseGuards(AuthGuard, VerifyGuard)
   async modifyPassword(
-    @Headers('verifyToken') header: ModifyPasswordHeader,
     @Body() request: ModifyPasswordReq,
     @Request() reqObj,
   ): Promise<Res> {
-    const data = await this.service.modifyPassword(header, request, reqObj);
+    console.log(request);
+
+    const data = await this.service.modifyPassword(request, reqObj);
 
     return {
       data,

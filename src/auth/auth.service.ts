@@ -21,7 +21,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async genAccessToken(userId: number): Promise<Object> {
+  async genAccessToken(userId: number): Promise<object> {
     return {
       accessToken: await this.jwt.signAsync(
         {
@@ -32,11 +32,11 @@ export class AuthService {
           privateKey: this.config.get<string>('JWT_PRIVATE'),
         },
       ),
-      expiredAt: new Date(Date.now() + 1000 * 60 * 60 * 3).toISOString(),
+      expiredAt: new Date(Date.now() + 1000 * 60 * 30).toISOString(),
     };
   }
 
-  async genRefreshToken(userId: number): Promise<Object> {
+  async genRefreshToken(userId: number): Promise<object> {
     return {
       refreshToken: await this.jwt.signAsync(
         {
@@ -51,7 +51,7 @@ export class AuthService {
     };
   }
 
-  async signIn(req: SignInReq): Promise<Object> {
+  async signIn(req: SignInReq): Promise<object> {
     this.logger.log('Try to signIn');
 
     const { userId, password } = req;
@@ -71,7 +71,7 @@ export class AuthService {
     );
   }
 
-  async verifyToken(req: string): Promise<Object> {
+  async verifyToken(req: string): Promise<object> {
     const userId = await this.jwt.verifyAsync(req.split(' ')[1], {
       secret: this.config.get<string>('JWT_SECRET'),
       publicKey: this.config.get<string>('JWT_PRIVATE'),

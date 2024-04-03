@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "prod": "pm2 start dist/main.js -i 3 --env prod",
     "start": "export NODE_ENV=dev && dotenv -e .env.dev nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -41,6 +42,7 @@
     "dotenv-cli": "^7.4.1",
     "jest-mock-extended": "^3.0.5",
     "nest-winston": "^1.9.4",
+    "pm2": "^5.3.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "winston": "^3.11.0",

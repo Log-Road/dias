@@ -12,5 +12,6 @@ RUN pnpm install
 RUN cd /app/src
 RUN pnpm prisma generate
 RUN cd ..
+RUN pnpm build
 
-CMD [ "pnpm", "start:prod" ]
+CMD [ "pm2", "start", "dist/app.js", "-i", "3" ]
