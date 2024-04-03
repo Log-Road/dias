@@ -3,9 +3,9 @@ import {
   Injectable,
   OnModuleDestroy,
   OnModuleInit,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { PrismaClient } from '@prisma/client';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class PrismaService
@@ -16,7 +16,7 @@ export class PrismaService
     super({
       datasources: {
         db: {
-          url: configService.get('POSTGRESQL_DB_URL'),
+          url: configService.get("POSTGRESQL_DB_URL"),
         },
       },
     });
@@ -39,6 +39,14 @@ export class PrismaService
   async findUserById(id: number) {
     return this.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        userId: true,
+        name: true,
+        email: true,
+        isStudent: true,
+        number: true,
+      },
     });
   }
 
@@ -49,7 +57,7 @@ export class PrismaService
   }
 
   async findUserByNumber(number?: number) {
-    if (!number) throw new BadRequestException('학번 필요');
+    if (!number) throw new BadRequestException("학번 필요");
 
     return this.user.findUnique({
       where: { number },

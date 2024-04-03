@@ -5,12 +5,12 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
-import { SignInReq } from '../dtos/signIn.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { compare } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+} from "@nestjs/common";
+import { SignInReq } from "../dtos/signIn.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { compare } from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
@@ -28,8 +28,8 @@ export class AuthService {
           id: userId,
         },
         {
-          secret: this.config.get<string>('JWT_SECRET'),
-          privateKey: this.config.get<string>('JWT_PRIVATE'),
+          secret: this.config.get<string>("JWT_SECRET"),
+          privateKey: this.config.get<string>("JWT_PRIVATE"),
         },
       ),
       expiredAt: new Date(Date.now() + 1000 * 60 * 30).toISOString(),
@@ -43,16 +43,16 @@ export class AuthService {
           id: userId,
         },
         {
-          expiresIn: '14d',
-          secret: this.config.get<string>('JWT_SECRET'),
-          privateKey: this.config.get<string>('JWT_PRIVATE'),
+          expiresIn: "14d",
+          secret: this.config.get<string>("JWT_SECRET"),
+          privateKey: this.config.get<string>("JWT_PRIVATE"),
         },
       ),
     };
   }
 
   async signIn(req: SignInReq): Promise<object> {
-    this.logger.log('Try to signIn');
+    this.logger.log("Try to signIn");
 
     const { userId, password } = req;
 
@@ -60,7 +60,7 @@ export class AuthService {
     if (!thisUser) throw new NotFoundException();
 
     if (!(await compare(password, thisUser.password)))
-      throw new BadRequestException('비밀번호 오입력');
+      throw new BadRequestException("비밀번호 오입력");
 
     return Object.assign(
       {
@@ -72,14 +72,14 @@ export class AuthService {
   }
 
   async verifyToken(req: string): Promise<object> {
-    const userId = await this.jwt.verifyAsync(req.split(' ')[1], {
-      secret: this.config.get<string>('JWT_SECRET'),
-      publicKey: this.config.get<string>('JWT_PRIVATE'),
+    const userId = await this.jwt.verifyAsync(req.split(" ")[1], {
+      secret: this.config.get<string>("JWT_SECRET"),
+      publicKey: this.config.get<string>("JWT_PRIVATE"),
     });
 
-    if (!userId) throw new InternalServerErrorException('JWT 오류');
+    if (!userId) throw new InternalServerErrorException("JWT 오류");
     if (!(await this.prisma.findUserById(userId.id)))
-      throw new NotFoundException('존재하지 않는 유저');
+      throw new NotFoundException("존재하지 않는 유저");
 
     const accessToken = await this.genAccessToken(userId);
     const refreshToken = await this.genRefreshToken(userId);
