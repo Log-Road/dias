@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { SignUpReq } from "../dtos/signUp.dto";
 import { Res } from "../dtos/response.dto";
@@ -62,6 +62,18 @@ export class UserController {
   @UseGuards(AuthGuard, VerifyGuard)
   async modifyInform(@Body() request: ModifyInformReq): Promise<Res> {
     const data = await this.service.modifyInform(request);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "OK",
+    };
+  }
+
+  @Get("/info")
+  @UseGuards(AuthGuard)
+  async getInform(@Body() request: object): Promise<Res> {
+    const data = await this.service.getInform(request);
 
     return {
       data,
