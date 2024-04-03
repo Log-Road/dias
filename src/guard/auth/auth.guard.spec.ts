@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TokenGuard } from './token.guard';
+import { AuthGuard } from './auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import {
   ExecutionContext,
-  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 
 describe('TokenGuard - HTTP', () => {
-  let guard: TokenGuard;
+  let guard: AuthGuard;
   let jwt: JwtService;
   let prisma: PrismaService;
 
@@ -30,7 +29,7 @@ describe('TokenGuard - HTTP', () => {
     jwt = module.get<JwtService>(JwtService);
     prisma = module.get<PrismaService>(PrismaService);
 
-    guard = new TokenGuard(jwt, prisma);
+    guard = new AuthGuard(jwt, prisma);
 
     req = {
       switchToHttp: jest.fn().mockReturnValue({

@@ -1,4 +1,4 @@
-FROM node:18.14.0
+FROM node:18-alpine
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -12,5 +12,6 @@ RUN pnpm install
 RUN cd /app/src
 RUN pnpm prisma generate
 RUN cd ..
+RUN pnpm build
 
-CMD [ "pnpm", "start:prod" ]
+CMD [ "pm2", "start", "dist/app.js", "-i", "3" ]

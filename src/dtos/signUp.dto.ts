@@ -19,7 +19,7 @@ export class SignUpReq {
   @IsString({
     message: 'String값 필수',
   })
-  @Length(0, 15, {
+  @Length(5, 15, {
     message: '아이디 길이는 0자 이상 15자 이하',
   })
   userId: string;

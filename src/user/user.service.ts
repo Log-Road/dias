@@ -6,8 +6,6 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-  Patch,
-  Post,
   UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
@@ -95,29 +93,18 @@ export class UserService {
   }
 
   async modifyPassword(
-    verifyToken: ModifyPasswordHeader,
     request: ModifyPasswordReq,
-    reqObj,
+    reqObj: Request | any,
   ): Promise<null> {
     this.logger.log("Trying modify one's password");
 
     const { newPassword } = request;
-    const thisUser = reqObj.user;
+    const thisUser = reqObj.body.user;
 
-    if (
-      PASSWORD_REGEXP.test(newPassword) == false
-    )
+    if (PASSWORD_REGEXP.test(newPassword) == false)
       throw new BadRequestException('비밀번호 제약조건 위반');
     if (await compare(newPassword, thisUser.password))
       throw new ConflictException('기존 비밀번호와 동일');
-
-    const isValidReq = await this.jwt.decode(verifyToken.verifyToken);
-
-    if (
-      new Date(isValidReq).getMilliseconds() + 1000 * 60 * 5 <
-      new Date().getMilliseconds()
-    )
-      throw new UnauthorizedException();
 
     try {
       const salt = await hash(
@@ -132,5 +119,9 @@ export class UserService {
     }
 
     return null;
+  }
+
+  async getInform() {
+
   }
 }
