@@ -26,3 +26,6 @@ jobs:
 
       - name: build
         run: nest build
+
+      - name: test
+        run: node dist/main.js
