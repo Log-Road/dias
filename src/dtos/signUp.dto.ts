@@ -1,4 +1,5 @@
 import { Optional } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -11,19 +12,47 @@ import {
 } from 'class-validator';
 
 export class SignUpReq {
+  @ApiProperty({
+    name: "name",
+    type: "string",
+    isArray: false,
+    required: true,
+    readOnly: true,
+    minLength: 1,
+    maxLength: 10,
+  })
   @IsString({
     message: 'String값 필수',
   })
+  @Length(1, 10, {
+    message: "이름의 길이는 1자 이상 10자 이하"
+  })
   name: string;
 
+  @ApiProperty({
+    name: "userId",
+    type: "string",
+    isArray: false,
+    required: true,
+    readOnly: true,
+    minLength: 5,
+    maxLength: 15
+  })
   @IsString({
     message: 'String값 필수',
   })
   @Length(5, 15, {
-    message: '아이디 길이는 0자 이상 15자 이하',
+    message: '아이디 길이는 5자 이상 15자 이하',
   })
   userId: string;
 
+  @ApiProperty({
+    name: "email",
+    type: "string",
+    isArray: false,
+    required: true,
+    readOnly: true,
+  })
   @IsString({
     message: 'String값 필수',
   })
@@ -35,6 +64,15 @@ export class SignUpReq {
   )
   email: string;
 
+  @ApiProperty({
+    name: "number",
+    type: "number",
+    isArray: false,
+    required: false,
+    readOnly: true,
+    minimum: 1101,
+    maximum: 3420
+  })
   @IsNumber(
     {
       allowNaN: false,
@@ -52,6 +90,15 @@ export class SignUpReq {
   })
   number?: number;
 
+  @ApiProperty({
+    name: "password",
+    type: "string",
+    isArray: false,
+    required: true,
+    readOnly: true,
+    minLength: 8,
+    maxLength: 15
+  })
   @IsString({
     message: 'String값 필수',
   })
@@ -60,6 +107,14 @@ export class SignUpReq {
   })
   password: string;
 
+  @ApiProperty({
+    name: "isStudent",
+    type: "boolean",
+    isArray: false,
+    required: true,
+    readOnly: true,
+    default: true
+  })
   @IsBoolean({
     message: 'Boolean값 필수',
   })
