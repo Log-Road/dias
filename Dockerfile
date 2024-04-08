@@ -4,6 +4,7 @@ RUN mkdir -p /app
 WORKDIR /app
 
 RUN apt-get update 
+RUN npm i pm2 -g
 RUN npm i -g pnpm
 
 COPY . .
@@ -14,4 +15,4 @@ RUN pnpm prisma generate
 RUN cd ..
 RUN pnpm build
 
-CMD [ "pm2", "start", "dist/app.js", "-i", "3" ]
+CMD [ "pnpm", "prod" ]

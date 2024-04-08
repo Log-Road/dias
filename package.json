@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "prod": "pm2 start dist/main.js -i 3 --env prod",
+    "prod": "pm2 start ecosystem.config.js --env production",
     "start": "export NODE_ENV=dev && dotenv -e .env.dev nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -26,6 +26,7 @@
     "prisma:generate": "npx prisma generate"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.540.0",
     "@jest/globals": "^29.7.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.2.0",
