@@ -1,28 +1,39 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Length } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, Length } from "class-validator";
 
 export class SignInReq {
-  @ApiProperty({
-    name: "userId",
-    type: "string",
-    minLength: 5,
-    maxLength: 15,
-    isArray: false,
-    required: true,
-    readOnly: true,
-  })
+  @ApiProperty()
   @IsString()
   @Length(5, 15)
   userId: string;
 
-  @ApiProperty({
-    name: "password",
-    type: "string",
-    minLength: 1,
-    isArray: false,
-    required: true,
-    readOnly: true,
-  })
+  @ApiProperty()
   @IsString()
   password: string;
+}
+
+export class SignInRes {
+  constructor(
+    id: number,
+    accessToken: string,
+    expiredAt: string,
+    refreshToken: string,
+  ) {
+    this.id = id;
+    this.accessToken = accessToken;
+    this.expiredAt = expiredAt;
+    this.refreshToken = refreshToken;
+  }
+
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  expiredAt: string;
+
+  @ApiProperty()
+  refreshToken: string;
 }

@@ -1,5 +1,5 @@
-export interface Res {
-    data: any | null
+export interface Res<T> {
+    data: T
     statusCode: number
     statusMsg: string
 }

@@ -14,7 +14,7 @@ export class UserController {
   constructor(private service: UserService) {}
 
   @Post("/signup")
-  async signUp(@Body() request: SignUpReq): Promise<Res> {
+  async signUp(@Body() request: SignUpReq): Promise<Res<null>> {
     await this.service.signUp(request);
 
     return {
@@ -25,7 +25,7 @@ export class UserController {
   }
 
   @Post("/id")
-  async findId(@Body() request: FindIdReq): Promise<Res> {
+  async findId(@Body() request: FindIdReq): Promise<Res<string>> {
     const data = await this.service.findId(request);
 
     return {
@@ -36,7 +36,7 @@ export class UserController {
   }
 
   @Patch("/find")
-  async findPassword(@Body() request: FindPasswordReq): Promise<Res> {
+  async findPassword(@Body() request: FindPasswordReq): Promise<Res<object>> {
     const data = await this.service.findPassword(request);
 
     return {
@@ -48,7 +48,7 @@ export class UserController {
 
   @Patch("/modify")
   @UseGuards(AuthGuard, VerifyGuard)
-  async modifyPassword(@Body() request: ModifyPasswordReq): Promise<Res> {
+  async modifyPassword(@Body() request: ModifyPasswordReq): Promise<Res<null>> {
     const data = await this.service.modifyPassword(request);
 
     return {
@@ -60,7 +60,7 @@ export class UserController {
 
   @Patch("/info")
   @UseGuards(AuthGuard, VerifyGuard)
-  async modifyInform(@Body() request: ModifyInformReq): Promise<Res> {
+  async modifyInform(@Body() request: ModifyInformReq): Promise<Res<null>> {
     const data = await this.service.modifyInform(request);
 
     return {
@@ -72,7 +72,7 @@ export class UserController {
 
   @Get("/info")
   @UseGuards(AuthGuard)
-  async getInform(@Body() request: object): Promise<Res> {
+  async getInform(@Body() request: object): Promise<Res<object>> {
     const data = await this.service.getInform(request);
 
     return {
