@@ -35,6 +35,9 @@ export class AuthController {
     this.authService = authService;
   }
 
+  @ApiOperation({
+    summary: "로그인"
+  })
   @ApiBody({
     type: SignInReq,
   })

@@ -81,7 +81,7 @@ export class UserService {
     try {
       await this.prisma.updateUserPassword(userId, password);
     } catch (error) {
-      throw new BadRequestException("비밀번호 수정 실패");
+      throw new InternalServerErrorException("비밀번호 수정 실패");
     }
 
     return { temporary };
@@ -120,8 +120,9 @@ export class UserService {
 
     try {
       await this.prisma.updateUserInform(thisUser.id, request.email);
-    } catch (e) {
-      throw new InternalServerErrorException(e);
+    } catch (error) {
+      this.logger.log(error)
+      throw new InternalServerErrorException("DB 오류");
     }
 
     return null;
