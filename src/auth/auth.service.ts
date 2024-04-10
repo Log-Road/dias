@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { SignInReq, SignInRes } from "../dtos/signIn.dto";
 import { PrismaService } from "../prisma/prisma.service";
@@ -86,7 +87,7 @@ export class AuthService {
 
     if (!userId) throw new InternalServerErrorException("JWT 오류");
     if (!(await this.prisma.findUserById(userId.id)))
-      throw new NotFoundException("존재하지 않는 유저");
+      throw new UnauthorizedException("존재하지 않는 유저");
 
     const accessToken = await this.genAccessToken(userId);
     const refreshToken = await this.genRefreshToken(userId);
