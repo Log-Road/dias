@@ -32,6 +32,9 @@ jobs:
           echo PORT=${{ secrets.PORT }} >> .env
           echo SALT=${{ secrets.SALT }} >> .env
 
+      - name: install package manager - pnpm
+        run: npm install -g pnpm
+
       - name: Install package
         run: pnpm i
 
