@@ -43,9 +43,10 @@ describe('AuthController', () => {
       };
 
       const data = {
-        accesstoken: 'testcodeaccesstoken',
+        id: 0,
+        accessToken: 'testcodeaccesstoken',
         expiredAt: '2024-03-25T03:25:59.238Z',
-        refreshtoken: 'testcoderefreshtoken',
+        refreshToken: 'testcoderefreshtoken',
       };
 
       const response = {

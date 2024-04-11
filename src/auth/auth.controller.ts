@@ -23,7 +23,7 @@ import {
   ApiUnauthorizedResponse,
   getSchemaPath,
 } from "@nestjs/swagger";
-import { GenTokenRes } from "src/dtos/genToken.dto";
+import { GenTokenRes, VerifyRefreshRes } from "src/dtos/genToken.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -43,11 +43,12 @@ export class AuthController {
   })
   @ApiCreatedResponse({
     description: "로그인 성공",
+    type: SignInRes
   })
   @ApiBadRequestResponse()
   @ApiNotFoundResponse()
   @Post("/signin")
-  async signIn(@Body() req: SignInReq): Promise<Res<SignInRes>> {
+  async signIn(@Body() req: SignInReq): Promise<SignInRes> {
     const data = await this.authService.signIn(req);
 
     return {
@@ -62,9 +63,8 @@ export class AuthController {
   })
   @ApiBearerAuth("authorization")
   @ApiOkResponse({
-    type: Promise<Res<GenTokenRes>>,
+    type: VerifyRefreshRes,
     description: "토큰 재생성 완료",
-    schema: { $ref: getSchemaPath(Res<GenTokenRes>) },
   })
   @ApiUnauthorizedResponse({
     description: "토큰 오류",
@@ -73,7 +73,7 @@ export class AuthController {
   @Get("/refresh")
   async verifyToken(
     @Headers("authorization") req: string,
-  ): Promise<Res<GenTokenRes>> {
+  ): Promise<VerifyRefreshRes> {
     const data = await this.authService.verifyToken(req);
 
     return {

@@ -7,7 +7,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { SignInReq, SignInRes } from "../dtos/signIn.dto";
+import { SignInReq, SignInServiceRes } from "../dtos/signIn.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { compare } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
@@ -57,7 +57,7 @@ export class AuthService {
     };
   }
 
-  async signIn(req: SignInReq): Promise<SignInRes> {
+  async signIn(req: SignInReq): Promise<SignInServiceRes> {
     this.logger.log("Try to signIn");
 
     const { userId, password } = req;
@@ -71,7 +71,7 @@ export class AuthService {
     const accessToken = await this.genAccessToken(thisUser.id);
     const refreshToken = await this.genRefreshToken(thisUser.id);
 
-    return new SignInRes(
+    return new SignInServiceRes(
       thisUser.id,
       accessToken.accessToken,
       accessToken.expiredAt,
