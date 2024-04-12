@@ -40,7 +40,7 @@ describe('UserController', () => {
     };
 
     it('[200] 학생 회원가입 성공', async () => {
-      const signUp = jest.spyOn(service, 'signUp').mockImplementation(null);
+      const signUp = jest.spyOn(service, 'signUp').mockReturnValue(null);
 
       const request = {
         name: '홍길동',
