@@ -22,7 +22,6 @@ export class UserService {
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
     private config: ConfigService,
-    private jwt: JwtService,
   ) {}
 
   async signUp(request: SignUpReq): Promise<null> {
