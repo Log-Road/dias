@@ -120,7 +120,7 @@ export class UserService {
     try {
       await this.prisma.updateUserInform(thisUser.id, request.email);
     } catch (error) {
-      this.logger.log(error)
+      this.logger.log(error);
       throw new InternalServerErrorException("DB 오류");
     }
 
