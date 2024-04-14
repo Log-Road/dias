@@ -13,7 +13,6 @@ import { compare, genSalt, hash } from "bcrypt";
 import { FindIdReq } from "../dtos/findId.dto";
 import { FindPasswordReq } from "../dtos/findPassword.dto";
 import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
 import { PASSWORD_REGEXP } from "../utils/newPassword.util";
 
 @Injectable()

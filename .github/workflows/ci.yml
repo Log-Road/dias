@@ -10,6 +10,8 @@ on:
 
 jobs:
   build:
+    env: 
+      secrets: PORT,
     runs-on: ubuntu-20.04
 
     steps:
@@ -31,6 +33,7 @@ jobs:
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
           echo PORT=${{ secrets.PORT }} >> .env
           echo SALT=${{ secrets.SALT }} >> .env
+          echo ORIGIN=$ORIGIN >> .env
 
       - name: install package manager - pnpm
         run: npm install -g pnpm
