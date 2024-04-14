@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-        
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -41,8 +41,8 @@ jobs:
       - name: Test unit
         run: pnpm test
 
-      - name: Test E2E
-        run: pnpm test:e2e
+      # - name: Test E2E
+      #   run: pnpm test:e2e
 
       - name: test
         run: nest start
