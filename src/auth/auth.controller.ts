@@ -8,7 +8,6 @@ import {
   Post,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { Res } from "../dtos/response.dto";
 import { SignInReq, SignInRes } from "../dtos/signIn.dto";
 import {
   ApiBadRequestResponse,
@@ -21,9 +20,8 @@ import {
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
-  getSchemaPath,
 } from "@nestjs/swagger";
-import { GenTokenRes, VerifyRefreshRes } from "src/dtos/genToken.dto";
+import { VerifyRefreshRes } from "../dtos/genToken.dto";
 
 @ApiTags("Auth")
 @Controller("auth")

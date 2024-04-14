@@ -5,21 +5,16 @@ import { mockDeep } from 'jest-mock-extended';
 import {
   BadRequestException,
   ConflictException,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpReq } from '../dtos/signUp.dto';
 import { ConfigService } from '@nestjs/config';
-import { compare, genSalt, hash } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { PASSWORD_REGEXP } from '../utils/newPassword.util';
+import { genSalt, hash } from 'bcrypt';
 
 describe('UserService', () => {
   let service: UserService;
   let prisma: PrismaService;
-  let jwt: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,7 +23,6 @@ describe('UserService', () => {
         PrismaService,
         Logger,
         ConfigService,
-        JwtService,
       ],
     })
       .overrideProvider(PrismaService)
@@ -37,7 +31,6 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     prisma = module.get<PrismaService>(PrismaService);
-    jwt = module.get<JwtService>(JwtService);
   });
 
   describe('signUp', () => {

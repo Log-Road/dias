@@ -13,10 +13,9 @@ import { compare } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import {
-  GenAccessTokenDto,
-  GenRefreshTokenDto,
   GenTokenRes,
-} from "src/dtos/genToken.dto";
+} from "../dtos/genToken.dto";
+import { AuthUtil } from "./auth.util"
 
 @Injectable()
 export class AuthService {
@@ -25,37 +24,8 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
+    private util: AuthUtil,
   ) {}
-
-  async genAccessToken(userId: number): Promise<GenAccessTokenDto> {
-    return {
-      accessToken: await this.jwt.signAsync(
-        {
-          id: userId,
-        },
-        {
-          secret: this.config.get<string>("JWT_SECRET"),
-          privateKey: this.config.get<string>("JWT_PRIVATE"),
-        },
-      ),
-      expiredAt: new Date(Date.now() + 1000 * 60 * 30).toISOString(),
-    };
-  }
-
-  async genRefreshToken(userId: number): Promise<GenRefreshTokenDto> {
-    return {
-      refreshToken: await this.jwt.signAsync(
-        {
-          id: userId,
-        },
-        {
-          expiresIn: "14d",
-          secret: this.config.get<string>("JWT_SECRET"),
-          privateKey: this.config.get<string>("JWT_PRIVATE"),
-        },
-      ),
-    };
-  }
 
   async signIn(req: SignInReq): Promise<SignInServiceRes> {
     this.logger.log("Try to signIn");
@@ -68,8 +38,8 @@ export class AuthService {
     if (!(await compare(password, thisUser.password)))
       throw new BadRequestException("비밀번호 오입력");
 
-    const accessToken = await this.genAccessToken(thisUser.id);
-    const refreshToken = await this.genRefreshToken(thisUser.id);
+    const accessToken = await this.util.genAccessToken(thisUser.id);
+    const refreshToken = await this.util.genRefreshToken(thisUser.id);
 
     return new SignInServiceRes(
       thisUser.id,
@@ -89,8 +59,8 @@ export class AuthService {
     if (!(await this.prisma.findUserById(userId.id)))
       throw new UnauthorizedException("존재하지 않는 유저");
 
-    const accessToken = await this.genAccessToken(userId);
-    const refreshToken = await this.genRefreshToken(userId);
+    const accessToken = await this.util.genAccessToken(userId);
+    const refreshToken = await this.util.genRefreshToken(userId);
 
     return {
       accessToken: accessToken.accessToken,

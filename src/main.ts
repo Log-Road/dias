@@ -1,21 +1,21 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { CorsOptions } from './utils/corsOption.util';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from './http.exception/http.exception.filter';
-import { Logger, ValidationPipe } from '@nestjs/common';
-import { WinstonModule } from 'nest-winston';
-import { WinstonInstance } from './utils/winston.util';
-import { configDotenv } from 'dotenv';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { CorsOptions } from "./utils/corsOption.util";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { HttpExceptionFilter } from "./http.exception/http.exception.filter";
+import { Logger, ValidationPipe } from "@nestjs/common";
+import { WinstonModule } from "nest-winston";
+import { WinstonInstance } from "./utils/winston.util";
+import { configDotenv } from "dotenv";
 
 async function bootstrap() {
   configDotenv({
     path:
-      process.env.NODE_ENV == 'prod'
-        ? '../.env.prod'
-        : process.env.NODE_ENV == 'dev'
-        ? '../.env.dev'
-        : '../.env.local',
+      process.env.NODE_ENV == "prod"
+        ? "../.env"
+        : process.env.NODE_ENV == "dev"
+        ? "../.env.dev"
+        : "../.env.local",
   });
 
   const app = await NestFactory.create(AppModule, {
@@ -28,26 +28,26 @@ async function bootstrap() {
   const docs = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
-      .setTitle('Dauth')
-      .setVersion('0.0.1')
-      .setDescription('Dauth - DSM Integrated Account Solution')
+      .setTitle("Dauth")
+      .setVersion("0.0.1")
+      .setDescription("Dauth - DSM Integrated Account Solution")
       .addBearerAuth({
-        type: 'http',
-        in: 'header',
-        scheme: 'Bearer',
-        name: 'authorization',
+        type: "http",
+        in: "header",
+        scheme: "Bearer",
+        name: "authorization",
       })
       .build(),
   );
 
-  SwaggerModule.setup('docs', app, docs);
+  SwaggerModule.setup("docs", app, docs);
 
-  app.useGlobalFilters(new HttpExceptionFilter(new Logger));
+  app.useGlobalFilters(new HttpExceptionFilter(new Logger()));
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       forbidNonWhitelisted: true,
-      disableErrorMessages: process.env.NODE_ENV === ('prod' || 'dev'),
+      disableErrorMessages: process.env.NODE_ENV === ("prod" || "dev"),
     }),
   );
 

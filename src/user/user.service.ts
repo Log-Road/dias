@@ -13,7 +13,6 @@ import { compare, genSalt, hash } from "bcrypt";
 import { FindIdReq } from "../dtos/findId.dto";
 import { FindPasswordReq } from "../dtos/findPassword.dto";
 import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
 import { PASSWORD_REGEXP } from "../utils/newPassword.util";
 
 @Injectable()
@@ -22,7 +21,6 @@ export class UserService {
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
     private config: ConfigService,
-    private jwt: JwtService,
   ) {}
 
   async signUp(request: SignUpReq): Promise<null> {
@@ -121,7 +119,7 @@ export class UserService {
     try {
       await this.prisma.updateUserInform(thisUser.id, request.email);
     } catch (error) {
-      this.logger.log(error)
+      this.logger.log(error);
       throw new InternalServerErrorException("DB 오류");
     }
 

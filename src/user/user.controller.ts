@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { SignUpReq, SignUpRes } from "../dtos/signUp.dto";
-import { Res } from "../dtos/response.dto";
 import { FindIdReq, FindIdRes } from "../dtos/findId.dto";
 import { FindPasswordReq, FindPasswordRes } from "../dtos/findPassword.dto";
 import {
@@ -25,7 +24,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { GetInformRes } from "src/dtos/getInform.dto";
+import { GetInformRes } from "../dtos/getInform.dto";
 
 @ApiTags("User")
 @Controller("user")
