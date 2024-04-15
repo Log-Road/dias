@@ -10,8 +10,7 @@ on:
 
 jobs:
   build:
-    environment: 
-      secrets: PRODUCTION,
+    environment: PRODUCTION,
     runs-on: ubuntu-20.04
 
     steps:
