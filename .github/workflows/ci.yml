@@ -10,8 +10,7 @@ on:
 
 jobs:
   build:
-    env: 
-      secrets: PORT,
+    environment: PRODUCTION,
     runs-on: ubuntu-20.04
 
     steps:
@@ -26,21 +25,35 @@ jobs:
       - name: install package manager - pnpm
         run: npm install -g pnpm
 
+      - name: env set
+        working-directory: ./
+        run: |
+          touch .env
+          echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
+          echo JWT_PRIVATE=${{secrets.JWT_PRIVATE}} >> .env
+          echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
+          echo PORT=${{secrets.PORT}} >> .env
+          echo SALT=${{secrets.SALT}} >> .env
+          echo ORIGIN=$ORIGIN >> .env
+
       - name: Install package
         run: pnpm i
 
+      - name: prisma set
+        run: |
+          npx prisma db push
+          npx prisma migrate deploy
+          npx prisma generate
+
       - name: Test unit
-        run: pnpm test
-        env:
-          POSTGRESQL_DB_URL: ${{ secrets.POSTGRESQL_DB_URL }}
-          ORIGIN: ${{ ORIGIN }}
-          JWT_PRIVATE: ${{ secrets.JWT_PRIVATE }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          PORT: ${{ secrets.PORT }}
-          SALT: ${{ secrets.SALT }}
+        run: pnpm test:prod
 
       # - name: Test E2E
       #   run: pnpm test:e2e
 
       - name: test
-        run: nest start
+        run: |
+          pnpm build
+          cp -r src/prisma/client dist/prisma/client
+          timeout ${{ vars.SLEEP }} nohup node dist/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+          cat app.log
