@@ -30,7 +30,9 @@ jobs:
         run: pnpm i
 
       - name: Test unit
-        run: pnpm test
+        run: |
+          npx prisma generate
+          pnpm test
         env:
           POSTGRESQL_DB_URL: ${{ secrets.POSTGRESQL_DB_URL }}
           JWT_PRIVATE: ${{ secrets.JWT_PRIVATE }}
