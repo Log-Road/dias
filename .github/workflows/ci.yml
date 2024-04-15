@@ -38,9 +38,6 @@ jobs:
 
       - name: Install package
         run: pnpm i
-      
-      - name: is there an env?
-        run: cat .env
 
       - name: prisma set
         run: |

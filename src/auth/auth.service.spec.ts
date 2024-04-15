@@ -84,7 +84,6 @@ describe("AuthService", () => {
             userId: "honGil",
             email: "dongil@dsm.hs.kr",
             number: 1111,
-            password: "thisIsTest1!",
             isStudent: true,
           },
       );
@@ -128,6 +127,17 @@ describe("AuthService", () => {
         refreshToken,
       };
 
+      prisma.findUserById = jest.fn().mockImplementationOnce(
+        async () =>
+          await {
+            id: 1,
+            name: "홍길동",
+            userId: "honGil",
+            email: "dongil@dsm.hs.kr",
+            number: 1111,
+            isStudent: true,
+          },
+      );
       jwt.verifyAsync = jest.fn().mockReturnValueOnce({ id: 1 });
 
       await expect(service.verifyToken(request)).resolves.toStrictEqual(
