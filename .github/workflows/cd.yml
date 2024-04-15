@@ -31,6 +31,8 @@ jobs:
           echo PORT=${{secrets.PORT}} >> .env
           echo SALT=${{secrets.SALT}} >> .env
           echo ORIGIN=$ORIGIN >> .env
+          echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
+          echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
 
       - name: Install package
         run: pnpm i
@@ -47,7 +49,7 @@ jobs:
           cp -r src/prisma/client dist/prisma/client
 
       - name: docker
-        run: docker build dist -t iixanx/dauth:latest
+        run: docker build ./dist -t iixanx/dauth:latest -f ./Dockerfile
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
