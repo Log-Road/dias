@@ -55,4 +55,6 @@ jobs:
         run: |
           pnpm build
           cp -r src/prisma/client dist/prisma/client
-          node dist/main.js
+          nohup node dist/main.js > app.log
+          sleep 10
+          kill -9 $(ps -ef | grep "node dist" | awk "{print $2}")
