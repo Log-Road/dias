@@ -54,4 +54,5 @@ jobs:
       - name: test
         run: |
           pnpm build
+          cp -r src/prisma/client dist/prisma/client
           node dist/main.js
