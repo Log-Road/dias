@@ -33,11 +33,11 @@ jobs:
         run: pnpm test
         env:
           POSTGRESQL_DB_URL: ${{ secrets.POSTGRESQL_DB_URL }}
-          ORIGIN: $ORIGIN
           JWT_PRIVATE: ${{ secrets.JWT_PRIVATE }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           PORT: ${{ secrets.PORT }}
           SALT: ${{ secrets.SALT }}
+          ORIGIN: $ORIGIN
 
       # - name: Test E2E
       #   run: pnpm test:e2e
