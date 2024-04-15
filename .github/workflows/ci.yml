@@ -48,7 +48,7 @@ jobs:
           npx prisma generate
 
       - name: Test unit
-        run: pnpm test
+        run: pnpm test:prod
 
       # - name: Test E2E
       #   run: pnpm test:e2e
