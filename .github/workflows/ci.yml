@@ -55,5 +55,5 @@ jobs:
         run: |
           pnpm build
           cp -r src/prisma/client dist/prisma/client
-          timeout ${{ vars.SLEEP }} nohup node dist/main.js > app.log
+          timeout ${{ vars.SLEEP }} nohup node dist/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
           cat app.log
