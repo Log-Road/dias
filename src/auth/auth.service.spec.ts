@@ -1,20 +1,29 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthService } from "./auth.service";
+import { PrismaService } from "../prisma/prisma.service";
 import {
   BadRequestException,
   InternalServerErrorException,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
+import { AuthUtil } from "./auth.util";
+import { SignInServiceRes } from "../dtos/signIn.dto";
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let service: AuthService;
   let prisma: PrismaService;
   let jwt: JwtService;
+  let util: AuthUtil;
+
+  const accessToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzExMzQwNzU5fQ.0UbgRd-ZxhNdAnFvVtatAiNpALsxEkf-vDTpy9zfNIQ";
+  const refreshToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY";
+  const expiredAt = "2024-03-25T03:25:59.238Z";
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +32,7 @@ describe('AuthService', () => {
         PrismaService,
         Logger,
         ConfigService,
+        AuthUtil,
         JwtService,
       ],
     }).compile();
@@ -30,68 +40,75 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
     prisma = module.get<PrismaService>(PrismaService);
     jwt = module.get<JwtService>(JwtService);
+    util = module.get<AuthUtil>(AuthUtil);
 
-    jest.spyOn(service, 'genAccessToken').mockImplementation(async () => ({
-      accessToken:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzExMzQwNzU5fQ.0UbgRd-ZxhNdAnFvVtatAiNpALsxEkf-vDTpy9zfNIQ',
-      expiredAt: '2024-03-25T03:25:59.238Z',
-    }));
-    jest.spyOn(service, 'genRefreshToken').mockImplementation(async () => ({
-      refreshToken:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY',
-    }));
+    util.genAccessToken = jest.fn().mockImplementation(
+      async () =>
+        await {
+          accessToken,
+          expiredAt,
+        },
+    );
+    util.genRefreshToken = jest.fn(util.genRefreshToken).mockImplementation(
+      async () =>
+        await {
+          refreshToken,
+        },
+    );
   });
 
-  describe('signIn', () => {
-    it('[200] success to login', async () => {
+  describe("signIn", () => {
+    it("[200] success to login", async () => {
       const request = {
-        userId: 'honGil',
-        password: 'thisIsTest1!',
+        userId: "honGil",
+        password: "thisIsTest1!",
       };
 
-      const response = {
-        id: 1,
-        accessToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzExMzQwNzU5fQ.0UbgRd-ZxhNdAnFvVtatAiNpALsxEkf-vDTpy9zfNIQ',
-        expiredAt: '2024-03-25T03:25:59.238Z',
-        refreshToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY',
-      };
+      const response = new SignInServiceRes(
+        1,
+        accessToken,
+        expiredAt,
+        refreshToken,
+      );
 
-      jest.spyOn(prisma, 'findUserByStrId').mockImplementationOnce(
+      jwt.signAsync = jest
+        .fn()
+        .mockReturnValueOnce(accessToken)
+        .mockReturnValueOnce(refreshToken);
+
+      prisma.findUserByStrId = jest.fn().mockImplementationOnce(
         async () =>
           await {
             id: 1,
-            name: '홍길동',
-            userId: 'honGil',
-            email: 'dongil@dsm.hs.kr',
+            name: "홍길동",
+            userId: "honGil",
+            email: "dongil@dsm.hs.kr",
             number: 1111,
-            password: 'thisIsTest1!',
             isStudent: true,
           },
       );
       jest
-        .spyOn(bcrypt, 'compare')
+        .spyOn(bcrypt, "compare")
         .mockImplementationOnce(async () => await true);
 
       await expect(service.signIn(request)).resolves.toStrictEqual(response);
     });
 
-    it('[400] failed to login with wrong password', async () => {
+    it("[400] failed to login with wrong password", async () => {
       const request = {
-        userId: 'honGil',
-        password: '1daf2341dfae!',
+        userId: "honGil",
+        password: "1daf2341dfae!",
       };
 
       await expect(
         async () => await service.signIn(request),
-      ).rejects.toThrowError(new BadRequestException('비밀번호 오입력'));
+      ).rejects.toThrowError(new BadRequestException("비밀번호 오입력"));
     });
 
-    it('[404] User not found with wrong id', async () => {
+    it("[404] User not found with wrong id", async () => {
       const request = {
-        userId: 'hoonGil',
-        password: 'thisIsTest1!',
+        userId: "hoonGil",
+        password: "thisIsTest1!",
       };
 
       await expect(
@@ -100,51 +117,59 @@ describe('AuthService', () => {
     });
   });
 
-  describe('regenerate refreshtoken', () => {
-    it('[200] success', async () => {
-      const request =
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTM4MjA2OSwiZXhwIjoxNzEyNTkxNjY5fQ.8ggYTBXBtPqcfveXX4nVAHUJYzp0uaeyAKAoQxxqVUE';
+  describe("regenerate refreshtoken", () => {
+    it("[200] success", async () => {
+      const request = `Bearer ${refreshToken}`;
 
       const response = {
-        accessToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzExMzQwNzU5fQ.0UbgRd-ZxhNdAnFvVtatAiNpALsxEkf-vDTpy9zfNIQ',
-        expiredAt: '2024-03-25T03:25:59.238Z',
-        refreshToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY',
+        accessToken,
+        expiredAt,
+        refreshToken,
       };
+
+      prisma.findUserById = jest.fn().mockImplementationOnce(
+        async () =>
+          await {
+            id: 1,
+            name: "홍길동",
+            userId: "honGil",
+            email: "dongil@dsm.hs.kr",
+            number: 1111,
+            isStudent: true,
+          },
+      );
+      jwt.verifyAsync = jest.fn().mockReturnValueOnce({ id: 1 });
 
       await expect(service.verifyToken(request)).resolves.toStrictEqual(
         response,
       );
     });
 
-    it('[404] 존재하지 않는 사용자 아이디', async () => {
-      const request =
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY';
+    it("[404] 존재하지 않는 사용자 아이디", async () => {
+      const request = `Bearer ${refreshToken}`;
 
-      jest.spyOn(prisma, 'findUserById').mockImplementationOnce(null);
+      prisma.findUserById = jest.fn().mockReturnValueOnce(null);
+      jwt.verifyAsync = jest.fn().mockReturnValueOnce({ id: 1 });
 
       await expect(
         async () => await service.verifyToken(request),
-      ).rejects.toThrowError(new NotFoundException('존재하지 않는 유저'));
+      ).rejects.toThrowError(new NotFoundException("존재하지 않는 유저"));
     });
 
-    it('[500] Internal Server Error - Bearer Token 양식 위반', async () => {
-      const request =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY';
+    it("[500] Internal Server Error - Bearer Token 양식 위반", async () => {
+      const request = refreshToken;
 
       await expect(
         async () => await service.verifyToken(request),
       ).rejects.toThrowError(
-        new InternalServerErrorException('jwt must be provided'),
+        new InternalServerErrorException("jwt must be provided"),
       );
     });
 
-    it('[500] Internal Server Error - Token 시간 만료', async () => {
-      const request =
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzEyNTM1OTU5fQ.AVfdnjbeZ-vErFwbxSMiT_lf7wZGKdMW72mo5GOAFHY';
+    it("[500] Internal Server Error - Token 시간 만료", async () => {
+      const request = `Bearer ${refreshToken}`;
 
-      jest.spyOn(jwt, 'verifyAsync').mockImplementation(async () => {
+      jest.spyOn(jwt, "verifyAsync").mockImplementation(async () => {
         throw new InternalServerErrorException();
       });
 

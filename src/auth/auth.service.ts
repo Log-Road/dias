@@ -5,12 +5,17 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
-import { SignInReq } from '../dtos/signIn.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { compare } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+  UnauthorizedException,
+} from "@nestjs/common";
+import { SignInReq, SignInServiceRes } from "../dtos/signIn.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { compare } from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import {
+  GenTokenRes,
+} from "../dtos/genToken.dto";
+import { AuthUtil } from "./auth.util"
 
 @Injectable()
 export class AuthService {
@@ -19,40 +24,11 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
+    private util: AuthUtil,
   ) {}
 
-  async genAccessToken(userId: number): Promise<Object> {
-    return {
-      accessToken: await this.jwt.signAsync(
-        {
-          id: userId,
-        },
-        {
-          secret: this.config.get<string>('JWT_SECRET'),
-          privateKey: this.config.get<string>('JWT_PRIVATE'),
-        },
-      ),
-      expiredAt: new Date(Date.now() + 1000 * 60 * 60 * 3).toISOString(),
-    };
-  }
-
-  async genRefreshToken(userId: number): Promise<Object> {
-    return {
-      refreshToken: await this.jwt.signAsync(
-        {
-          id: userId,
-        },
-        {
-          expiresIn: '14d',
-          secret: this.config.get<string>('JWT_SECRET'),
-          privateKey: this.config.get<string>('JWT_PRIVATE'),
-        },
-      ),
-    };
-  }
-
-  async signIn(req: SignInReq): Promise<Object> {
-    this.logger.log('Try to signIn');
+  async signIn(req: SignInReq): Promise<SignInServiceRes> {
+    this.logger.log("Try to signIn");
 
     const { userId, password } = req;
 
@@ -60,30 +36,36 @@ export class AuthService {
     if (!thisUser) throw new NotFoundException();
 
     if (!(await compare(password, thisUser.password)))
-      throw new BadRequestException('비밀번호 오입력');
+      throw new BadRequestException("비밀번호 오입력");
 
-    return Object.assign(
-      {
-        id: thisUser.id,
-      },
-      await this.genAccessToken(thisUser.id),
-      await this.genRefreshToken(thisUser.id),
+    const accessToken = await this.util.genAccessToken(thisUser.id);
+    const refreshToken = await this.util.genRefreshToken(thisUser.id);
+
+    return new SignInServiceRes(
+      thisUser.id,
+      accessToken.accessToken,
+      accessToken.expiredAt,
+      refreshToken.refreshToken,
     );
   }
 
-  async verifyToken(req: string): Promise<Object> {
-    const userId = await this.jwt.verifyAsync(req.split(' ')[1], {
-      secret: this.config.get<string>('JWT_SECRET'),
-      publicKey: this.config.get<string>('JWT_PRIVATE'),
+  async verifyToken(req: string): Promise<GenTokenRes> {
+    const userId = await this.jwt.verifyAsync(req.split(" ")[1], {
+      secret: this.config.get<string>("JWT_SECRET"),
+      publicKey: this.config.get<string>("JWT_PRIVATE"),
     });
 
-    if (!userId) throw new InternalServerErrorException('JWT 오류');
+    if (!userId) throw new InternalServerErrorException("JWT 오류");
     if (!(await this.prisma.findUserById(userId.id)))
-      throw new NotFoundException('존재하지 않는 유저');
+      throw new UnauthorizedException("존재하지 않는 유저");
 
-    const accessToken = await this.genAccessToken(userId);
-    const refreshToken = await this.genRefreshToken(userId);
+    const accessToken = await this.util.genAccessToken(userId);
+    const refreshToken = await this.util.genRefreshToken(userId);
 
-    return Object.assign(accessToken, refreshToken);
+    return {
+      accessToken: accessToken.accessToken,
+      expiredAt: accessToken.expiredAt,
+      refreshToken: refreshToken.refreshToken,
+    };
   }
 }

@@ -1,0 +1,68 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: build
+        run: |
+          pnpm build
+          cp -r src/prisma/client dist/prisma/client
+
+      - name: docker
+        run: docker build dist -t iixanx/dauth:latest
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: push to Docker Hub
+        run: sudo docker push iixanx/dauth:latest
+
+      - name: Get GitHub Actions IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
+      - name: Add Github Actions IP to Security group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+          --group-id ${{ secrets.AWS_EC2_SG_ID }} \
+          --protocol tcp --port 22 \
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: EC2 Production Server Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.PROD_AWS_SSH_KEY }}
+          host: ${{ secrets.PROD_AWS_HOST }}
+          port: ${{ secrets.PORT }}
+          username: ubuntu
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            pm2 save
+            docker pull iixanx/dauth:latest
+            pm2 save
+
+      - name: Remove Github Actions IP From Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress \
+          --group-id ${{ secrets.AWS_EC2_SG_ID }} \
+          --protocol tcp --port 22 \
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32

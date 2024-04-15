@@ -7,14 +7,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class TokenGuard implements CanActivate {
-  constructor(
-    private jwt: JwtService,
-    private prisma: PrismaService,
-  ) {}
+export class AuthGuard implements CanActivate {
+  constructor(private jwt: JwtService, private prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = await context.switchToHttp().getRequest();
@@ -29,14 +26,7 @@ export class TokenGuard implements CanActivate {
     const thisUser = await this.prisma.findUserById(id);
     if (!thisUser) throw new NotFoundException('존재하지 않는 유저');
 
-    req.user = thisUser;
-
-    return true;
-  }
-
-  // TODO : 구현
-  async canActivateRPC(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToRpc();
+    req.body.user = thisUser;
 
     return true;
   }

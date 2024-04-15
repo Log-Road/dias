@@ -1,9 +1,10 @@
-FROM node:18.14.0
+FROM node:18-alpine
 
 RUN mkdir -p /app
 WORKDIR /app
 
 RUN apt-get update 
+RUN npm i pm2 -g
 RUN npm i -g pnpm
 
 COPY . .
@@ -12,5 +13,6 @@ RUN pnpm install
 RUN cd /app/src
 RUN pnpm prisma generate
 RUN cd ..
+RUN pnpm build
 
-CMD [ "pnpm", "start:prod" ]
+CMD [ "pnpm", "prod" ]

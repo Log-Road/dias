@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: install package manager - pnpm
+        run: npm install -g pnpm
+
+      - name: env set
+        working-directory: ./
+        run: |
+          touch .env
+          echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
+          echo JWT_PRIVATE=${{secrets.JWT_PRIVATE}} >> .env
+          echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
+          echo PORT=${{secrets.PORT}} >> .env
+          echo SALT=${{secrets.SALT}} >> .env
+          echo ORIGIN=$ORIGIN >> .env
+
+      - name: Install package
+        run: pnpm i
+
+      - name: prisma set
+        run: |
+          npx prisma db push
+          npx prisma migrate deploy
+          npx prisma generate
+
+      - name: Test unit
+        run: pnpm test:prod
+
+      # - name: Test E2E
+      #   run: pnpm test:e2e
+
+      - name: test
+        run: |
+          pnpm build
+          cp -r src/prisma/client dist/prisma/client
+          timeout ${{ vars.SLEEP }} nohup node dist/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+          cat app.log

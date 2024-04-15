@@ -3,9 +3,9 @@ import {
   Injectable,
   OnModuleDestroy,
   OnModuleInit,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { PrismaClient } from '@prisma/client';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { PrismaClient } from "./client";
 
 @Injectable()
 export class PrismaService
@@ -16,7 +16,7 @@ export class PrismaService
     super({
       datasources: {
         db: {
-          url: configService.get('POSTGRESQL_DB_URL'),
+          url: configService.get("POSTGRESQL_DB_URL"),
         },
       },
     });
@@ -31,27 +31,35 @@ export class PrismaService
   }
 
   async findUserByStrId(userId: string) {
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { userId },
     });
   }
 
   async findUserById(id: number) {
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        userId: true,
+        name: true,
+        email: true,
+        isStudent: true,
+        number: true,
+      },
     });
   }
 
   async findUserByEmail(email: string) {
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { email },
     });
   }
 
   async findUserByNumber(number?: number) {
-    if (!number) throw new BadRequestException('학번 필요');
+    if (!number) throw new BadRequestException("학번 필요");
 
-    return await this.user.findUnique({
+    return this.user.findUnique({
       where: { number },
     });
   }
@@ -67,6 +75,14 @@ export class PrismaService
       data: {
         password,
       },
+    });
+  }
+
+  async updateUserInform(id: number, email: string) {
+    await this.user.update({
+      where: { id },
+      select: { email: true },
+      data: { email },
     });
   }
 }
