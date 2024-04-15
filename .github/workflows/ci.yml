@@ -33,7 +33,7 @@ jobs:
         run: pnpm test
         env:
           POSTGRESQL_DB_URL: ${{ secrets.POSTGRESQL_DB_URL }}
-          ORIGIN: ${{ ORIGIN }}
+          ORIGIN: $ORIGIN
           JWT_PRIVATE: ${{ secrets.JWT_PRIVATE }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           PORT: ${{ secrets.PORT }}
