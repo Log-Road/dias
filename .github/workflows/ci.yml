@@ -46,7 +46,6 @@ jobs:
         run: |
           npx prisma db push
           npx prisma generate
-          nest build
 
       - name: Test unit
         run: pnpm test
