@@ -10,8 +10,8 @@ on:
 
 jobs:
   build:
-    env: 
-      secrets: PORT,
+    environment: 
+      secrets: PRODUCTION,
     runs-on: ubuntu-20.04
 
     steps:
