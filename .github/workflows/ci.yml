@@ -52,4 +52,6 @@ jobs:
       #   run: pnpm test:e2e
 
       - name: test
-        run: nest start
+        run: |
+          pnpm build
+          node dist/main.js

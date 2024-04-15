@@ -19,7 +19,7 @@ jobs:
           node-version: 20
 
       - name: build
-        run: nest build
+        run: pnpm build
 
       - name: docker
         run: docker build . -t iixanx/dauth:latest
