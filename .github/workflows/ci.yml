@@ -27,6 +27,7 @@ jobs:
         run: npm install -g pnpm
 
       - name: env set
+        working-directory: ./
         run: |
           touch .env
           echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
