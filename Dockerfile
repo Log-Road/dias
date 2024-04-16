@@ -12,7 +12,7 @@ RUN npm i -g pm2
 RUN npm i -g pnpm
 
 COPY . .
-RUN tree 5 -L -d
+RUN tree -L 5 -d
 RUN export NODE_ENV=prod
 RUN cd /app/src
 RUN pnpm install
