@@ -7,7 +7,7 @@ WORKDIR /app
 
 RUN apk update 
 RUN apk add npm
-RUN sudo yum install tree
+RUN apk add tree
 RUN npm i -g pm2
 RUN npm i -g pnpm
 
