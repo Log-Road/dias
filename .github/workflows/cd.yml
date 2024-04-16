@@ -66,11 +66,13 @@ jobs:
         uses: haythem/public-ip@v1.2
 
       - name: Add Github Actions IP to Security group
+        env: 
+          AWS_DEFAULT_REGION: ap-northeast-2
         run: |
           aws ec2 authorize-security-group-ingress \
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
           --protocol tcp --port 22 \
-          --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
 
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
