@@ -58,7 +58,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: push to Docker Hub
-        run: docker build ./dist -t iixanx/dauth:latest -f ./Dockerfile
+        run: sudo docker push iixanx/dauth:latest
 
       - name: Get GitHub Actions IP
         id: ip
