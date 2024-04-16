@@ -1,10 +1,13 @@
-FROM node:18-alpine
+FROM node:20-alpine
+
+ENV NODE_VERSION 20.12.2
 
 RUN mkdir -p /app
 WORKDIR /app
 
-RUN apt-get update 
-RUN npm i pm2 -g
+RUN apk update 
+RUN apk add npm
+RUN npm i -g pm2
 RUN npm i -g pnpm
 
 COPY . .
