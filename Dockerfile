@@ -1,6 +1,6 @@
 FROM node:20-alpine AS base
 
-FROM base AS setEnv
+FROM base AS set
 
 ENV NODE_VERSION 20.12.2
 
