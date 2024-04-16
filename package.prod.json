@@ -90,6 +90,6 @@
     }
   },
   "prisma": {
-    "schema": "prisma/schema.prisma"
+    "schema": "prisma/client/schema.prisma"
   }
 }

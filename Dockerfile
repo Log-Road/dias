@@ -12,7 +12,7 @@ RUN npm i -g pm2
 RUN npm i -g pnpm
 
 COPY . .
-RUN tree -L 5 -d
+RUN tree -L 5
 RUN export NODE_ENV=prod
 RUN pnpm install
 RUN pnpm prisma generate
