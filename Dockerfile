@@ -1,4 +1,6 @@
-FROM node:20-alpine
+FROM node:20-alpine AS base
+
+FROM base AS setEnv
 
 ENV NODE_VERSION 20.12.2
 
@@ -11,11 +13,14 @@ RUN apk add tree
 RUN npm i -g pm2
 RUN npm i -g pnpm
 
+FROM setEnv AS build
+
 COPY . .
-RUN tree -L 5
 RUN export NODE_ENV=prod
 RUN pnpm install
 RUN pnpm prisma generate
 RUN cd ..
+
+EXPOSE 8080
 
 CMD [ "pnpm", "prod" ]

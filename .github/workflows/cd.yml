@@ -49,10 +49,6 @@ jobs:
           cp -r src/prisma/client dist/prisma/client
           cp package.prod.json dist/package.json
 
-  deploy:
-    runs-on: ubuntu-20.04
-
-    steps:
       - name: docker
         run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest -f ./Dockerfile
 
@@ -69,11 +65,14 @@ jobs:
         id: ip
         uses: haythem/public-ip@v1.2
 
-      - name: Add Github Actions IP to Security group
-        env: 
-          AWS_DEFAULT_REGION: ap-northeast-2
+      - name: configuring
         run: |
           aws configure
+
+      - name: Add Github Actions IP to Security group
+        env:
+          AWS_DEFAULT_REGION: ap-northeast-2
+        run: |
           aws ec2 authorize-security-group-ingress \
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
           --protocol tcp --port 22 \
