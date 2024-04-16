@@ -7,10 +7,12 @@ WORKDIR /app
 
 RUN apk update 
 RUN apk add npm
+RUN sudo yum install tree
 RUN npm i -g pm2
 RUN npm i -g pnpm
 
 COPY . .
+RUN tree run -L -d
 RUN export NODE_ENV=prod
 RUN cd /app/src
 RUN pnpm install
