@@ -13,7 +13,7 @@ RUN apk add tree
 RUN npm i -g pm2
 RUN npm i -g pnpm
 
-FROM setEnv AS build
+FROM set AS build
 
 COPY . .
 RUN export NODE_ENV=prod
