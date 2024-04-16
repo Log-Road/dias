@@ -14,10 +14,8 @@ RUN npm i -g pnpm
 COPY . .
 RUN tree -L 5 -d
 RUN export NODE_ENV=prod
-RUN cd /app/src
 RUN pnpm install
 RUN pnpm prisma generate
 RUN cd ..
-RUN pnpm build
 
 CMD [ "pnpm", "prod" ]
