@@ -8,7 +8,7 @@ module.exports = {
   apps: [
     {
       name: "dauth",
-      script: "dist/main.js",
+      script: "main.js",
       watch: true,
       ignore_watch: ["logs", "node_modules", "*.log"],
       instance: 2,
