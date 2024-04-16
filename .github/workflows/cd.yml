@@ -30,7 +30,9 @@ jobs:
           echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
           echo PORT=${{secrets.PORT}} >> .env
           echo SALT=${{secrets.SALT}} >> .env
-          echo ORIGIN=$ORIGIN >> .env
+          echo ORIGIN=${{ secrets.ORIGIN }} >> .env
+          echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
+          echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
 
       - name: Install package
         run: pnpm i
@@ -56,7 +58,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: push to Docker Hub
-        run: sudo docker push iixanx/dauth:latest
+        run: docker build ./dist -t iixanx/dauth:latest -f ./Dockerfile
 
       - name: Get GitHub Actions IP
         id: ip
