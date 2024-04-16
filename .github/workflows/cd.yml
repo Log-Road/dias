@@ -35,7 +35,7 @@ jobs:
           echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
 
       - name: Install package
-        run: pnpm i
+        run: pnpm i --no-frozen-lockfile
 
       - name: prisma set
         run: |
