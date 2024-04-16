@@ -1,4 +1,6 @@
-FROM node:18-alpine
+FROM node:20-alpine
+
+ENV NODE_VERSION 20.12.2
 
 RUN mkdir -p /app
 WORKDIR /app
