@@ -92,6 +92,10 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ubuntu
           script: |
+            echo ${{ secrets.PROD_AWS_SSH_KEY }}
+            echo ${{ secrets.PPROD_AWS_HOST }}
+            echo ${{ secrets.PORT }}
+            echo ${{ secrets.DOCKERHUB_USERNAME }}
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             pm2 save
