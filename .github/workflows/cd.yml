@@ -50,7 +50,7 @@ jobs:
           cp package.prod.json dist/package.json
 
       - name: docker
-        run: docker build ./dist -t iixanx/dauth:latest -f ./Dockerfile
+        run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest -f ./Dockerfile
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -83,7 +83,7 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             pm2 save
-            docker pull iixanx/dauth:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
             pm2 save
 
       - name: Remove Github Actions IP From Security Group
