@@ -1,20 +1,27 @@
-FROM node:20-alpine
+
+FROM node:20-alpine AS base
+
+FROM base AS set
 
 ENV NODE_VERSION 20.12.2
 
 RUN mkdir -p /app
 WORKDIR /app
 
-RUN apt-get update 
-RUN npm i pm2 -g
+RUN apk update 
+RUN apk add npm
+RUN apk add tree
+RUN npm i -g pm2
 RUN npm i -g pnpm
+
+FROM set AS build
 
 COPY . .
 RUN export NODE_ENV=prod
 RUN pnpm install
-RUN cd /app/src
 RUN pnpm prisma generate
 RUN cd ..
-RUN pnpm build
+
+EXPOSE 8080
 
 CMD [ "pnpm", "prod" ]

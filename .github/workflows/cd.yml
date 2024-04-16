@@ -38,7 +38,7 @@ jobs:
           echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
 
       - name: Install package
-        run: pnpm i
+        run: pnpm i --no-frozen-lockfile
 
       - name: prisma set
         run: |
@@ -50,9 +50,10 @@ jobs:
         run: |
           pnpm build
           cp -r src/prisma/client dist/prisma/client
+          cp package.prod.json dist/package.json
 
       - name: docker
-        run: docker build ./dist -t iixanx/dauth:latest -f ./Dockerfile
+        run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest -f ./Dockerfile
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -61,18 +62,27 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: push to Docker Hub
-        run: sudo docker push iixanx/dauth:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
 
       - name: Get GitHub Actions IP
         id: ip
         uses: haythem/public-ip@v1.2
 
+      - name: configuring
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Add Github Actions IP to Security group
+        env:
+          AWS_DEFAULT_REGION: ap-northeast-2
         run: |
           aws ec2 authorize-security-group-ingress \
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
           --protocol tcp --port 22 \
-          --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
 
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
@@ -85,7 +95,7 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             pm2 save
-            docker pull iixanx/dauth:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
             pm2 save
 
       - name: Remove Github Actions IP From Security Group
