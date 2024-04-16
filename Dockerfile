@@ -12,8 +12,8 @@ RUN npm i -g pnpm
 
 COPY . .
 RUN export NODE_ENV=prod
-RUN pnpm install
 RUN cd /app/src
+RUN pnpm install
 RUN pnpm prisma generate
 RUN cd ..
 RUN pnpm build
