@@ -92,15 +92,13 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ubuntu
           script: |
-            echo ${{ secrets.PROD_AWS_SSH_KEY }}
-            echo ${{ secrets.PPROD_AWS_HOST }}
-            echo ${{ secrets.PORT }}
-            echo ${{ secrets.DOCKERHUB_USERNAME }}
+            touch host.log
+            echo ${{ secrets.PROD_AWS_HOST }} >> host.log
+            cat host.log
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             pm2 save
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
-            pm2 save
 
       - name: Remove Github Actions IP From Security Group
         run: |
