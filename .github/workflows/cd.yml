@@ -86,9 +86,9 @@ jobs:
 
       - name: logging
         run: |
-        touch host.log
-        echo ${{ secrets.PROD_AWS_HOST}} >> host.log
-        cat host.log
+          touch host.log
+          echo ${{ secrets.PROD_AWS_HOST}} >> host.log
+          cat host.log
 
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
