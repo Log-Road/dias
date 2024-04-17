@@ -95,7 +95,7 @@ jobs:
         with:
           key: ${{ secrets.PROD_AWS_SSH_KEY }}
           host: ${{ secrets.PROD_AWS_HOST }}
-          port: ${{ secrets.PORT }}
+          port: ${{ secrets.AWS_PORT }}
           username: ubuntu
           script: |
             export NVM_DIR=~/.nvm
