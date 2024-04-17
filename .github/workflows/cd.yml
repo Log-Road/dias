@@ -98,9 +98,10 @@ jobs:
           port: ${{ secrets.AWS_PORT }}
           username: ubuntu
           script: |
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            pm2 save
+            groupadd docker
+            usermod -aG docker $USER
+            newgrp docker
+            npx pm2 save
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
 
       - name: Remove Github Actions IP From Security Group
