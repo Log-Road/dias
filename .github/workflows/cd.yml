@@ -95,8 +95,7 @@ jobs:
             groupadd docker
             sudo usermod -aG docker $USER
             newgrp docker
-            npm i -g pm2
-            npx pm2 save
+            pm2 save
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
 
       - name: Remove Github Actions IP From Security Group
