@@ -84,12 +84,6 @@ jobs:
           --protocol tcp --port 22 \
           --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
 
-      - name: logging
-        run: |
-          touch host.log
-          echo ${{ secrets.PROD_AWS_HOST}} >> host.log
-          cat host.log
-
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
         with:
@@ -101,6 +95,7 @@ jobs:
             groupadd docker
             sudo usermod -aG docker $USER
             newgrp docker
+            npm i -g pm2
             npx pm2 save
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
 
