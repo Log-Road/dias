@@ -99,7 +99,7 @@ jobs:
           username: ubuntu
           script: |
             groupadd docker
-            usermod -aG docker $USER
+            sudo usermod -aG docker $USER
             newgrp docker
             npx pm2 save
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
