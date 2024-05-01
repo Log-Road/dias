@@ -47,7 +47,7 @@ jobs:
         run: |
           pnpm build
           cp package.prod.json dist/package.json
-          cp ecosystem.config.json dist/ecosystem.config.json
+          cp ecosystem.config.js dist/ecosystem.config.js
 
       - name: docker
         run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest -f ./Dockerfile
