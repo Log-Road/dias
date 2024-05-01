@@ -3,7 +3,10 @@ import { GenAccessTokenDto, GenRefreshTokenDto } from "../dtos/genToken.dto";
 import { ConfigService } from "@nestjs/config";
 
 export class AuthUtil {
-  constructor(private jwt: JwtService, private config: ConfigService) {}
+  constructor(
+    private readonly jwt: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async genAccessToken(userId: number): Promise<GenAccessTokenDto> {
     return {
