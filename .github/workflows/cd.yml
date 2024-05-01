@@ -96,7 +96,7 @@ jobs:
             cat ~/my_password.txt | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
             docker run -d --name dauth -p 8080:8080 iixanx/dauth:latest
-            docker rmi $(docker images -f "dangling=true" -q)
+            docker image prune 
 
       - name: Remove Github Actions IP From Security Group
         run: |
