@@ -1,15 +1,13 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - dev
   pull_request:
     branches:
       - dev
+      - prod
 
 jobs:
-  build:
+  ci-build:
     runs-on: ubuntu-20.04
 
     steps:
@@ -53,6 +51,5 @@ jobs:
       - name: test
         run: |
           pnpm build
-          cp -r src/prisma/client dist/prisma/client
           timeout ${{ vars.SLEEP }} nohup node dist/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
           cat app.log
