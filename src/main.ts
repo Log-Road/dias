@@ -51,6 +51,24 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 8888);
+  await app.listen(process.env.PORT ?? 8888, () => {
+    const logger = WinstonModule.createLogger({instance: WinstonInstance});
+    logger.log(`                                `)
+    logger.log(`                                `)
+    logger.log(`               ::               `)
+    logger.log(`              +++=              `)
+    logger.log(`              .-:               `)
+    logger.log(`            =++++=-.            `)
+    logger.log(`           -+++:-+++.           `)
+    logger.log(`          :+++. .+++:         Dauth For ROAD  `)
+    logger.log(`         .+++++++++=           - DSM Integrated Account Solution   `)
+    logger.log(`         ++++=++++++=.          `)
+    logger.log(`        -+++     :=+++-         `)
+    logger.log(`       :+++:       :+++=        `)
+    logger.log(`       ++++.        =+++=.      `)
+    logger.log(`       .::::         ::::.      `)
+    logger.log(`                                `)
+    logger.log(`                                `)
+  })
 }
 bootstrap();

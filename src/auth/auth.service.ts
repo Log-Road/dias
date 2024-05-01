@@ -22,7 +22,7 @@ export class AuthService {
   constructor(
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
-    private jwt: JwtService,
+    private readonly jwt: JwtService,
     private config: ConfigService,
     private util: AuthUtil,
   ) {}

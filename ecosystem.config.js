@@ -30,7 +30,7 @@ module.exports = {
       ref: "origin/prod",
       repo: "https://github.com/log-road/dauth.git",
       path: "./",
-      "post-setup": "pnpm i && nest build",
+      "post-setup": "pnpm i && pnpm build",
       "post-deploy": "pnpm prod",
     },
   },
