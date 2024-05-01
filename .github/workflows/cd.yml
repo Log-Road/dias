@@ -46,6 +46,7 @@ jobs:
       - name: build
         run: |
           pnpm build
+          cp -r src/prisma/client dist/prisma/client
           cp package.prod.json dist/package.json
           cp ecosystem.config.js dist/ecosystem.config.js
 
@@ -95,18 +96,8 @@ jobs:
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" >> ~/my_password.txt
             cat ~/my_password.txt | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
-            touch .env
-            echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
-            echo JWT_PRIVATE=${{secrets.JWT_PRIVATE}} >> .env
-            echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
-            echo PORT=${{secrets.PORT}} >> .env
-            echo SALT=${{secrets.SALT}} >> .env
-            echo ORIGIN=${{ secrets.ORIGIN }} >> .env
-            echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
-            echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
-            docker run -d -p 8080:8080 --env-file .env iixanx/dauth:latest
-            y | docker rm $(docker ps -a -f status=exited -q)
-            y | docker image prune
+            docker run -d --name dauth -p 8080:8080 iixanx/dauth:latest
+            docker rmi $(docker images -f "dangling=true" -q)
 
       - name: Remove Github Actions IP From Security Group
         run: |
