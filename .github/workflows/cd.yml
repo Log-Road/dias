@@ -95,10 +95,6 @@ jobs:
             groupadd docker
             sudo usermod -aG docker $USER
             newgrp docker
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-            nvm install 20
-            npm i npx, pm2
-            npx pm2 save
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
 
       - name: Remove Github Actions IP From Security Group
