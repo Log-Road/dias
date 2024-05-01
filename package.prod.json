@@ -8,6 +8,7 @@
   "scripts": {
     "build": "npx prisma generate && nest build && cp -rf ./src/prisma/client ./dist/prisma/client",
     "node": "ts-node ./dist/main.js",
+    "node:prod" : "ts-node main.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prod": "pm2 start ecosystem.config.js --env prod",
     "start:debug": "nest start --debug --watch",
