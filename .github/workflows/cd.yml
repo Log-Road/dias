@@ -21,6 +21,19 @@ jobs:
       - name: install package manager - pnpm
         run: npm install -g pnpm
 
+      - name: Install package
+        run: pnpm i --no-frozen-lockfile
+
+      - name: prisma set
+        run: |
+          npx prisma db push
+          npx prisma migrate deploy
+          npx prisma generate
+
+      - name: build
+        run:  pnpm build
+
+
       - name: env set
         working-directory: ./
         run: |
