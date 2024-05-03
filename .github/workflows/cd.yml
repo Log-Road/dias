@@ -21,9 +21,6 @@ jobs:
       - name: install package manager - pnpm
         run: npm install -g pnpm
 
-      - name: tree
-        run: sudo apt install tree
-
       - name: env set
         working-directory: ./
         run: |
