@@ -24,4 +24,4 @@ RUN cd ..
 
 EXPOSE 8080
 
-CMD [ "pnpm", "prod" ]
+CMD [ "pnpm", "node:prod" ]
