@@ -49,7 +49,6 @@ jobs:
           cp package.prod.json dist/package.json
           cp ecosystem.config.js dist/ecosystem.config.js
           cp .env dist/.env
-          ls -a dist
 
       - name: docker
         run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest -f ./Dockerfile
@@ -99,7 +98,7 @@ jobs:
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest
             docker run -d -p 8080:8080 iixanx/dauth:latest
             y | docker rm $(docker ps -a -f status=exited -q)
-            docker image prune 
+            y | docker image prune
 
       - name: Remove Github Actions IP From Security Group
         run: |
