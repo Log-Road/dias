@@ -21,6 +21,9 @@ jobs:
       - name: install package manager - pnpm
         run: npm install -g pnpm
 
+      - name: tree
+        run: sudo apt install tree
+
       - name: env set
         working-directory: ./
         run: |
@@ -33,6 +36,7 @@ jobs:
           echo ORIGIN=${{ secrets.ORIGIN }} >> .env
           echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
           echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
+          tree
 
       - name: Install package
         run: pnpm i --no-frozen-lockfile
@@ -49,10 +53,6 @@ jobs:
           cp package.prod.json dist/package.json
           cp ecosystem.config.js dist/ecosystem.config.js
           cp .env dist/.env
-
-      - name: testingg
-        run: |
-          sudo apt install tree
           tree
 
       - name: docker
