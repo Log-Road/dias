@@ -21,6 +21,19 @@ jobs:
       - name: install package manager - pnpm
         run: npm install -g pnpm
 
+      - name: Install package
+        run: pnpm i --no-frozen-lockfile
+
+      - name: prisma set
+        run: |
+          npx prisma db push
+          npx prisma migrate deploy
+          npx prisma generate
+
+      - name: build
+        run:  pnpm build
+
+
       - name: env set
         working-directory: ./
         run: |
@@ -35,19 +48,6 @@ jobs:
           echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
           echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
           cd ..
-
-      - name: Install package
-        run: pnpm i --no-frozen-lockfile
-
-      - name: prisma set
-        run: |
-          npx prisma db push
-          npx prisma migrate deploy
-          npx prisma generate
-
-      - name: build
-        run: |
-          pnpm build
           cp package.prod.json dist/package.json
           cp ecosystem.config.js dist/ecosystem.config.js
 
