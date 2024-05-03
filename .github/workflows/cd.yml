@@ -21,6 +21,19 @@ jobs:
       - name: install package manager - pnpm
         run: npm install -g pnpm
 
+      - name: env set
+        working-directory: ./
+        run: |
+          touch .env
+          echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
+          echo JWT_PRIVATE=${{secrets.JWT_PRIVATE}} >> .env
+          echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
+          echo PORT=${{secrets.PORT}} >> .env
+          echo SALT=${{secrets.SALT}} >> .env
+          echo ORIGIN=${{ secrets.ORIGIN }} >> .env
+          echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
+          echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
+
       - name: Install package
         run: pnpm i --no-frozen-lockfile
 
@@ -31,25 +44,16 @@ jobs:
           npx prisma generate
 
       - name: build
-        run:  pnpm build
-
-
-      - name: env set
-        working-directory: ./
         run: |
-          cd dist
-          touch .env
-          echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
-          echo JWT_PRIVATE=${{secrets.JWT_PRIVATE}} >> .env
-          echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
-          echo PORT=${{secrets.PORT}} >> .env
-          echo SALT=${{secrets.SALT}} >> .env
-          echo ORIGIN=${{ secrets.ORIGIN }} >> .env
-          echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
-          echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
-          cd ..
+          pnpm build
           cp package.prod.json dist/package.json
           cp ecosystem.config.js dist/ecosystem.config.js
+          cp .env dist/.env
+
+      - name: testingg
+        run: |
+          sudo apt install tree
+          tree
 
       - name: docker
         run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dauth:latest -f ./Dockerfile
