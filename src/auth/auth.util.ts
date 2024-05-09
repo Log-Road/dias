@@ -1,10 +1,11 @@
 import { JwtService } from "@nestjs/jwt";
 import { GenAccessTokenDto, GenRefreshTokenDto } from "../dtos/genToken.dto";
 import { ConfigService } from "@nestjs/config";
+import { Inject } from "@nestjs/common";
 
 export class AuthUtil {
   constructor(
-    private readonly jwt: JwtService,
+    @Inject(JwtService) private readonly jwt: JwtService,
     private config: ConfigService,
   ) {}
 
