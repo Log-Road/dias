@@ -25,6 +25,7 @@ import {
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { GetInformRes } from "../dtos/getInform.dto";
+import { SendEmailWithLoginRes } from "src/dtos/sendEmailWithLogin.dto";
 
 @ApiTags("User")
 @Controller("user")
@@ -213,5 +214,34 @@ export class UserController {
       statusCode: 200,
       statusMsg: "OK",
     };
+  }
+
+  @ApiOperation({
+    summary: "이메일 발송 / 로그인 상태"
+  })
+  @ApiHeader({
+    name: "authorization",
+    description: "Bearer Token (Access)",
+    example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni"
+  })
+  @ApiOkResponse({
+
+  })
+  @ApiBadRequestResponse({
+
+  })
+  @ApiInternalServerErrorResponse({
+
+  })
+  @Post("/sendlogin")
+  @UseGuards(AuthGuard)
+  async sendEmailWithLogin(@Body() token: object): Promise<SendEmailWithLoginRes>{
+    const data = await this.service.sendEmailWithLogin(token);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "OK"
+    }
   }
 }
