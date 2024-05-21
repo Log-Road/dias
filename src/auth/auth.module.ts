@@ -4,7 +4,7 @@ import { AuthController } from "./auth.controller";
 import { PrismaService } from "src/prisma/prisma.service";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { AuthUtil } from "./auth.util";
+import { AuthUtil } from "./util/auth.util";
 
 @Module({
   imports: [

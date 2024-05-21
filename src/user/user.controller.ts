@@ -1,15 +1,7 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { SignUpReq, SignUpRes } from "../dtos/signUp.dto";
-import { FindIdReq, FindIdRes } from "../dtos/findId.dto";
-import { FindPasswordReq, FindPasswordRes } from "../dtos/findPassword.dto";
-import {
-  ModifyPasswordReq,
-  ModifyPasswordRes,
-} from "../dtos/modifyPassword.dto";
 import { AuthGuard } from "../guard/auth/auth.guard";
 import { VerifyGuard } from "../guard/verify/verify.guard";
-import { ModifyInformReq, ModifyInformRes } from "../dtos/modifyInform.dto";
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -24,13 +16,28 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { GetInformRes } from "../dtos/getInform.dto";
-import { SendEmailWithLoginRes } from "src/dtos/sendEmailWithLogin.dto";
+import { GetInformRes } from "../auth/dto/response/getInform.response.dto";
+import { FindIdReq } from "./dto/request/findId.request.dto";
+import { FindPasswordReq } from "./dto/request/findPassword.request.dto";
+import { ModifyInformReq } from "./dto/request/modifyInform.request.dto";
+import { ModifyPasswordReq } from "./dto/request/modifyPassword.dto";
+import { SignUpReq } from "./dto/request/signUp.request.dto";
+import { FindIdRes } from "./dto/response/findId.response.dto";
+import { FindPasswordRes } from "./dto/response/findPassword.response.dto";
+import { ModifyInformRes } from "./dto/response/modifyInform.response.dto";
+import { ModifyPasswordRes } from "./dto/response/modifyPassword.dto";
+import { SignUpRes } from "./dto/response/signUp.response.dto";
+import { IUserController } from "./interface/user.controller.interface";
+import { SendEmailWithLoginRes } from "./dto/response/sendEmailWithLogin.response.dto";
 
 @ApiTags("User")
 @Controller("user")
-export class UserController {
-  constructor(private service: UserService) {}
+export class UserController implements IUserController {
+  constructor(
+    private service: UserService
+  ) {
+    this.service = service;
+  }
 
   @ApiOperation({
     summary: "회원가입",
@@ -101,7 +108,9 @@ export class UserController {
     description: "비밀번호 수정 실패 (DB 업데이트 실패)",
   })
   @Patch("/find")
-  async findPassword(@Body() request: FindPasswordReq): Promise<FindPasswordRes> {
+  async findPassword(
+    @Body() request: FindPasswordReq,
+  ): Promise<FindPasswordRes> {
     const data = await this.service.findPassword(request);
 
     return {
@@ -118,12 +127,12 @@ export class UserController {
     {
       name: "authorization",
       description: "Bearer Token (Access)",
-      example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni"
+      example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni",
     },
     {
       name: "verifytoken",
       description: "Bearer Token (Verify)",
-      example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni"
+      example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni",
     },
   ])
   @ApiBody({
@@ -192,7 +201,7 @@ export class UserController {
   @ApiHeader({
     name: "authorization",
     description: "Bearer Token (Access)",
-    example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni"
+    example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni",
   })
   @ApiOkResponse({
     type: GetInformRes,
@@ -217,31 +226,27 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: "이메일 발송 / 로그인 상태"
+    summary: "이메일 발송 / 로그인 상태",
   })
   @ApiHeader({
     name: "authorization",
     description: "Bearer Token (Access)",
-    example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni"
+    example: "Bearer asdjhfkqjh.hdkfhqwe2.k3h98c93ni",
   })
-  @ApiOkResponse({
-
-  })
-  @ApiBadRequestResponse({
-
-  })
-  @ApiInternalServerErrorResponse({
-
-  })
+  @ApiOkResponse({})
+  @ApiBadRequestResponse({})
+  @ApiInternalServerErrorResponse({})
   @Post("/sendlogin")
   @UseGuards(AuthGuard)
-  async sendEmailWithLogin(@Body() token: object): Promise<SendEmailWithLoginRes>{
+  async sendEmailWithLogin(
+    @Body() token: object,
+  ): Promise<SendEmailWithLoginRes> {
     const data = await this.service.sendEmailWithLogin(token);
 
     return {
       data,
       statusCode: 200,
-      statusMsg: "OK"
-    }
+      statusMsg: "OK",
+    };
   }
 }

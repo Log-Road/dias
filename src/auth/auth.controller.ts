@@ -8,7 +8,7 @@ import {
   Post,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { SignInReq, SignInRes } from "../dtos/signIn.dto";
+import { SignInRes } from "./dto/response/signIn.dto";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -21,7 +21,9 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { VerifyRefreshRes } from "../dtos/genToken.dto";
+import { Res } from "src/dtos/response.dto";
+import { SignInReq } from "./dto/request/signIn.request.dto";
+import { GenTokenRes } from "./dto/response/genToken.response.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -34,19 +36,19 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: "로그인"
+    summary: "로그인",
   })
   @ApiBody({
     type: SignInReq,
   })
   @ApiCreatedResponse({
     description: "로그인 성공",
-    type: SignInRes
+    type: SignInRes,
   })
   @ApiBadRequestResponse()
   @ApiNotFoundResponse()
   @Post("/signin")
-  async signIn(@Body() req: SignInReq): Promise<SignInRes> {
+  async signIn(@Body() req: SignInReq): Promise<Res<SignInRes>> {
     const data = await this.authService.signIn(req);
 
     return {
@@ -61,7 +63,7 @@ export class AuthController {
   })
   @ApiBearerAuth("authorization")
   @ApiOkResponse({
-    type: VerifyRefreshRes,
+    type: Res<GenTokenRes>,
     description: "토큰 재생성 완료",
   })
   @ApiUnauthorizedResponse({
@@ -71,7 +73,7 @@ export class AuthController {
   @Get("/refresh")
   async verifyToken(
     @Headers("authorization") req: string,
-  ): Promise<VerifyRefreshRes> {
+  ): Promise<Res<GenTokenRes>> {
     const data = await this.authService.verifyToken(req);
 
     return {

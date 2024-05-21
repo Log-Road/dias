@@ -7,11 +7,9 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import { SignUpReq } from "../dtos/signUp.dto";
+import { SignUpReq } from "./dto/request/signUp.request.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { compare, genSalt, hash } from "bcrypt";
-import { FindIdReq } from "../dtos/findId.dto";
-import { FindPasswordReq } from "../dtos/findPassword.dto";
 import { ConfigService } from "@nestjs/config";
 import { PASSWORD_REGEXP } from "../utils/newPassword.util";
 import {
@@ -20,9 +18,12 @@ import {
   SendEmailCommandOutput,
   SESClient,
 } from "@aws-sdk/client-ses";
+import { FindIdReq } from "./dto/request/findId.request.dto";
+import { FindPasswordReq } from "./dto/request/findPassword.request.dto";
+import { IUserService } from "./interface/user.service.interface";
 
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
@@ -31,7 +32,7 @@ export class UserService {
   ) {
     this.client = new SESClient({
       region: "ap-northeast-2",
-    })
+    });
   }
 
   async signUp(request: SignUpReq): Promise<null> {
@@ -155,15 +156,14 @@ export class UserService {
         Body: {
           Html: {
             Charset: "UTF-8",
-            Data: ""
-          }
+            Data: "",
+          },
         },
         Subject: {
           Charset: "UTF-8",
-          Data: ""
-        }
+          Data: "",
+        },
       },
-      ReplyToAddresses: [],
     };
     const command = new SendEmailCommand(param);
 

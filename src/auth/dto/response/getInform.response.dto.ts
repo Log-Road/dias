@@ -1,18 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
-import { Res } from "./response.dto";
+import { Res } from "../../../dtos/response.dto";
 
-export class FindPasswordReq {
-  @ApiProperty()
-  @IsString()
-  userId: string;
-}
-
-export class FindPasswordRes implements Res<object> {
+export class GetInformRes implements Res<object> {
   @ApiProperty({
     type: Object,
-    description: "임시 비밀번호",
-    example: { temporary: "hjd#o2kldnkf!@sd" },
+    description: "사용자 객체",
+    example: {
+      id: 1,
+      userId: "honGil",
+      name: "홍길동",
+      email: "donGil@dsm.hs.kr",
+      isStudent: true,
+      number: 1234,
+    },
   })
   data: object;
 

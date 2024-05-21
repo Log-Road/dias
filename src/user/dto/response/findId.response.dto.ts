@@ -1,17 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail } from "class-validator";
-import { Res } from "./response.dto";
-
-export class FindIdReq {
-  @ApiProperty()
-  @IsEmail(
-    {},
-    {
-      message: "이메일 형식 위반",
-    },
-  )
-  email: string;
-}
+import { Res } from "src/dtos/response.dto";
 
 export class FindIdRes implements Res<string> {
   @ApiProperty({ type: String, description: "사용자 Id", example: "honGil" })

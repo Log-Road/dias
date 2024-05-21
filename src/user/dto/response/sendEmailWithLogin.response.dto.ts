@@ -1,5 +1,5 @@
 import { SendEmailCommandInput, SendEmailCommandOutput } from "@aws-sdk/client-ses";
-import { Res } from "./response.dto";
+import { Res } from "../../../dtos/response.dto";
 
 export class SendEmailWithLoginRes implements Res<SendEmailCommandOutput> {
   data: SendEmailCommandOutput;

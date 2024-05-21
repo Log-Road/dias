@@ -10,7 +10,6 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { Res } from "./response.dto";
 
 export class SignUpReq {
   @ApiProperty()
@@ -78,15 +77,4 @@ export class SignUpReq {
     message: "Boolean값 필수",
   })
   isStudent: boolean = true;
-}
-
-export class SignUpRes implements Res<null> {
-  @ApiProperty({ type: "null" })
-  data: null;
-
-  @ApiProperty({ type: Number, description: "응답 코드", example: 201 })
-  statusCode: number = 201;
-
-  @ApiProperty({ type: String, description: "응답 메시지", example: "OK" })
-  statusMsg: string = "OK";
 }
