@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: install pnpm
+        run: npm i -g pnpm
+
       - name: Caching dependencies
         id: cache
         uses: actions/cache@v3
@@ -31,9 +34,7 @@ jobs:
               
       - name: Install package
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm i pnpm
-          pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile
 
       - name: env set
         working-directory: ./
