@@ -10,12 +10,7 @@ import { configDotenv } from "dotenv";
 
 async function bootstrap() {
   configDotenv({
-    path:
-      process.env.NODE_ENV == "prod"
-        ? "../.env"
-        : process.env.NODE_ENV == "dev"
-        ? "../.env.dev"
-        : "../.env.local",
+    path: process.env.NODE_ENV == "prod" ? "../.env" : "../.env.dev",
   });
 
   const app = await NestFactory.create(AppModule, {
@@ -52,23 +47,25 @@ async function bootstrap() {
   );
 
   await app.listen(process.env.PORT ?? 8888, () => {
-    const logger = WinstonModule.createLogger({instance: WinstonInstance});
-    logger.log(`                                `)
-    logger.log(`                                `)
-    logger.log(`               ::               `)
-    logger.log(`              +++=              `)
-    logger.log(`              .-:               `)
-    logger.log(`            =++++=-.            `)
-    logger.log(`           -+++:-+++.           `)
-    logger.log(`          :+++. .+++:         Dauth For ROAD  `)
-    logger.log(`         .+++++++++=           - DSM Integrated Account Solution   `)
-    logger.log(`         ++++=++++++=.          `)
-    logger.log(`        -+++     :=+++-         `)
-    logger.log(`       :+++:       :+++=        `)
-    logger.log(`       ++++.        =+++=.      `)
-    logger.log(`       .::::         ::::.      `)
-    logger.log(`                                `)
-    logger.log(`                                `)
-  })
+    const logger = WinstonModule.createLogger({ instance: WinstonInstance });
+    logger.log(`                                `);
+    logger.log(`                                `);
+    logger.log(`               ::               `);
+    logger.log(`              +++=              `);
+    logger.log(`              .-:               `);
+    logger.log(`            =++++=-.            `);
+    logger.log(`           -+++:-+++.           `);
+    logger.log(`          :+++. .+++:         Dauth For ROAD  `);
+    logger.log(
+      `         .+++++++++=           - DSM Integrated Account Solution   `,
+    );
+    logger.log(`         ++++=++++++=.          `);
+    logger.log(`        -+++     :=+++-         `);
+    logger.log(`       :+++:       :+++=        `);
+    logger.log(`       ++++.        =+++=.      `);
+    logger.log(`       .::::         ::::.      `);
+    logger.log(`                                `);
+    logger.log(`                                `);
+  });
 }
 bootstrap();
