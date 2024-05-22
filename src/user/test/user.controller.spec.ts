@@ -11,6 +11,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { genSalt, hash } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+import { SESClient } from "@aws-sdk/client-ses";
 
 describe("UserController", () => {
   let controller: UserController;
@@ -30,6 +31,7 @@ describe("UserController", () => {
         PrismaService,
         ConfigService,
         JwtService,
+        SESClient,
       ],
     }).compile();
 

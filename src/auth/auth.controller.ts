@@ -21,7 +21,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { Res } from "src/dtos/response.dto";
+import { Res } from "../dtos/response.dto";
 import { SignInReq } from "./dto/request/signIn.request.dto";
 import { GenTokenRes } from "./dto/response/genToken.response.dto";
 

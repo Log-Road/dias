@@ -11,6 +11,7 @@ import {
 import { SignUpReq } from "../dto/request/signUp.request.dto";
 import { ConfigService } from "@nestjs/config";
 import { genSalt, hash } from "bcrypt";
+import { SESClient } from "@aws-sdk/client-ses";
 
 describe("UserService", () => {
   let service: UserService;
@@ -18,7 +19,7 @@ describe("UserService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, PrismaService, Logger, ConfigService],
+      providers: [UserService, PrismaService, Logger, ConfigService, SESClient],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaService>())
