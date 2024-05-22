@@ -7,15 +7,14 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { SignInReq, SignInServiceRes } from "../dtos/signIn.dto";
+import { SignInRes } from "./dto/response/signIn.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { compare } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import {
-  GenTokenRes,
-} from "../dtos/genToken.dto";
-import { AuthUtil } from "./auth.util"
+import { GenTokenRes } from "./dto/response/genToken.response.dto";
+import { AuthUtil } from "./util/auth.util";
+import { SignInReq } from "./dto/request/signIn.request.dto";
 
 @Injectable()
 export class AuthService {
@@ -24,10 +23,10 @@ export class AuthService {
     private prisma: PrismaService,
     @Inject(JwtService) private readonly jwt: JwtService,
     private config: ConfigService,
-    private util: AuthUtil,
+    @Inject(AuthUtil) private util: AuthUtil,
   ) {}
 
-  async signIn(req: SignInReq): Promise<SignInServiceRes> {
+  async signIn(req: SignInReq): Promise<SignInRes> {
     this.logger.log("Try to signIn");
 
     const { userId, password } = req;
@@ -41,12 +40,12 @@ export class AuthService {
     const accessToken = await this.util.genAccessToken(thisUser.id);
     const refreshToken = await this.util.genRefreshToken(thisUser.id);
 
-    return new SignInServiceRes(
-      thisUser.id,
-      accessToken.accessToken,
-      accessToken.expiredAt,
-      refreshToken.refreshToken,
-    );
+    return {
+      id: thisUser.id,
+      accessToken: accessToken.accessToken,
+      expiredAt: accessToken.expiredAt,
+      refreshToken: refreshToken.refreshToken,
+    };
   }
 
   async verifyToken(req: string): Promise<GenTokenRes> {

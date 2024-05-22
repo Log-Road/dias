@@ -7,21 +7,33 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import { SignUpReq } from "../dtos/signUp.dto";
+import { SignUpReq } from "./dto/request/signUp.request.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { compare, genSalt, hash } from "bcrypt";
-import { FindIdReq } from "../dtos/findId.dto";
-import { FindPasswordReq } from "../dtos/findPassword.dto";
 import { ConfigService } from "@nestjs/config";
 import { PASSWORD_REGEXP } from "../utils/newPassword.util";
+import {
+  SendEmailCommand,
+  SendEmailCommandInput,
+  SendEmailCommandOutput,
+  SESClient,
+} from "@aws-sdk/client-ses";
+import { FindIdReq } from "./dto/request/findId.request.dto";
+import { FindPasswordReq } from "./dto/request/findPassword.request.dto";
+import { IUserService } from "./interface/user.service.interface";
 
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
     private config: ConfigService,
-  ) {}
+    @Inject(SESClient) private client: SESClient,
+  ) {
+    this.client = new SESClient({
+      region: "ap-northeast-2",
+    });
+  }
 
   async signUp(request: SignUpReq): Promise<null> {
     this.logger.log("try signUp");
@@ -129,5 +141,38 @@ export class UserService {
   async getInform(request): Promise<object> {
     this.logger.log(`Trying get One's information`);
     return await this.prisma.findUserById(request.user.id);
+  }
+
+  async sendEmailWithLogin(request): Promise<SendEmailCommandOutput> {
+    this.logger.log(`Sending Email to ${request.user.name}`);
+
+    const param: SendEmailCommandInput = {
+      Source: process.env.LOG_EMAIL,
+      Destination: {
+        CcAddresses: [],
+        ToAddresses: [],
+      },
+      Message: {
+        Body: {
+          Html: {
+            Charset: "UTF-8",
+            Data: "",
+          },
+        },
+        Subject: {
+          Charset: "UTF-8",
+          Data: "",
+        },
+      },
+    };
+    const command = new SendEmailCommand(param);
+
+    try {
+      const data = await this.client.send(command);
+      return data;
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException("이메일 전송 오류");
+    }
   }
 }

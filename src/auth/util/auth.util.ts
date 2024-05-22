@@ -1,5 +1,8 @@
 import { JwtService } from "@nestjs/jwt";
-import { GenAccessTokenDto, GenRefreshTokenDto } from "../dtos/genToken.dto";
+import {
+  GenAccessTokenDto,
+  GenRefreshTokenDto,
+} from "../dto/response/genToken.response.dto";
 import { ConfigService } from "@nestjs/config";
 import { Inject } from "@nestjs/common";
 
