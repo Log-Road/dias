@@ -32,7 +32,7 @@ jobs:
       - name: Install package
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          npm install -g pnpm
+          npm i pnpm
           pnpm i --frozen-lockfile
 
       - name: env set
