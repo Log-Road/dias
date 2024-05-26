@@ -38,10 +38,7 @@ jobs:
         run: pnpm i --no-frozen-lockfile
 
       - name: prisma set
-        run: |
-          npx prisma db push
-          npx prisma migrate deploy
-          npx prisma generate
+        run: npx prisma generate
 
       - name: build
         run: |

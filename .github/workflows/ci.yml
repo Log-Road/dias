@@ -37,10 +37,7 @@ jobs:
         run: pnpm i
 
       - name: prisma set
-        run: |
-          npx prisma db push
-          npx prisma migrate deploy
-          npx prisma generate
+        run: npx prisma generate
 
       - name: Test unit
         run: pnpm test:prod

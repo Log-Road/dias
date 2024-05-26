@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { AuthService } from "./auth.service";
-import { PrismaService } from "../prisma/prisma.service";
+import { AuthService } from "../auth.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -10,8 +10,8 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { AuthUtil } from "./auth.util";
-import { SignInServiceRes } from "../dtos/signIn.dto";
+import { AuthUtil } from "../util/auth.util";
+import { SignInRes } from "../dto/response/signIn.dto";
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -64,12 +64,12 @@ describe("AuthService", () => {
         password: "thisIsTest1!",
       };
 
-      const response = new SignInServiceRes(
-        1,
+      const response: SignInRes = {
+        id: 1,
         accessToken,
         expiredAt,
         refreshToken,
-      );
+      };
 
       jwt.signAsync = jest
         .fn()
