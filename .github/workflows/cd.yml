@@ -18,8 +18,22 @@ jobs:
         with:
           node-version: 20
 
-      - name: install package manager - pnpm
-        run: npm install -g pnpm
+      - name: install pnpm
+        run: npm i -g pnpm
+
+      - name: Caching dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{runner.os}}-node-${{ hashFiles('**/pnpm-lock.json')}}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            ${{ runner.os }}
+              
+      - name: Install package
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pnpm i --frozen-lockfile
 
       - name: env set
         working-directory: ./
@@ -33,9 +47,6 @@ jobs:
           echo ORIGIN=${{ secrets.ORIGIN }} >> .env
           echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
           echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
-
-      - name: Install package
-        run: pnpm i --no-frozen-lockfile
 
       - name: prisma set
         run: npx prisma generate
