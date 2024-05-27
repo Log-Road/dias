@@ -8,7 +8,7 @@ ENV NODE_VERSION 20.12.2
 RUN mkdir -p /app
 WORKDIR /app
 
-RUN apk update 
+RUN apk update
 
 FROM set AS build
 
