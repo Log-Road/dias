@@ -10,16 +10,11 @@ WORKDIR /app
 
 RUN apk update 
 RUN apk add npm
-RUN apk add tree
-RUN npm i -g pm2
-RUN npm i -g pnpm
 
 FROM set AS build
 
 COPY . .
 RUN export NODE_ENV=prod
-RUN pnpm install
-RUN pnpm prisma generate
 RUN cd ..
 
 EXPOSE 8080
