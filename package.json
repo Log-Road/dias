@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "npx prisma generate && nest build && cp -rf ./src/prisma/client ./dist/prisma/client && ts-node ./dist/main.js",
+    "build": "npx prisma generate && nest build && cp -rf ./src/prisma/client ./dist/prisma/client",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prod": "pm2 start ecosystem.config.js --env production",
     "start": "export NODE_ENV=dev && dotenv -e .env.dev nest build && cp -r src/prisma/client dist/prisma/client && node dist/main.js",
