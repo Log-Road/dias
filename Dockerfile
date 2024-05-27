@@ -9,7 +9,6 @@ RUN mkdir -p /app
 WORKDIR /app
 
 RUN apk update 
-RUN apk add npm
 
 FROM set AS build
 
@@ -19,4 +18,4 @@ RUN cd ..
 
 EXPOSE 8080
 
-CMD [ "pnpm", "node:prod" ]
+CMD [ "node", "main.js" ]
