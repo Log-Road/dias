@@ -2,7 +2,7 @@ import { JwtService } from "@nestjs/jwt";
 import {
   GenAccessTokenDto,
   GenRefreshTokenDto,
-} from "../dto/response/genToken.response.dto";
+} from "../auth/dto/response/genToken.response.dto";
 import { ConfigService } from "@nestjs/config";
 import { Inject } from "@nestjs/common";
 
@@ -40,5 +40,11 @@ export class AuthUtil {
         },
       ),
     };
+  }
+
+  async genAuthNumber() {
+    const authNumber = String(Math.random() * 999999).padStart(6, "0");
+
+    return authNumber;
   }
 }

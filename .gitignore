@@ -45,4 +45,10 @@ src/prisma/ap-northeast-2-bundle.pem
 Log-Road-Key.pem
 
 # prisma
-src/prisma/client
+src/prisma/*
+
+# AWS
+.aws/*
+
+# Visual Studio Code
+.vscode/*

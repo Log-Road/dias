@@ -24,6 +24,8 @@ import {
 import { Res } from "../dtos/response.dto";
 import { SignInReq } from "./dto/request/signIn.request.dto";
 import { GenTokenRes } from "./dto/response/genToken.response.dto";
+import { SendEmailRequestDto } from "./dto/request/sendEmail.request.dto";
+import { SendEmailResponseDto } from "../dtos/sendEmail.response.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -80,6 +82,32 @@ export class AuthController {
       data,
       statusCode: 200,
       statusMsg: "토큰 재생성",
+    };
+  }
+
+  @ApiOperation({
+    summary: "인증용 이메일 발송",
+  })
+  @ApiOkResponse({
+    type: Res<GenTokenRes>,
+    description: "토큰 재생성 완료",
+  })
+  @ApiBadRequestResponse({
+    description: "요청값 오류"
+  })
+  @ApiInternalServerErrorResponse({
+    description: "이메일 발송 실패"
+  })
+  @Post("/send")
+  async sendEmail(
+    @Body() request: SendEmailRequestDto,
+  ): Promise<Res<SendEmailResponseDto>> {
+    const data = await this.authService.send(request);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "이메일 발송 완료",
     };
   }
 }
