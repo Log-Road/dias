@@ -1,4 +1,4 @@
-# Dauth ![Static Badge](https://img.shields.io/badge/version-0.0.1-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
+# DIAS ![Static Badge](https://img.shields.io/badge/version-0.5.1-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
 
 <p style="text-align: center;">
 
@@ -13,7 +13,7 @@
 
 ## Description
 
-D-Auth : Authorization & Authentication Service for DSM
+DIAS : DSM Intergrated Auth Service
 
 This project is open source, so you can contribute with `pull request` whenever you want.
 
