@@ -13,7 +13,6 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
-  ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -26,7 +25,7 @@ import { Res } from "../dtos/response.dto";
 import { SignInReq } from "./dto/request/signIn.request.dto";
 import { GenTokenRes } from "./dto/response/genToken.response.dto";
 import { SendEmailRequestDto } from "./dto/request/sendEmail.request.dto";
-import { SendEmailResponseDto } from "src/dtos/sendEmail.response.dto";
+import { SendEmailResponseDto } from "../dtos/sendEmail.response.dto";
 
 @ApiTags("Auth")
 @Controller("auth")

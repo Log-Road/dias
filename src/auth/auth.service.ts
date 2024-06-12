@@ -16,13 +16,13 @@ import { GenTokenRes } from "./dto/response/genToken.response.dto";
 import { AuthUtil } from "../utils/auth.util";
 import { SignInReq } from "./dto/request/signIn.request.dto";
 import { SendEmailRequestDto } from "./dto/request/sendEmail.request.dto";
-import SendEmail from "src/middleware/send-email";
-import { SendEmailResponseDto } from "src/dtos/sendEmail.response.dto";
+import SendEmail from "../middleware/send-email";
+import { SendEmailResponseDto } from "../dtos/sendEmail.response.dto";
 import {
   emailContent,
   emailTitle,
   EmailType,
-} from "src/dtos/sendEmail.request.dto";
+} from "../dtos/sendEmail.request.dto";
 
 @Injectable()
 export class AuthService {

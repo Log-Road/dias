@@ -12,6 +12,8 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { AuthUtil } from "../../utils/auth.util";
 import { SignInRes } from "../dto/response/signIn.dto";
+import { SESClient } from "@aws-sdk/client-ses";
+import SendEmail from "../../middleware/send-email";
 
 describe("AuthService", () => {
   let service: AuthService;
@@ -34,6 +36,8 @@ describe("AuthService", () => {
         ConfigService,
         AuthUtil,
         JwtService,
+        SESClient,
+        SendEmail
       ],
     }).compile();
 

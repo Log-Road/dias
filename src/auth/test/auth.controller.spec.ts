@@ -11,6 +11,8 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { AuthUtil } from "../../utils/auth.util";
+import SendEmail from "../../middleware/send-email";
+import { SESClient } from "@aws-sdk/client-ses";
 
 describe("AuthController", () => {
   let controller: AuthController;
@@ -28,6 +30,8 @@ describe("AuthController", () => {
         ConfigService,
         JwtService,
         AuthUtil,
+        SendEmail,
+        SESClient,
       ],
     }).compile();
 
