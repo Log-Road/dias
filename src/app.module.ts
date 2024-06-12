@@ -5,6 +5,8 @@ import { PrismaService } from "./prisma/prisma.service";
 import { WinstonModule } from "nest-winston";
 import { ConfigModule } from "@nestjs/config";
 import { WinstonInstance } from "./utils/winston.util";
+import SendEmail from "./middleware/send-email";
+import { SESClient } from "@aws-sdk/client-ses";
 
 @Module({
   imports: [
@@ -25,6 +27,6 @@ import { WinstonInstance } from "./utils/winston.util";
     UserModule,
   ],
   controllers: [],
-  providers: [Logger, PrismaService],
+  providers: [Logger, PrismaService, SendEmail, SESClient],
 })
 export class AppModule {}

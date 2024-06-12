@@ -13,8 +13,16 @@ import { compare } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { GenTokenRes } from "./dto/response/genToken.response.dto";
-import { AuthUtil } from "./util/auth.util";
+import { AuthUtil } from "../utils/auth.util";
 import { SignInReq } from "./dto/request/signIn.request.dto";
+import { SendEmailRequestDto } from "./dto/request/sendEmail.request.dto";
+import SendEmail from "src/middleware/send-email";
+import { SendEmailResponseDto } from "src/dtos/sendEmail.response.dto";
+import {
+  emailContent,
+  emailTitle,
+  EmailType,
+} from "src/dtos/sendEmail.request.dto";
 
 @Injectable()
 export class AuthService {
@@ -24,6 +32,7 @@ export class AuthService {
     @Inject(JwtService) private readonly jwt: JwtService,
     private config: ConfigService,
     @Inject(AuthUtil) private util: AuthUtil,
+    @Inject(SendEmail) private readonly sendEmail: SendEmail,
   ) {}
 
   async signIn(req: SignInReq): Promise<SignInRes> {
@@ -66,5 +75,16 @@ export class AuthService {
       expiredAt: accessToken.expiredAt,
       refreshToken: refreshToken.refreshToken,
     };
+  }
+
+  async send(req: SendEmailRequestDto): Promise<SendEmailResponseDto> {
+    const { email } = req;
+
+    const res = await this.sendEmail.send({
+      email,
+      title: emailTitle(EmailType.AUTH),
+      content: emailContent(EmailType.AUTH),
+    });
+    return res;
   }
 }

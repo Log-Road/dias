@@ -10,7 +10,7 @@ import {
 import { PrismaService } from "../../prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { AuthUtil } from "../util/auth.util";
+import { AuthUtil } from "../../utils/auth.util";
 
 describe("AuthController", () => {
   let controller: AuthController;

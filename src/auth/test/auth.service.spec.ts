@@ -10,7 +10,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { AuthUtil } from "../util/auth.util";
+import { AuthUtil } from "../../utils/auth.util";
 import { SignInRes } from "../dto/response/signIn.dto";
 
 describe("AuthService", () => {
