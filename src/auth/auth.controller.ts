@@ -26,10 +26,11 @@ import { SignInReq } from "./dto/request/signIn.request.dto";
 import { GenTokenRes } from "./dto/response/genToken.response.dto";
 import { SendEmailRequestDto } from "./dto/request/sendEmail.request.dto";
 import { SendEmailResponseDto } from "../dtos/sendEmail.response.dto";
+import { IAuthController } from "./auth.controller.interface";
 
 @ApiTags("Auth")
 @Controller("auth")
-export class AuthController {
+export class AuthController implements IAuthController {
   constructor(
     private authService: AuthService,
     @Inject(Logger) private logger: Logger,
@@ -93,10 +94,10 @@ export class AuthController {
     description: "토큰 재생성 완료",
   })
   @ApiBadRequestResponse({
-    description: "요청값 오류"
+    description: "요청값 오류",
   })
   @ApiInternalServerErrorResponse({
-    description: "이메일 발송 실패"
+    description: "이메일 발송 실패",
   })
   @Post("/send")
   async sendEmail(

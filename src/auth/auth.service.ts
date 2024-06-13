@@ -23,9 +23,10 @@ import {
   emailTitle,
   EmailType,
 } from "../dtos/sendEmail.request.dto";
+import { IAuthService } from "./auth.service.interface";
 
 @Injectable()
-export class AuthService {
+export class AuthService implements IAuthService {
   constructor(
     @Inject(Logger) private logger: Logger,
     private prisma: PrismaService,
