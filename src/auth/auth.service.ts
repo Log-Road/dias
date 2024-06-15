@@ -58,6 +58,8 @@ export class AuthService implements IAuthService {
     };
   }
 
+  async oauth(req) {}
+
   async verifyToken(req: string): Promise<GenTokenRes> {
     const userId = await this.jwt.verifyAsync(req.split(" ")[1], {
       secret: this.config.get<string>("JWT_SECRET"),

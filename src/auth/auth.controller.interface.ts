@@ -7,6 +7,7 @@ import { SendEmailResponseDto } from "../dtos/sendEmail.response.dto";
 
 export interface IAuthController {
   signIn(req: SignInReq): Promise<Res<SignInRes>>;
+  oauth(req);
   verifyToken(req: string): Promise<Res<GenTokenRes>>;
   sendEmail(request: SendEmailRequestDto): Promise<Res<SendEmailResponseDto>>;
 }

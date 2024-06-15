@@ -7,6 +7,8 @@ import { SignInRes } from "./dto/response/signIn.dto";
 export interface IAuthService {
   signIn(req: SignInReq): Promise<SignInRes>;
 
+  oauth(req);
+
   verifyToken(req: string): Promise<GenTokenRes>;
 
   send(req: SendEmailRequestDto): Promise<SendEmailResponseDto>;

@@ -62,6 +62,19 @@ export class AuthController implements IAuthController {
   }
 
   @ApiOperation({
+    summary: "Google OAuth 2.0",
+  })
+  async oauth(req: any) {
+    const data = await this.authService.oauth(req);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "OAuth"
+    }
+  }
+
+  @ApiOperation({
     summary: "Refresh Token 검증 및 Access Token 재발급",
   })
   @ApiBearerAuth("authorization")
