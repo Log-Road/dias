@@ -7,6 +7,9 @@ import { ConfigModule } from "@nestjs/config";
 import { WinstonInstance } from "./utils/winston.util";
 import SendEmail from "./middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
+import { GoogleStrategyService } from "./auth/strategies/google/google.strategy.service";
+import { AuthUtil } from "./utils/auth.util";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
   imports: [
@@ -27,6 +30,13 @@ import { SESClient } from "@aws-sdk/client-ses";
     UserModule,
   ],
   controllers: [],
-  providers: [Logger, PrismaService, SendEmail, SESClient],
+  providers: [
+    Logger,
+    PrismaService,
+    SendEmail,
+    SESClient,
+    AuthUtil,
+    JwtService,
+  ],
 })
 export class AppModule {}

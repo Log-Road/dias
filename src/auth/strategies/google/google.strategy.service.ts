@@ -11,6 +11,7 @@ import { AuthUtil } from "src/utils/auth.util";
 import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
 import { hash } from "bcrypt";
 import { GoogleSignUpRequestDto } from "src/auth/dto/request/googleSignUp.request.dto";
+import { configDotenv } from "dotenv";
 
 @Injectable()
 export class GoogleStrategyService extends PassportStrategy(
@@ -23,43 +24,42 @@ export class GoogleStrategyService extends PassportStrategy(
     @Inject(PrismaService) private prisma: PrismaService,
     @Inject(ConfigService) private config: ConfigService,
   ) {
+    configDotenv();
+
     super({
       clientID: config.get<string>("GOOGLE_CLIENT_ID"),
-      clientSecret: config.get<string>("GOOGLE_SECRET"),
+      clientSecret: config.get<string>("GOOGLE_SECURE_PASSWORD"),
       callbackURL: config.get<string>("GOOGLE_CALLBACK_URL"),
-      scope: ["profile"],
+      scope: ["profile", "email"],
     });
   }
 
   async validate(
-    _accessToken: string,
-    _refreshToken: string,
+    accessToken: string,
+    refreshToken: string,
     profile: Profile,
     done: VerifyCallback,
   ) {
     try {
-      const userId = profile.id;
-      const { /*picture,*/ name, email } = profile._json;
-
-      let user = await this.prisma.findUserByStrId(userId);
-      if (!user) {
-        return {
-          name,
-          userId,
-          email,
-        };
-      }
+      const { name, email, sub } = profile._json;
+      const user = {
+        email,
+        name,
+        accessToken,
+        refreshToken,
+        sub,
+      };
 
       done(null, user);
     } catch (e) {
       this.logger.error(e);
-      throw new InternalServerErrorException(e);
+      throw new InternalServerErrorException({ error: e });
     }
   }
 
   async googleSignUp(request: GoogleSignUpRequestDto) {
     const { name, email, userId, isStudent } = request;
-    const number = request.number ?? 0
+    const number = request.number ?? 0;
 
     await this.prisma.user.create({
       data: {

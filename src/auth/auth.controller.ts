@@ -7,6 +7,7 @@ import {
   Logger,
   Post,
   Req,
+  Request,
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
@@ -78,13 +79,15 @@ export class AuthController implements IAuthController {
   })
   @Get("/google")
   @UseGuards(GoogleAuthGuard)
-  async oauth(@Req() req) {}
+  async oauth(@Request() req) {}
 
   @Get("/redirect")
   @UseGuards(GoogleAuthGuard)
-  async oauthRedirect(@Req() req) {
+  async oauthRedirect(@Request() req) {
+    const data = await this.service.googleOAuth(req);
+
     return {
-      data: req.user,
+      data,
       statusCode: 200,
       statusMsg: "Middle of signup process",
     };

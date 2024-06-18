@@ -1,26 +1,19 @@
 import {
   ExecutionContext,
+  Inject,
   Injectable,
+  InternalServerErrorException,
+  Logger,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { AuthGuard } from "@nestjs/passport";
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {
-  constructor() {
-    super();
-  }
-
-  canActivate(context: ExecutionContext) {
-    // Add your custom authentication logic here
-    // for example, call super.logIn(request) to establish a session.
-    //
-
-    return this.canActivate(context);
-  }
-
-  handleRequest(err: any, user: any, info: any) {
-    if (err || !user) throw err || new UnauthorizedException();
-    return user;
+  constructor(private config: ConfigService) {
+    super({
+      accessType: "offline",
+    });
   }
 }

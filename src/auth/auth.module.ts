@@ -3,7 +3,7 @@ import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import { PrismaService } from "src/prisma/prisma.service";
 import { JwtModule } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthUtil } from "../utils/auth.util";
 import SendEmail from "src/middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";

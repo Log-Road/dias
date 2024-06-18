@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
@@ -37,5 +38,11 @@ export class AuthService implements IAuthService {
       content: emailContent(EmailType.AUTH),
     });
     return res;
+  }
+
+  async googleOAuth(req) {
+    if(!req.user) throw new NotFoundException("회원가입 필요");
+
+    return req.user;
   }
 }
