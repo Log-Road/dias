@@ -7,6 +7,9 @@ import { ConfigService } from "@nestjs/config";
 import { AuthUtil } from "../utils/auth.util";
 import SendEmail from "src/middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
+import { PassportModule } from "@nestjs/passport";
+import { GoogleStrategyService } from "./strategies/google/google.strategy.service";
+import { JwtStrategyService } from "./strategies/jwt/jwt.strategy.service";
 
 @Module({
   imports: [
@@ -14,6 +17,7 @@ import { SESClient } from "@aws-sdk/client-ses";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>("JWT_SECRET"),
+        secretOrPrivateKey: config.get<string>("JWT_PRIVATE"),
         signOptions: {
           expiresIn: "30m",
         },
@@ -22,8 +26,18 @@ import { SESClient } from "@aws-sdk/client-ses";
         },
       }),
     }),
+    PassportModule.register({ defaultStrategy: "jwt" }),
   ],
-  providers: [AuthService, Logger, PrismaService, AuthUtil, SendEmail, SESClient],
+  providers: [
+    AuthService,
+    Logger,
+    PrismaService,
+    AuthUtil,
+    SendEmail,
+    SESClient,
+    GoogleStrategyService,
+    JwtStrategyService,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

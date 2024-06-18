@@ -6,6 +6,8 @@ import {
   Inject,
   Logger,
   Post,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { SignInRes } from "./dto/response/signIn.dto";
@@ -27,15 +29,22 @@ import { GenTokenRes } from "./dto/response/genToken.response.dto";
 import { SendEmailRequestDto } from "./dto/request/sendEmail.request.dto";
 import { SendEmailResponseDto } from "../dtos/sendEmail.response.dto";
 import { IAuthController } from "./auth.controller.interface";
+import { JwtStrategyService } from "./strategies/jwt/jwt.strategy.service";
+import { GoogleSignUpRequestDto } from "./dto/request/googleSignUp.request.dto";
+import { GoogleStrategyService } from "./strategies/google/google.strategy.service";
+import { GoogleAuthGuard } from "./strategies/google/google.auth.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController implements IAuthController {
   constructor(
-    private authService: AuthService,
+    private service: AuthService,
     @Inject(Logger) private logger: Logger,
+    @Inject(JwtStrategyService) private jwtStrategy: JwtStrategyService,
+    @Inject(GoogleStrategyService)
+    private googleStrategy: GoogleStrategyService,
   ) {
-    this.authService = authService;
+    this.service = service;
   }
 
   @ApiOperation({
@@ -52,7 +61,7 @@ export class AuthController implements IAuthController {
   @ApiNotFoundResponse()
   @Post("/signin")
   async signIn(@Body() req: SignInReq): Promise<Res<SignInRes>> {
-    const data = await this.authService.signIn(req);
+    const data = await this.jwtStrategy.signIn(req);
 
     return {
       data,
@@ -64,14 +73,32 @@ export class AuthController implements IAuthController {
   @ApiOperation({
     summary: "Google OAuth 2.0",
   })
-  async oauth(req: any) {
-    const data = await this.authService.oauth(req);
+  @ApiOkResponse({
+    description: "",
+  })
+  @Get("/google")
+  @UseGuards(GoogleAuthGuard)
+  async oauth(@Req() req) {}
+
+  @Get("/redirect")
+  @UseGuards(GoogleAuthGuard)
+  async oauthRedirect(@Req() req) {
+    return {
+      data: req.user,
+      statusCode: 200,
+      statusMsg: "Middle of signup process",
+    };
+  }
+
+  @Post("/signup")
+  async oauthSignUp(@Body() request: GoogleSignUpRequestDto) {
+    const data = await this.googleStrategy.googleSignUp(request);
 
     return {
       data,
-      statusCode: 200,
-      statusMsg: "OAuth"
-    }
+      statusCode: 201,
+      statusMsg: "Success to sign up",
+    };
   }
 
   @ApiOperation({
@@ -90,7 +117,7 @@ export class AuthController implements IAuthController {
   async verifyToken(
     @Headers("authorization") req: string,
   ): Promise<Res<GenTokenRes>> {
-    const data = await this.authService.verifyToken(req);
+    const data = await this.jwtStrategy.verifyToken(req);
 
     return {
       data,
@@ -116,7 +143,7 @@ export class AuthController implements IAuthController {
   async sendEmail(
     @Body() request: SendEmailRequestDto,
   ): Promise<Res<SendEmailResponseDto>> {
-    const data = await this.authService.send(request);
+    const data = await this.service.send(request);
 
     return {
       data,
