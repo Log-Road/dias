@@ -5,6 +5,9 @@ on:
     branches:
       - dev
       - prod
+  push:
+    branches:
+      - dev
 
 jobs:
   ci-build:
