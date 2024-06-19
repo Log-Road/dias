@@ -55,7 +55,7 @@ async function bootstrap() {
     logger.log(`              .-:               `);
     logger.log(`            =++++=-.            `);
     logger.log(`           -+++:-+++.           `);
-    logger.log(`          :+++. .+++:         Dauth For ROAD  `);
+    logger.log(`          :+++. .+++:         DIAS For ROAD  `);
     logger.log(
       `         .+++++++++=           - DSM Integrated Account Solution   `,
     );

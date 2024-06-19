@@ -29,13 +29,13 @@ export const WinstonInstance = createLogger({
     new transports.Console({
       format: format.printf(
         ({ level, message }) =>
-          `[${level}] ${new Date().toISOString()} [DAUTH] - ${message}`,
+          `[${level}] ${new Date().toISOString()} [DIAS] - ${message}`,
       ),
     }),
   ],
   format: format.printf(
     ({ level, message }) =>
-      `[${level}] ${new Date().toISOString()} [DAUTH] - ${message}`,
+      `[${level}] ${new Date().toISOString()} [DIAS] - ${message}`,
   ),
 });
 

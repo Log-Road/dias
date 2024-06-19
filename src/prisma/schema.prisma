@@ -17,4 +17,5 @@ model User {
   password  String
   isStudent Boolean @default(true)
   number    Int?    @unique
+  provided  String  @default("jwt")
 }

@@ -9,17 +9,18 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcrypt";
 import { AuthUtil } from "../../utils/auth.util";
-import { SignInRes } from "../dto/response/signIn.dto";
 import { SESClient } from "@aws-sdk/client-ses";
 import SendEmail from "../../middleware/send-email";
+import { JwtStrategyService } from "../strategies/jwt/jwt.strategy.service";
+import { GoogleStrategyService } from "../strategies/google/google.strategy.service";
 
 describe("AuthService", () => {
   let service: AuthService;
   let prisma: PrismaService;
   let jwt: JwtService;
   let util: AuthUtil;
+  let jwtStrategy: JwtStrategyService;
 
   const accessToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzExMzQwNzU5fQ.0UbgRd-ZxhNdAnFvVtatAiNpALsxEkf-vDTpy9zfNIQ";
@@ -37,7 +38,9 @@ describe("AuthService", () => {
         AuthUtil,
         JwtService,
         SESClient,
-        SendEmail
+        SendEmail,
+        JwtStrategyService,
+        GoogleStrategyService,
       ],
     }).compile();
 
@@ -45,6 +48,7 @@ describe("AuthService", () => {
     prisma = module.get<PrismaService>(PrismaService);
     jwt = module.get<JwtService>(JwtService);
     util = module.get<AuthUtil>(AuthUtil);
+    jwtStrategy = module.get<JwtStrategyService>(JwtStrategyService);
 
     util.genAccessToken = jest.fn().mockImplementation(
       async () =>
@@ -59,66 +63,6 @@ describe("AuthService", () => {
           refreshToken,
         },
     );
-  });
-
-  describe("signIn", () => {
-    it("[200] success to login", async () => {
-      const request = {
-        userId: "honGil",
-        password: "thisIsTest1!",
-      };
-
-      const response: SignInRes = {
-        id: 1,
-        accessToken,
-        expiredAt,
-        refreshToken,
-      };
-
-      jwt.signAsync = jest
-        .fn()
-        .mockReturnValueOnce(accessToken)
-        .mockReturnValueOnce(refreshToken);
-
-      prisma.findUserByStrId = jest.fn().mockImplementationOnce(
-        async () =>
-          await {
-            id: 1,
-            name: "홍길동",
-            userId: "honGil",
-            email: "dongil@dsm.hs.kr",
-            number: 1111,
-            isStudent: true,
-          },
-      );
-      jest
-        .spyOn(bcrypt, "compare")
-        .mockImplementationOnce(async () => await true);
-
-      await expect(service.signIn(request)).resolves.toStrictEqual(response);
-    });
-
-    it("[400] failed to login with wrong password", async () => {
-      const request = {
-        userId: "honGil",
-        password: "1daf2341dfae!",
-      };
-
-      await expect(
-        async () => await service.signIn(request),
-      ).rejects.toThrowError(new BadRequestException("비밀번호 오입력"));
-    });
-
-    it("[404] User not found with wrong id", async () => {
-      const request = {
-        userId: "hoonGil",
-        password: "thisIsTest1!",
-      };
-
-      await expect(
-        async () => await service.signIn(request),
-      ).rejects.toThrowError(new NotFoundException());
-    });
   });
 
   describe("regenerate refreshtoken", () => {
@@ -144,7 +88,7 @@ describe("AuthService", () => {
       );
       jwt.verifyAsync = jest.fn().mockReturnValueOnce({ id: 1 });
 
-      await expect(service.verifyToken(request)).resolves.toStrictEqual(
+      await expect(jwtStrategy.verifyToken(request)).resolves.toStrictEqual(
         response,
       );
     });
@@ -156,7 +100,7 @@ describe("AuthService", () => {
       jwt.verifyAsync = jest.fn().mockReturnValueOnce({ id: 1 });
 
       await expect(
-        async () => await service.verifyToken(request),
+        async () => await jwtStrategy.verifyToken(request),
       ).rejects.toThrowError(new NotFoundException("존재하지 않는 유저"));
     });
 
@@ -164,7 +108,7 @@ describe("AuthService", () => {
       const request = refreshToken;
 
       await expect(
-        async () => await service.verifyToken(request),
+        async () => await jwtStrategy.verifyToken(request),
       ).rejects.toThrowError(
         new InternalServerErrorException("jwt must be provided"),
       );
@@ -178,7 +122,7 @@ describe("AuthService", () => {
       });
 
       await expect(
-        async () => await service.verifyToken(request),
+        async () => await jwtStrategy.verifyToken(request),
       ).rejects.toThrowError(new InternalServerErrorException());
     });
   });

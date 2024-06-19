@@ -1,8 +1,6 @@
 import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses";
 import { Inject, Injectable } from "@nestjs/common";
 import {
-  emailContent,
-  EmailType,
   SendEmailRequestDto,
 } from "src/dtos/sendEmail.request.dto";
 import { SendEmailResponseDto } from "src/dtos/sendEmail.response.dto";

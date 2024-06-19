@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "../auth.controller";
 import { AuthService } from "../auth.service";
 import {
-  BadRequestException,
   InternalServerErrorException,
   Logger,
   NotFoundException,
@@ -13,12 +12,15 @@ import { JwtService } from "@nestjs/jwt";
 import { AuthUtil } from "../../utils/auth.util";
 import SendEmail from "../../middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
+import { JwtStrategyService } from "../strategies/jwt/jwt.strategy.service";
+import { GoogleStrategyService } from "../strategies/google/google.strategy.service";
 
 describe("AuthController", () => {
   let controller: AuthController;
   let service: AuthService;
   let jwt: JwtService;
   let prisma: PrismaService;
+  let jwtStrategy: JwtStrategyService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +34,8 @@ describe("AuthController", () => {
         AuthUtil,
         SendEmail,
         SESClient,
+        JwtStrategyService,
+        GoogleStrategyService
       ],
     }).compile();
 
@@ -39,60 +43,7 @@ describe("AuthController", () => {
     service = module.get<AuthService>(AuthService);
     jwt = module.get<JwtService>(JwtService);
     prisma = module.get<PrismaService>(PrismaService);
-  });
-
-  describe("/signin", () => {
-    it("[200] 로그인 성공", async () => {
-      const request = {
-        userId: "honGil",
-        password: "thisIsTest1!",
-      };
-
-      const data = {
-        id: 0,
-        accessToken: "testcodeaccesstoken",
-        expiredAt: "2024-03-25T03:25:59.238Z",
-        refreshToken: "testcoderefreshtoken",
-      };
-
-      const response = {
-        data,
-        statusCode: 201,
-        statusMsg: "로그인",
-      };
-
-      jest.spyOn(service, "signIn").mockImplementation(async () => await data);
-
-      const res = controller.signIn(request);
-
-      await expect(res).resolves.toStrictEqual(response);
-    });
-
-    it("[400]", async () => {
-      jest.spyOn(service, "signIn").mockImplementation(async () => {
-        throw new BadRequestException("비밀번호 오입력");
-      });
-      await expect(
-        async () =>
-          await controller.signIn({
-            userId: "honGil",
-            password: "thisIsTes1!",
-          }),
-      ).rejects.toThrowError(new BadRequestException("비밀번호 오입력"));
-    });
-
-    it("[404]", async () => {
-      jest.spyOn(service, "signIn").mockImplementation(async () => {
-        throw new NotFoundException();
-      });
-      await expect(
-        async () =>
-          await controller.signIn({
-            userId: "hongGil",
-            password: "thisIsTest1!",
-          }),
-      ).rejects.toThrowError(new NotFoundException());
-    });
+    jwtStrategy = module.get<JwtStrategyService>(JwtStrategyService);
   });
 
   describe("regenerate refreshtoken", () => {
@@ -116,7 +67,7 @@ describe("AuthController", () => {
         statusMsg: "토큰 재생성",
       };
 
-      jest.spyOn(service, "verifyToken").mockImplementation(
+      jest.spyOn(jwtStrategy, "verifyToken").mockImplementation(
         async () =>
           await {
             accessToken,

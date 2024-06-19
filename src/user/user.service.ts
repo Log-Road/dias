@@ -40,8 +40,8 @@ export class UserService implements IUserService {
     const { name, userId, email, password, isStudent, number } = request;
 
     if (
-      (isStudent == false && number != null) ||
-      (isStudent == true && number == null)
+      (isStudent == false && number) ||
+      (isStudent == true && !number)
     ) {
       throw new BadRequestException("제약조건 위반");
     }
