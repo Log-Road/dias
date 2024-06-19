@@ -1,11 +1,11 @@
 import { Logger, Module } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { JwtModule } from "@nestjs/jwt";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { AuthUtil } from "../utils/auth.util";
-import SendEmail from "src/middleware/send-email";
+import SendEmail from "../middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
 import { PassportModule } from "@nestjs/passport";
 import { GoogleStrategyService } from "./strategies/google/google.strategy.service";

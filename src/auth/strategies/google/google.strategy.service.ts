@@ -6,11 +6,11 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
-import { PrismaService } from "src/prisma/prisma.service";
-import { AuthUtil } from "src/utils/auth.util";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { AuthUtil } from "../../../utils/auth.util";
 import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
 import { hash } from "bcrypt";
-import { GoogleSignUpRequestDto } from "src/auth/dto/request/googleSignUp.request.dto";
+import { GoogleSignUpRequestDto } from "../../dto/request/googleSignUp.request.dto";
 import { configDotenv } from "dotenv";
 
 @Injectable()

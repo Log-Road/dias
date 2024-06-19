@@ -125,6 +125,7 @@ describe("UserService", () => {
         number: 1111,
         password: "thisIsTest1!",
         isStudent: true,
+        provided: 'jwt'
       };
 
       jest
@@ -154,6 +155,7 @@ describe("UserService", () => {
         number: 1111,
         password: "thisIsTest1!",
         isStudent: true,
+        provided: 'jwt'
       };
 
       jest
@@ -183,6 +185,7 @@ describe("UserService", () => {
         number: 1111,
         password: "thisIsTest1!",
         isStudent: true,
+        provided: 'jwt'
       };
 
       jest
@@ -221,6 +224,7 @@ describe("UserService", () => {
             number: 1111,
             password: "thisIsTest1!",
             isStudent: true,
+            provided: 'jwt'
           },
       );
 
@@ -255,6 +259,7 @@ describe("UserService", () => {
             number: 1111,
             password: "thisIsTest1!",
             isStudent: true,
+            provided: 'jwt'
           },
       );
       jest.spyOn(prisma, "updateUserPassword").mockImplementation(null);
@@ -275,6 +280,7 @@ describe("UserService", () => {
             number: 1111,
             password: "thisIsTest1!",
             isStudent: true,
+            provided: 'jwt'
           },
       );
       jest.spyOn(prisma, "updateUserPassword").mockImplementationOnce(() => {

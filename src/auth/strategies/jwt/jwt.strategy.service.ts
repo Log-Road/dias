@@ -15,8 +15,8 @@ import { GenTokenRes } from "../../dto/response/genToken.response.dto";
 import { SignInRes } from "../../dto/response/signIn.dto";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "src/prisma/prisma.service";
-import { AuthUtil } from "src/utils/auth.util";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { AuthUtil } from "../../../utils/auth.util";
 
 @Injectable()
 export class JwtStrategyService extends PassportStrategy(Strategy) {

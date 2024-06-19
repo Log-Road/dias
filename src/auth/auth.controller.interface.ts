@@ -1,4 +1,4 @@
-import { Res } from "src/dtos/response.dto";
+import { Res } from "../dtos/response.dto";
 import { SignInReq } from "./dto/request/signIn.request.dto";
 import { SignInRes } from "./dto/response/signIn.dto";
 import { GenTokenRes } from "./dto/response/genToken.response.dto";

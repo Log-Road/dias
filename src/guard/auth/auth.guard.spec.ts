@@ -67,6 +67,7 @@ describe("TokenGuard - HTTP", () => {
           number: 1111,
           password: "thisIsTest1!",
           isStudent: true,
+          provided: 'jwt'
         },
     );
 

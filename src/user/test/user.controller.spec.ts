@@ -92,6 +92,7 @@ describe("UserController", () => {
         number: 1111,
         password: "thisIsTest1!",
         isStudent: true,
+        provided: "jwt",
       };
 
       jest
@@ -128,6 +129,7 @@ describe("UserController", () => {
         number: 1111,
         password: "thisIsTest1!",
         isStudent: true,
+        provided: "jwt",
       };
 
       await expect(
@@ -154,6 +156,7 @@ describe("UserController", () => {
         number: 1111,
         password: "thisIsTest1!",
         isStudent: true,
+        provided: "jwt",
       };
 
       await expect(
@@ -178,6 +181,7 @@ describe("UserController", () => {
             number: 1111,
             password: "thisIsTest1!",
             isStudent: true,
+            provided: "jwt",
           },
       );
 
@@ -216,6 +220,7 @@ describe("UserController", () => {
             number: 1111,
             password: "thisIsTest1!",
             isStudent: true,
+            provided: "jwt",
           },
       );
       jest.spyOn(prisma, "updateUserPassword").mockImplementation(null);
@@ -240,6 +245,7 @@ describe("UserController", () => {
             number: 1111,
             password: "thisIsTest1!",
             isStudent: true,
+            provided: "jwt",
           },
       );
       jest.spyOn(prisma, "updateUserPassword").mockImplementation(() => {

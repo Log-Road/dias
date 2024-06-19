@@ -46,6 +46,7 @@ export class PrismaService
         email: true,
         isStudent: true,
         number: true,
+        provided: true,
       },
     });
   }
