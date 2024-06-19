@@ -47,6 +47,9 @@ jobs:
           echo ORIGIN=${{ secrets.ORIGIN }} >> .env
           echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
           echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
+          echo GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}} >> .env
+          echo GOOGLE_SECURE_PASSWORD=${{secrets.GOOGLE_SECURE_PASSWORD}} >> .env
+          echo GOOGLE_CALLBACK_URL=${{secrets.GOOGLE_CALLBACK_URL}} >> .env
 
       - name: prisma set
         run: npx prisma generate

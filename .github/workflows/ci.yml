@@ -46,6 +46,9 @@ jobs:
           echo PORT=${{secrets.PORT}} >> .env
           echo SALT=${{secrets.SALT}} >> .env
           echo ORIGIN=${{secrets.ORIGIN}} >> .env
+          echo GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}} >> .env
+          echo GOOGLE_SECURE_PASSWORD=${{secrets.GOOGLE_SECURE_PASSWORD}} >> .env
+          echo GOOGLE_CALLBACK_URL=${{secrets.GOOGLE_CALLBACK_URL}} >> .env
 
       - name: prisma set
         run: npx prisma generate
