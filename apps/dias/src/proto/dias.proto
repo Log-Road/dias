@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package dias;
+
+service Guard {
+  rpc JwtAuthGuard(JwtGuardRequest) returns (IsValid) {}
+  rpc GoogleAuthGuard(GoogleAuthGuardRequest) returns (IsValid) {}
+}
+
+message IsValid {
+  bool isValid = 1;
+}
+
+message JwtGuardRequest {
+  string authorization = 1;
+}
+
+message GoogleAuthGuardRequest {
+  string authorization = 1;
+}
