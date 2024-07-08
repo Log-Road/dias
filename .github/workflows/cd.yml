@@ -54,11 +54,11 @@ jobs:
       - name: prisma set
         run: npx prisma generate
 
-      - name: build
-        run: |
-          pnpm build
-          cp -r src/prisma/client dist/prisma/client
-          cp package.prod.json dist/package.json
+      # - name: build
+      #   run: |
+      #     pnpm build
+      #     cp -r src/prisma/client dist/prisma/client
+      #     cp package.prod.json dist/package.json
 
       - name: docker
         run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest -f ./Dockerfile

@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "npx prisma generate && nest build && cp -rf ./src/prisma/client ./dist/prisma/client",
+    "build": "npx prisma generate && nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "export NODE_ENV=dev && dotenv -e .env.dev nest build && cp -r src/prisma/client dist/prisma/client && node dist/main.js",
     "start:debug": "nest start --debug --watch",
