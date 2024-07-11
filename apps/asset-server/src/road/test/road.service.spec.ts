@@ -122,7 +122,7 @@ describe("RoadService", () => {
       .spyOn(prismaService, "findOneLikeByProjectIdAndUserId")
       .mockReturnValue(Promise.resolve(null));
 
-    const result = await service.mainpage();
+    const result = await service.mainpage({ user: null });
 
     expect(result).toEqual({
       now: [
@@ -164,7 +164,7 @@ describe("RoadService", () => {
           duration: [new Date("2024-07-01"), new Date("2024-07-10")],
         },
       ],
-      projects: [
+      project: [
         {
           id: "1",
           image: "image1",

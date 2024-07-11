@@ -20,7 +20,7 @@ export class ProjectItemDto {
   inform: String;
 
   @IsString()
-  created_at: String;
+  created_at: Date;
 
   @IsBoolean()
   like: Boolean;

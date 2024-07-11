@@ -3,6 +3,9 @@ import { PrismaService } from "../prisma/prisma.service";
 import { NowAndArchiveItemDto } from "./dto/response/mainpage/nowAndArchiveItem.dto";
 import { AwardItemDto } from "./dto/response/mainpage/awardItem.dto";
 import { RecentlyItemDto } from "./dto/response/mainpage/recentlyItem.dto";
+import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
+import { MainpageRespondDto } from "./dto/response/mainpage/mainpage.response.dto";
+import { ProjectItemDto } from "./dto/response/mainpage/projectItem.dto";
 
 @Injectable()
 export class RoadService {
@@ -10,8 +13,11 @@ export class RoadService {
     @Inject(PrismaService) private readonly prismaService: PrismaService,
   ) {}
 
-  async mainpage(user?: any) {
+  async mainpage(
+    mainpageRequestDto: MainpageRequestDto,
+  ): Promise<MainpageRespondDto> {
     const nowDate = new Date();
+    const user = mainpageRequestDto.user;
     const contests = await this.prismaService.findAllContests();
     const projects = (await this.prismaService.findAllProjects()).slice(0, 9);
 
@@ -50,7 +56,7 @@ export class RoadService {
     }));
 
     // projects 객체 - 최근 8개개의 프로젝트 반환
-    const projectItem = await Promise.all(
+    const projectItem: ProjectItemDto[] = await Promise.all(
       projects.map(async (project) => {
         const likeCnt = await this.prismaService.countLikesByProjectId(
           project.id,
@@ -84,7 +90,7 @@ export class RoadService {
       now,
       recently,
       archive,
-      projects: projectItem,
+      project: projectItem,
     };
   }
 }

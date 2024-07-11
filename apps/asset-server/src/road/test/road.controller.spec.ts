@@ -70,7 +70,7 @@ describe("RoadController", () => {
             duration: [new Date("2024-07-01"), new Date("2024-07-10")],
           },
         ],
-        projects: [
+        project: [
           {
             id: "1",
             image: "image1",
@@ -97,7 +97,7 @@ describe("RoadController", () => {
       }),
     );
 
-    const result = await controller.mainpage({});
+    const result = await controller.mainpage({ user: null });
 
     expect(result).toEqual({
       statusCode: 200,
@@ -142,7 +142,7 @@ describe("RoadController", () => {
             duration: [new Date("2024-07-01"), new Date("2024-07-10")],
           },
         ],
-        projects: [
+        project: [
           {
             id: "1",
             image: "image1",

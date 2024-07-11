@@ -1,6 +1,7 @@
 import { Body, Controller, Get, UseGuards } from "@nestjs/common";
 import { RoadService } from "./road.service";
 import { JwtValidateGuard } from "../guard/jwtValidater/jwtValidater.guard";
+import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
 
 @Controller("road")
 export class RoadController {
@@ -8,7 +9,7 @@ export class RoadController {
 
   @Get("/")
   @UseGuards(JwtValidateGuard)
-  async mainpage(@Body() mainpageDto: any) {
+  async mainpage(@Body() mainpageDto: MainpageRequestDto) {
     const data = await this.roadService.mainpage(mainpageDto);
 
     const res = {
