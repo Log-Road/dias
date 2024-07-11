@@ -133,7 +133,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/xii/Desktop/iixanx/dias/apps/dias/src/prisma/client",
+      "value": "/Users/osongju/Desktop/Git/dias/apps/dias/src/prisma/client",
       "fromEnvVar": null
     },
     "config": {

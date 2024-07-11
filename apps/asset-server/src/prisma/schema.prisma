@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("POSTGRESQL_DB_URL")
 }
 
 model Contests {
@@ -20,19 +20,22 @@ model Contests {
 }
 
 model Projects {
-  id           String   @id() @default(uuid())
-  contest_id   String
-  contest      Contests @relation(references: [id], fields: [contest_id])
-  name         String
-  image        String
-  members      String[]
-  skills       String[]
-  status       STATUS
-  introduction String
-  description  String
-  video_link   String
-  Vote         Vote[]
-  Like         Like[]
+  id             String   @id() @default(uuid())
+  contest_id     String
+  contest        Contests @relation(references: [id], fields: [contest_id])
+  name           String
+  image          String
+  members        String[]
+  skills         String[]
+  status         STATUS
+  auth_category  CATEGORY
+  introduction   String
+  description    String
+  video_link     String
+  place          String
+  Vote           Vote[]
+  Like           Like[]
+  CreatedAt      DateTime
 }
 
 model Awards {
@@ -67,4 +70,10 @@ enum STATUS {
   REJECTED
   MODIFICATION
   DELETION
+}
+
+enum CATEGORY {
+  PERSONAL
+  TEAM
+  CLUB
 }
