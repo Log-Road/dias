@@ -4,7 +4,7 @@ import { NowAndArchiveItemDto } from "./dto/response/mainpage/nowAndArchiveItem.
 import { AwardItemDto } from "./dto/response/mainpage/awardItem.dto";
 import { RecentlyItemDto } from "./dto/response/mainpage/recentlyItem.dto";
 import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
-import { MainpageRespondDto } from "./dto/response/mainpage/mainpage.response.dto";
+import { MainpageResponseDto } from "./dto/response/mainpage/mainpage.response.dto";
 import { ProjectItemDto } from "./dto/response/mainpage/projectItem.dto";
 
 @Injectable()
@@ -15,7 +15,7 @@ export class RoadService {
 
   async mainpage(
     mainpageRequestDto: MainpageRequestDto,
-  ): Promise<MainpageRespondDto> {
+  ): Promise<MainpageResponseDto> {
     const nowDate = new Date();
     const user = mainpageRequestDto.user;
     const contests = await this.prismaService.findAllContests();

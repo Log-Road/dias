@@ -35,7 +35,7 @@ model Projects {
   place          String
   Vote           Vote[]
   Like           Like[]
-  CreatedAt      DateTime
+  CreatedAt      DateTime @default(now())
 }
 
 model Awards {

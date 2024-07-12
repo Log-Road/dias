@@ -3,7 +3,7 @@ import { NowAndArchiveItemDto } from "./nowAndArchiveItem.dto";
 import { RecentlyItemDto } from "./recentlyItem.dto";
 import { ProjectItemDto } from "./projectItem.dto";
 
-export class MainpageRespondDto {
+export class MainpageResponseDto {
   @IsArray()
   now: NowAndArchiveItemDto[];
 
