@@ -3,10 +3,10 @@ import { AwardItemDto } from "./awardItem.dto";
 
 export class RecentlyItemDto {
   @IsString()
-  id: String;
+  id: string;
 
   @IsString()
-  name: String;
+  name: string;
 
   @IsArray()
   award: AwardItemDto[];

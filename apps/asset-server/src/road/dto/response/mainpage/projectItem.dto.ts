@@ -2,29 +2,29 @@ import { IsArray, IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class ProjectItemDto {
   @IsString()
-  id: String;
+  id: string;
 
   @IsString()
-  image: String;
+  image: string;
 
   @IsString()
-  author_category: String;
+  author_category: string;
 
   @IsArray()
-  author: String[];
+  author: string[];
 
   @IsString()
-  title: String;
+  title: string;
 
   @IsString()
-  inform: String;
+  inform: string;
 
   @IsString()
   created_at: Date;
 
   @IsBoolean()
-  like: Boolean;
+  like: boolean;
 
   @IsNumber()
-  like_count: Number;
+  like_count: number;
 }

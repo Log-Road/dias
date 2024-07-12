@@ -2,10 +2,10 @@ import { IsArray, IsString } from "class-validator";
 
 export class NowAndArchiveItemDto {
   @IsString()
-  id: String;
+  id: string;
 
   @IsString()
-  name: String;
+  name: string;
 
   @IsArray()
   duration: Date[];
