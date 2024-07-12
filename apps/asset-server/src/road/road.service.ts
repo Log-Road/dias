@@ -18,8 +18,12 @@ export class RoadService {
   ): Promise<MainpageResponseDto> {
     const nowDate = new Date();
     const user = mainpageRequestDto.user;
-    const contests = await this.prismaService.findAllContests();
-    const projects = (await this.prismaService.findAllProjects()).slice(0, 9);
+
+    const [contests, projects, recentlyEndedContest] = await Promise.all([
+      await this.prismaService.findAllContests(),
+      (await this.prismaService.findAllProjects()).slice(0, 9),
+      (await this.prismaService.findContestByDateBefore(nowDate))[0],
+    ]);
 
     // now 객체 - 현재 진행중인 프로젝트
     const now: NowAndArchiveItemDto[] = contests
@@ -33,10 +37,6 @@ export class RoadService {
       }));
 
     // recent 객체 - 최근 진행된 프로젝트
-    const recentlyEndedContest = (
-      await this.prismaService.findContestByDateBefore(nowDate)
-    )[0];
-
     const awards: AwardItemDto[] =
       await this.prismaService.findAllAwardsByContestId(
         recentlyEndedContest.id,
