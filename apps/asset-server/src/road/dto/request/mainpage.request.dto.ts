@@ -1,4 +1,4 @@
-import { User } from "apps/dias/src/prisma/client";
+import { User } from "../../../../../dias/src/prisma/client";
 import { IsObject } from "class-validator";
 
 export class MainpageRequestDto {
