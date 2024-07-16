@@ -29,7 +29,7 @@ async function bootstrap() {
   );
 
   await app.listen(8001, () => {
-    console.log('asset-server started')
+    console.log("asset-server started");
   });
 }
 bootstrap();
