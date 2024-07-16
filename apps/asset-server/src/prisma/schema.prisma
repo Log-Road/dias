@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+  output        = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_DB_URL")
+}
+
+model Contests {
+  id         String     @id() @default(uuid())
+  name       String
+  start_date DateTime   @default(now())
+  end_date   DateTime   @default(now())
+  purpose    String
+  audience   String
+  Awards     Awards[]
+  Projects   Projects[]
+  Vote       Vote[]
+}
+
+model Projects {
+  id             String   @id() @default(uuid())
+  contest_id     String
+  contest        Contests @relation(references: [id], fields: [contest_id])
+  name           String
+  image          String
+  members        String[]
+  skills         String[]
+  status         STATUS
+  auth_category  CATEGORY
+  introduction   String
+  description    String
+  video_link     String
+  place          String
+  Vote           Vote[]
+  Like           Like[]
+  CreatedAt      DateTime @default(now())
+}
+
+model Awards {
+  id         String   @id() @default(uuid())
+  contest_id String
+  contest    Contests @relation(references: [id], fields: [contest_id])
+  name       String
+  count      Int
+}
+
+model Vote {
+  contest_id String
+  project_id String
+  user_id    String
+  contest    Contests @relation(references: [id], fields: [contest_id])
+  project    Projects @relation(references: [id], fields: [project_id])
+
+  @@id([project_id, user_id])
+}
+
+model Like {
+  project_id String
+  user_id    String
+  project    Projects @relation(references: [id], fields: [project_id])
+
+  @@id([project_id, user_id])
+}
+
+enum STATUS {
+  PENDING
+  APPROVAL
+  REJECTED
+  MODIFICATION
+  DELETION
+}
+
+enum CATEGORY {
+  PERSONAL
+  TEAM
+  CLUB
+}

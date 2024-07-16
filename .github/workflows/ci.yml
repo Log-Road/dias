@@ -54,7 +54,9 @@ jobs:
           echo GOOGLE_CALLBACK_URL=${{secrets.GOOGLE_CALLBACK_URL}} >> .env
 
       - name: prisma set
-        run: npx prisma generate
+        run: |
+          npx prisma generate --schema=apps/dias/src/prisma/schema.prisma
+          npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma
 
       - name: Test unit
         run: pnpm test:prod
