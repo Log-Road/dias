@@ -52,3 +52,7 @@ src/prisma/*
 
 # Visual Studio Code
 .vscode/*
+
+# Prisma Client
+apps/asset-server/src/prisma/client
+apps/dias/src/prisma/client

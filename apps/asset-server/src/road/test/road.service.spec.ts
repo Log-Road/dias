@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoadService } from "../road.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { CATEGORY, STATUS } from "@prisma/client";
+import { CATEGORY, STATUS } from "../../prisma/client";
 
 describe("RoadService", () => {
   let service: RoadService;
