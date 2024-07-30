@@ -67,14 +67,14 @@ model Like {
   @@id([project_id, user_id])
 }
 
-enum PROJECT_STATUS {
+enum CONTEST_STATUS {
   BEFORE
   NOW
   PENDING
   FINISHED
 }
 
-enum CONTEST_STATUS {
+enum PROJECT_STATUS {
   PENDING
   APPROVAL
   REJECTED

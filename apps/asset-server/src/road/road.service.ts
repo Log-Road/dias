@@ -6,7 +6,7 @@ import { RecentlyItemDto } from "./dto/response/mainpage/recentlyItem.dto";
 import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
 import { MainpageResponseDto } from "./dto/response/mainpage/mainpage.response.dto";
 import { ProjectItemDto } from "./dto/response/mainpage/projectItem.dto";
-import { Contests } from "@prisma/client";
+import { Contests } from "../prisma/client";
 import { GetContestResponseDto } from "./dto/response/getContests/getContest.response.dto";
 
 @Injectable()
