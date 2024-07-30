@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { JwtAuthGuard } from "apps/dias/src/auth/strategies/jwt/jwt.auth.guard";
-import { PrismaService } from "apps/dias/src/prisma/prisma.service";
+import { JwtAuthGuard } from "../../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
+import { PrismaService } from "../../../../dias/src/prisma/prisma.service";
 
 @Injectable()
 export class JwtValidateGuard implements CanActivate {

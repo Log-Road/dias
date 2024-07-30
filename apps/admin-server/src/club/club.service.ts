@@ -15,7 +15,7 @@ import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
 import { ModifyClubResponseDto } from "./dto/res/modifyClub.response.dto";
 import { PostClubResponseDto } from "./dto/res/postClub.response.dto";
 import { PrismaService } from "../prisma/prisma.service";
-import { PrismaService as UserPrismaService } from "apps/dias/src/prisma/prisma.service";
+import { PrismaService as UserPrismaService } from "../../../dias/src/prisma/prisma.service";
 
 @Injectable()
 export class ClubService implements IClubService {

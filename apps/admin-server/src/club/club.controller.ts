@@ -16,7 +16,7 @@ import { DeleteClubResponseDto } from "./dto/res/deleteClub.response.dto";
 import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
 import { ModifyClubResponseDto } from "./dto/res/modifyClub.response.dto";
 import { PostClubResponseDto } from "./dto/res/postClub.response.dto";
-import { JwtAuthGuard } from "apps/dias/src/auth/strategies/jwt/jwt.auth.guard";
+import { JwtAuthGuard } from "../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
 
 @UseGuards(JwtAuthGuard)
 @Controller("club")
