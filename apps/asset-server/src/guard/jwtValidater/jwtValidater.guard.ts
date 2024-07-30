@@ -4,6 +4,10 @@ import {
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { JwtAuthGuard } from "apps/dias/src/auth/strategies/jwt/jwt.auth.guard";
+import { PrismaService } from "apps/dias/src/prisma/prisma.service";
 
 @Injectable()
 export class JwtValidateGuard implements CanActivate {
@@ -16,7 +20,10 @@ export class JwtValidateGuard implements CanActivate {
     } else {
       if (!bearerToken.startsWith("Bearer "))
         throw new UnauthorizedException("토큰 형식 오류");
-      const token: String = bearerToken.split(" ")[1];
+      await new JwtAuthGuard(
+        new JwtService(),
+        new PrismaService(new ConfigService()),
+      ).canActivate(context);
     }
 
     return true;
