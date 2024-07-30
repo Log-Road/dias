@@ -6,6 +6,8 @@ import { RecentlyItemDto } from "./dto/response/mainpage/recentlyItem.dto";
 import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
 import { MainpageResponseDto } from "./dto/response/mainpage/mainpage.response.dto";
 import { ProjectItemDto } from "./dto/response/mainpage/projectItem.dto";
+import { Contests } from "@prisma/client";
+import { GetContestResponseDto } from "./dto/response/getContests/getContest.response.dto";
 
 @Injectable()
 export class RoadService {
@@ -92,5 +94,20 @@ export class RoadService {
       archive,
       project: projectItem,
     };
+  }
+
+  async getContests(): Promise<GetContestResponseDto> {
+    const contests: Array<Contests> =
+      await this.prismaService.findContestsOnGoing();
+
+    const now = contests.map((contest) => {
+      return {
+        id: contest.id,
+        name: contest.name,
+        duration: [contest.start_date, contest.end_date],
+      };
+    });
+
+    return { now };
   }
 }

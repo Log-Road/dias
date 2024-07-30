@@ -1,7 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoadService } from "../road.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { CATEGORY, STATUS } from "../../prisma/client";
+import {
+  CATEGORY,
+  Contests,
+  CONTEST_STATUS,
+  PROJECT_STATUS,
+} from "@prisma/client";
 
 describe("RoadService", () => {
   let service: RoadService;
@@ -20,6 +25,7 @@ describe("RoadService", () => {
             findAllProjects: jest.fn(),
             countLikesByProjectId: jest.fn(),
             findOneLikeByProjectIdAndUserId: jest.fn(),
+            findContestsOnGoing: jest.fn(),
           },
         },
       ],
@@ -65,7 +71,7 @@ describe("RoadService", () => {
         image: "image1",
         members: ["홍길동", "김아무개", "성이름"],
         skills: ["Nest.js", "prisma", "React"],
-        status: STATUS.APPROVAL,
+        status: PROJECT_STATUS.APPROVAL,
         auth_category: CATEGORY.CLUB,
         introduction:
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -82,7 +88,7 @@ describe("RoadService", () => {
         image: "image1",
         members: ["홍길동", "김아무개", "성이름"],
         skills: ["Nest.js", "prisma", "React"],
-        status: STATUS.APPROVAL,
+        status: PROJECT_STATUS.APPROVAL,
         auth_category: CATEGORY.CLUB,
         introduction:
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -186,6 +192,67 @@ describe("RoadService", () => {
           created_at: new Date("2024-07-10"),
           like: false,
           like_count: 10,
+        },
+      ],
+    });
+  });
+
+  it("get contests test", async () => {
+    const contests: Array<Contests> = [
+      {
+        id: "1",
+        name: "2024 대마고 해커톤",
+        start_date: new Date("2024-07-10"),
+        end_date: new Date("2024-07-12"),
+        purpose: "실력 향상",
+        audience: "학생",
+        place: "청죽관",
+        status: CONTEST_STATUS.NOW,
+      },
+      {
+        id: "2",
+        name: "2024년 7월 30일에 열리는 대회",
+        start_date: new Date("2024-07-30"),
+        end_date: new Date("2024-07-30"),
+        purpose: "실력 향상",
+        audience: "학생",
+        place: "청죽관",
+        status: CONTEST_STATUS.NOW,
+      },
+      {
+        id: "3",
+        name: "2025 대마고 해커톤",
+        start_date: new Date("2025-12-12"),
+        end_date: new Date("2025-12-31"),
+        purpose: "실력 향상",
+        audience: "학생",
+        place: "청죽관",
+        status: CONTEST_STATUS.NOW,
+      },
+    ];
+
+    jest
+      .spyOn(prismaService, "findContestsOnGoing")
+      .mockReturnValue(Promise.resolve(contests));
+
+    const result = await service.getContests();
+
+    expect(result).toEqual({
+      now: [
+        {
+          id: "1",
+          name: "2024 대마고 해커톤",
+          duration: [new Date("2024-07-10"), new Date("2024-07-12")],
+        },
+        {
+          id: "2",
+          name: "2024년 7월 30일에 열리는 대회",
+          duration: [new Date("2024-07-30"), new Date("2024-07-30")],
+        },
+        {
+          id: "3",
+          name: "2025 대마고 해커톤",
+          duration: [new Date("2025-12-12"), new Date("2025-12-31")],
         },
       ],
     });
