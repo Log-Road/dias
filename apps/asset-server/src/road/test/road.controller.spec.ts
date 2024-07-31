@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoadController } from "../road.controller";
 import { RoadService } from "../road.service";
-import { CATEGORY } from "@prisma/client";
+import { CATEGORY } from "../../prisma/client";
 
 describe("RoadController", () => {
   let controller: RoadController;

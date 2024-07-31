@@ -6,7 +6,7 @@ import {
   Contests,
   CONTEST_STATUS,
   PROJECT_STATUS,
-} from "@prisma/client";
+} from "../../prisma/client";
 
 describe("RoadService", () => {
   let service: RoadService;
