@@ -8,6 +8,11 @@ import { MainpageResponseDto } from "./dto/response/mainpage/mainpage.response.d
 import { ProjectItemDto } from "./dto/response/mainpage/projectItem.dto";
 import { Contests } from "../prisma/client";
 import { GetContestResponseDto } from "./dto/response/getContests/getContest.response.dto";
+import { GetArchiveRequestDto } from "./dto/request/getArchive.request.dto";
+import { GetArchiveResponseDto } from "./dto/response/getArchive/getArchive.response.dto";
+import { CompetitionDto } from "./dto/response/getArchive/competition.dto";
+import { ProjectDto } from "./dto/response/getArchive/project.dto";
+import { identity } from "rxjs";
 
 @Injectable()
 export class RoadService {
@@ -97,8 +102,7 @@ export class RoadService {
   }
 
   async getContests(): Promise<GetContestResponseDto> {
-    const contests: Array<Contests> =
-      await this.prismaService.findContestsOnGoing();
+    const contests = await this.prismaService.findContestsOnGoing();
 
     const now = contests.map((contest) => {
       return {
@@ -109,5 +113,64 @@ export class RoadService {
     });
 
     return { now };
+  }
+
+  async getArchive(
+    comp_id: string,
+    getArchiveRequestDto: GetArchiveRequestDto,
+  ): Promise<GetArchiveResponseDto> {
+    const user = getArchiveRequestDto.user;
+
+    const [contests, projects] = await Promise.all([
+      await this.prismaService.findContestsOnGoing(),
+      await this.prismaService.findAllProjectByContestId(comp_id),
+    ]);
+
+    const processedContests: CompetitionDto[] = contests.map((contest) => {
+      return {
+        id: contest.id,
+        name: contest.name,
+        duration: [contest.start_date, contest.end_date],
+      };
+    });
+
+    const boundedContests: { [key: string]: CompetitionDto[] } = {};
+    processedContests.forEach((contest) => {
+      const year = contest.duration[0].getFullYear();
+
+      if (year in boundedContests) {
+        boundedContests[year].push(contest);
+      } else {
+        boundedContests[year] = [contest];
+      }
+    });
+
+    const processedProjects: ProjectDto[] = await Promise.all(
+      projects.map(async (project) => {
+        const likes = await this.prismaService.findAllLikeByProjectId(
+          project.id,
+        );
+
+        const like =
+          user != null && likes.some((like) => like.user_id === user.id); // 유저가 로그인 상태인지 && 유저가 좋아요를 눌렀는지
+        return {
+          id: project.id,
+          image: project.image,
+          author_category: project.auth_category,
+          author: project.members,
+          title: project.name,
+          inform: project.introduction,
+          created_at: project.CreatedAt,
+          like,
+          like_count: likes.length,
+        };
+      }),
+    );
+
+    return {
+      competitions: boundedContests,
+      id: comp_id,
+      projects: processedProjects,
+    };
   }
 }

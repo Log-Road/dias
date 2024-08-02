@@ -33,6 +33,7 @@ export class PrismaService
         start_date: true,
         end_date: true,
       },
+      orderBy: { start_date: "desc" },
     });
   }
 
@@ -85,6 +86,27 @@ export class PrismaService
       where: {
         status: CONTEST_STATUS.NOW,
       },
+      select: {
+        id: true,
+        name: true,
+        start_date: true,
+        end_date: true,
+      },
+      orderBy: { start_date: "desc" },
+    });
+  }
+
+  async findAllProjectByContestId(contest_id: string) {
+    return await this.projects.findMany({
+      where: { contest_id },
+      orderBy: { CreatedAt: "desc" },
+    });
+  }
+
+  async findAllLikeByProjectId(project_id: string) {
+    return await this.like.findMany({
+      where: { project_id },
+      select: { user_id: true },
     });
   }
 }
