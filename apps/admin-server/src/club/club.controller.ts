@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Logger, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Inject,
+  Logger,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { ClubService } from "./club.service";
 import { IClubController } from "./club.controller.interface";
 import { Res } from "../dtos/response.dto";
@@ -27,7 +34,9 @@ export class ClubController implements IClubController {
   ) {}
 
   @Post()
-  async postClub(@Body() req: PostClubRequestDto): Promise<Res<PostClubResponseDto>> {
+  async postClub(
+    @Body() req: PostClubRequestDto,
+  ): Promise<Res<PostClubResponseDto>> {
     const data = await this.service.postClub(req);
 
     return {

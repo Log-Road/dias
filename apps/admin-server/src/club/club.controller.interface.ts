@@ -4,7 +4,10 @@ import {
   DeleteClubRequestDtoParams,
 } from "./dto/req/deleteClub.request.dto";
 import { GetClubRequestDto } from "./dto/req/getClub.request.dto";
-import { ModifyClubRequestDto, ModifyClubRequestDtoParams } from "./dto/req/modifyClub.request.dto";
+import {
+  ModifyClubRequestDto,
+  ModifyClubRequestDtoParams,
+} from "./dto/req/modifyClub.request.dto";
 import { PostClubRequestDto } from "./dto/req/postClub.request.dto";
 import { DeleteClubResponseDto } from "./dto/res/deleteClub.response.dto";
 import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
