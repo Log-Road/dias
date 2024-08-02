@@ -1,4 +1,11 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaClient } from "./client";
 
@@ -7,7 +14,10 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor(readonly configService: ConfigService) {
+  constructor(
+    readonly configService: ConfigService,
+    @Inject(Logger) private logger: Logger,
+  ) {
     super({
       datasources: {
         db: {
@@ -26,11 +36,16 @@ export class PrismaService
   }
 
   async saveClub(clubName: string, isActive?: boolean) {
-    return await this.club.create({
-      data: {
-        club_name: clubName,
-        is_active: isActive,
-      },
-    });
+    try {
+      return await this.club.create({
+        data: {
+          club_name: clubName,
+          is_active: isActive,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
   }
 }
