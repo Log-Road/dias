@@ -11,7 +11,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 async function bootstrap() {
   configDotenv({
-    path: process.env.NODE_ENV == "prod" ? "../../../.env" : "../../../.env.dev",
+    path: "../../../.env",
   });
 
   const app = await NestFactory.create(AppModule, {
@@ -58,7 +58,7 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       forbidNonWhitelisted: true,
-      disableErrorMessages: process.env.NODE_ENV === ("prod" || "dev"),
+      disableErrorMessages: true,
     }),
   );
 

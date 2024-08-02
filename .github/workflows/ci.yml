@@ -52,11 +52,16 @@ jobs:
           echo GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}} >> .env
           echo GOOGLE_SECURE_PASSWORD=${{secrets.GOOGLE_SECURE_PASSWORD}} >> .env
           echo GOOGLE_CALLBACK_URL=${{secrets.GOOGLE_CALLBACK_URL}} >> .env
+          echo LOG_EMAIL=${{secrets.LOG_EMAIL}} >> .env
+          echo AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY}} >> .env
+          echo AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} >> .env
+          echo POSTGRESQL_DB=${{secrets.POSTGRESQL_DB}} >> .env
 
       - name: prisma set
         run: |
           npx prisma generate --schema=apps/dias/src/prisma/schema.prisma
           npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma
+          npx prisma generate --schema=apps/admin-server/src/prisma/schema.prisma
 
       - name: Test unit
         run: pnpm test:prod
