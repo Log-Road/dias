@@ -10,7 +10,7 @@ import { CompetitionModule } from "./competition/competition.module";
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
-      envFilePath: "../../../.env"
+      envFilePath: "../../../.env",
     }),
     WinstonModule.forRoot({
       instance: WinstonInstance,
