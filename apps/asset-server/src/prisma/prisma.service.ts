@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PrismaClient } from "./client";
+import { CONTEST_STATUS, PrismaClient } from "./client";
 
 @Injectable()
 export class PrismaService
@@ -76,6 +76,14 @@ export class PrismaService
           project_id,
           user_id,
         },
+      },
+    });
+  }
+
+  async findContestsOnGoing() {
+    return await this.contests.findMany({
+      where: {
+        status: CONTEST_STATUS.NOW,
       },
     });
   }

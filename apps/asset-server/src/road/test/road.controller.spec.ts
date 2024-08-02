@@ -15,6 +15,7 @@ describe("RoadController", () => {
           provide: RoadService,
           useValue: {
             mainpage: jest.fn(),
+            getContests: jest.fn(),
           },
         },
       ],
@@ -167,6 +168,56 @@ describe("RoadController", () => {
           },
         ],
       },
+    });
+  });
+
+  it("[200] 현재 진행중인 대회 반환", async () => {
+    jest.spyOn(service, "getContests").mockReturnValue(
+      Promise.resolve({
+        now: [
+          {
+            id: "1",
+            name: "2024 대마고 해커톤",
+            duration: [new Date("2024-07-10"), new Date("2024-07-12")],
+          },
+          {
+            id: "2",
+            name: "2024년 7월 30일에 열리는 대회",
+            duration: [new Date("2024-07-30"), new Date("2024-07-30")],
+          },
+          {
+            id: "3",
+            name: "2025 대마고 해커톤",
+            duration: [new Date("2025-12-12"), new Date("2025-12-31")],
+          },
+        ],
+      }),
+    );
+
+    const result = await controller.getContests();
+
+    expect(result).toEqual({
+      data: {
+        now: [
+          {
+            id: "1",
+            name: "2024 대마고 해커톤",
+            duration: [new Date("2024-07-10"), new Date("2024-07-12")],
+          },
+          {
+            id: "2",
+            name: "2024년 7월 30일에 열리는 대회",
+            duration: [new Date("2024-07-30"), new Date("2024-07-30")],
+          },
+          {
+            id: "3",
+            name: "2025 대마고 해커톤",
+            duration: [new Date("2025-12-12"), new Date("2025-12-31")],
+          },
+        ],
+      },
+      statusCode: 200,
+      statusMsg: "OK",
     });
   });
 });

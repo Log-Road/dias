@@ -16,6 +16,8 @@ model Contests {
   end_date   DateTime   @default(now())
   purpose    String
   audience   String
+  place      String
+  status     CONTEST_STATUS
   Awards     Awards[]
   Projects   Projects[]
   Vote       Vote[]
@@ -29,7 +31,7 @@ model Projects {
   image          String
   members        String[]
   skills         String[]
-  status         STATUS
+  status         PROJECT_STATUS
   auth_category  CATEGORY
   introduction   String
   description    String
@@ -72,7 +74,14 @@ model Club {
   is_active Boolean @default(true)
 }
 
-enum STATUS {
+enum CONTEST_STATUS {
+  BEFORE
+  NOW
+  PENDING
+  FINISHED
+}
+
+enum PROJECT_STATUS {
   PENDING
   APPROVAL
   REJECTED
