@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { ROLE } from "../../../../../dias/src/prisma/client";
 
 export class SignInRes {
   @ApiProperty({ type: "string", example: 1, description: "userId: UUID" })
@@ -11,6 +12,13 @@ export class SignInRes {
     description: "access token",
   })
   accessToken: string;
+
+  @ApiProperty({
+    type: "ROLE",
+    example: "Student",
+    description: "The role of user account"
+  })
+  role: ROLE;
 
   @ApiProperty({
     type: "string",

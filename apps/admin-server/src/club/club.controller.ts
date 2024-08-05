@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Logger,
   Post,
@@ -24,8 +25,9 @@ import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
 import { ModifyClubResponseDto } from "./dto/res/modifyClub.response.dto";
 import { PostClubResponseDto } from "./dto/res/postClub.response.dto";
 import { JwtAuthGuard } from "../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
+import { AdminValidateGuard } from "../guard/adminValidator/adminValidator.guard";
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminValidateGuard)
 @Controller("club")
 export class ClubController implements IClubController {
   constructor(
@@ -46,8 +48,15 @@ export class ClubController implements IClubController {
     };
   }
 
+  @Get()
   async getClub(req: GetClubRequestDto): Promise<Res<GetClubResponseDto>> {
-    throw new Error("Method not implemented.");
+    const data = await this.service.getClub(req);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "",
+    };
   }
 
   async modifyClub(
