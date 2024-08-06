@@ -48,4 +48,13 @@ export class PrismaService
       throw new InternalServerErrorException(e);
     }
   }
+
+  async findClubs() {
+    try {
+      return await this.club.findMany();
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
 }

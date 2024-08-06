@@ -36,7 +36,11 @@ export class ClubService implements IClubService {
   }
 
   async getClub(req: GetClubRequestDto): Promise<GetClubResponseDto> {
-    throw new Error("Method not implemented.");
+    const clubs = await this.prisma.findClubs();
+
+    return {
+      clubs,
+    };
   }
 
   async modifyClub(
