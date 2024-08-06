@@ -6,7 +6,9 @@ import {
   Contests,
   CONTEST_STATUS,
   PROJECT_STATUS,
+  Projects,
 } from "../../prisma/client";
+import { ROLE } from "../../../../dias/src/prisma/client";
 
 describe("RoadService", () => {
   let service: RoadService;
@@ -26,6 +28,8 @@ describe("RoadService", () => {
             countLikesByProjectId: jest.fn(),
             findOneLikeByProjectIdAndUserId: jest.fn(),
             findContestsOnGoing: jest.fn(),
+            findAllProjectByContestId: jest.fn(),
+            findAllLikeByProjectId: jest.fn(),
           },
         },
       ],
@@ -79,7 +83,7 @@ describe("RoadService", () => {
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
         place: "대덕마이스터고",
-        CreatedAt: new Date("2024-07-10"),
+        created_at: new Date("2024-07-10"),
       },
       {
         id: "2",
@@ -96,7 +100,7 @@ describe("RoadService", () => {
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
         place: "대덕마이스터고",
-        CreatedAt: new Date("2024-07-10"),
+        created_at: new Date("2024-07-10"),
       },
     ];
 
@@ -198,36 +202,24 @@ describe("RoadService", () => {
   });
 
   it("get contests test", async () => {
-    const contests: Array<Contests> = [
+    const contests = [
       {
         id: "1",
         name: "2024 대마고 해커톤",
         start_date: new Date("2024-07-10"),
         end_date: new Date("2024-07-12"),
-        purpose: "실력 향상",
-        audience: "학생",
-        place: "청죽관",
-        status: CONTEST_STATUS.NOW,
       },
       {
         id: "2",
         name: "2024년 7월 30일에 열리는 대회",
         start_date: new Date("2024-07-30"),
         end_date: new Date("2024-07-30"),
-        purpose: "실력 향상",
-        audience: "학생",
-        place: "청죽관",
-        status: CONTEST_STATUS.NOW,
       },
       {
         id: "3",
         name: "2025 대마고 해커톤",
         start_date: new Date("2025-12-12"),
         end_date: new Date("2025-12-31"),
-        purpose: "실력 향상",
-        audience: "학생",
-        place: "청죽관",
-        status: CONTEST_STATUS.NOW,
       },
     ];
 
@@ -253,6 +245,141 @@ describe("RoadService", () => {
           id: "3",
           name: "2025 대마고 해커톤",
           duration: [new Date("2025-12-12"), new Date("2025-12-31")],
+        },
+      ],
+    });
+  });
+
+  it("get archive test", async () => {
+    const contests = Promise.resolve([
+      {
+        id: "1",
+        name: "contest1",
+        start_date: new Date("2024-07-10"),
+        end_date: new Date("2024-07-20"),
+      },
+      {
+        id: "2",
+        name: "contest2",
+        start_date: new Date("2024-07-15"),
+        end_date: new Date("2024-07-20"),
+      },
+      {
+        id: "3",
+        name: "contest3",
+        start_date: new Date("2023-07-01"),
+        end_date: new Date("2023-07-10"),
+      },
+    ]);
+
+    const projects: Promise<Projects[]> = Promise.resolve([
+      {
+        id: "1",
+        name: "project1",
+        contest_id: "1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        status: PROJECT_STATUS.APPROVAL,
+        auth_category: CATEGORY.CLUB,
+        introduction:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        description:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        place: "대덕마이스터고",
+        created_at: new Date("2024-07-10"),
+      },
+      {
+        id: "2",
+        name: "project2",
+        contest_id: "1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        status: PROJECT_STATUS.APPROVAL,
+        auth_category: CATEGORY.CLUB,
+        introduction:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        description:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        place: "대덕마이스터고",
+        created_at: new Date("2024-07-10"),
+      },
+    ]);
+
+    const likes: Promise<{ user_id: string }[]> = Promise.resolve([
+      { user_id: "1" },
+      { user_id: "4" },
+      { user_id: "7" },
+      { user_id: "8" },
+    ]);
+
+    jest.spyOn(prismaService, "findContestsOnGoing").mockReturnValue(contests);
+    jest.spyOn(prismaService, "findAllLikeByProjectId").mockReturnValue(likes);
+    jest
+      .spyOn(prismaService, "findAllProjectByContestId")
+      .mockReturnValue(projects);
+
+    const result = await service.getArchive("1", {
+      user: {
+        id: "1",
+        userId: "loginId",
+        name: "오송주",
+        email: "dhthdwn7920@gmail.com",
+        password: "string",
+        role: ROLE.Student,
+        number: 2209,
+        provided: "access_token",
+      },
+    });
+
+    expect(result).toEqual({
+      competitions: {
+        "2024": [
+          {
+            id: "1",
+            name: "contest1",
+            duration: [new Date("2024-07-10"), new Date("2024-07-20")],
+          },
+          {
+            id: "2",
+            name: "contest2",
+            duration: [new Date("2024-07-15"), new Date("2024-07-20")],
+          },
+        ],
+        "2023": [
+          {
+            id: "3",
+            name: "contest3",
+            duration: [new Date("2023-07-01"), new Date("2023-07-10")],
+          },
+        ],
+      },
+      id: "1",
+      projects: [
+        {
+          id: "1",
+          image: "image1",
+          author_category: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project1",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          created_at: new Date("2024-07-10"),
+          like: true,
+          like_count: 4,
+        },
+        {
+          id: "2",
+          image: "image1",
+          author_category: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project2",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          created_at: new Date("2024-07-10"),
+          like: true,
+          like_count: 4,
         },
       ],
     });

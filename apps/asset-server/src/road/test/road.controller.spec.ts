@@ -16,6 +16,7 @@ describe("RoadController", () => {
           useValue: {
             mainpage: jest.fn(),
             getContests: jest.fn(),
+            getArchive: jest.fn(),
           },
         },
       ],
@@ -213,6 +214,114 @@ describe("RoadController", () => {
             id: "3",
             name: "2025 대마고 해커톤",
             duration: [new Date("2025-12-12"), new Date("2025-12-31")],
+          },
+        ],
+      },
+      statusCode: 200,
+      statusMsg: "OK",
+    });
+  });
+
+  it("[200] 아카이브 페이지 반환", async () => {
+    jest.spyOn(service, "getArchive").mockReturnValue(
+      Promise.resolve({
+        competitions: {
+          "2024": [
+            {
+              id: "1",
+              name: "contest1",
+              duration: [new Date("2024-07-10"), new Date("2024-07-20")],
+            },
+            {
+              id: "2",
+              name: "contest2",
+              duration: [new Date("2024-07-15"), new Date("2024-07-20")],
+            },
+          ],
+          "2023": [
+            {
+              id: "3",
+              name: "contest3",
+              duration: [new Date("2023-07-01"), new Date("2023-07-10")],
+            },
+          ],
+        },
+        id: "1",
+        projects: [
+          {
+            id: "1",
+            image: "image1",
+            author_category: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project1",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            created_at: new Date("2024-07-10"),
+            like: false,
+            like_count: 4,
+          },
+          {
+            id: "2",
+            image: "image1",
+            author_category: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project2",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            created_at: new Date("2024-07-10"),
+            like: false,
+            like_count: 4,
+          },
+        ],
+      }),
+    );
+
+    const result = await controller.getArchive("1", null);
+
+    expect(result).toEqual({
+      data: {
+        competitions: {
+          "2024": [
+            {
+              id: "1",
+              name: "contest1",
+              duration: [new Date("2024-07-10"), new Date("2024-07-20")],
+            },
+            {
+              id: "2",
+              name: "contest2",
+              duration: [new Date("2024-07-15"), new Date("2024-07-20")],
+            },
+          ],
+          "2023": [
+            {
+              id: "3",
+              name: "contest3",
+              duration: [new Date("2023-07-01"), new Date("2023-07-10")],
+            },
+          ],
+        },
+        id: "1",
+        projects: [
+          {
+            id: "1",
+            image: "image1",
+            author_category: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project1",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            created_at: new Date("2024-07-10"),
+            like: false,
+            like_count: 4,
+          },
+          {
+            id: "2",
+            image: "image1",
+            author_category: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project2",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            created_at: new Date("2024-07-10"),
+            like: false,
+            like_count: 4,
           },
         ],
       },
