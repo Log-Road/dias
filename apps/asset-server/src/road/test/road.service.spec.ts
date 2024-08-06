@@ -83,7 +83,7 @@ describe("RoadService", () => {
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
         place: "대덕마이스터고",
-        CreatedAt: new Date("2024-07-10"),
+        created_at: new Date("2024-07-10"),
       },
       {
         id: "2",
@@ -100,7 +100,7 @@ describe("RoadService", () => {
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
         place: "대덕마이스터고",
-        CreatedAt: new Date("2024-07-10"),
+        created_at: new Date("2024-07-10"),
       },
     ];
 
@@ -288,7 +288,7 @@ describe("RoadService", () => {
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
         place: "대덕마이스터고",
-        CreatedAt: new Date("2024-07-10"),
+        created_at: new Date("2024-07-10"),
       },
       {
         id: "2",
@@ -305,7 +305,7 @@ describe("RoadService", () => {
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
         place: "대덕마이스터고",
-        CreatedAt: new Date("2024-07-10"),
+        created_at: new Date("2024-07-10"),
       },
     ]);
 

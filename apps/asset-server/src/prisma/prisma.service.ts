@@ -99,7 +99,7 @@ export class PrismaService
   async findAllProjectByContestId(contest_id: string) {
     return await this.projects.findMany({
       where: { contest_id },
-      orderBy: { CreatedAt: "desc" },
+      orderBy: { created_at: "desc" },
     });
   }
 

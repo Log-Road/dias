@@ -86,7 +86,7 @@ export class RoadService {
           author: project.members,
           title: project.name,
           inform: project.introduction,
-          created_at: project.CreatedAt,
+          created_at: project.created_at,
           like,
           like_count: likeCnt,
         };
@@ -160,7 +160,7 @@ export class RoadService {
           author: project.members,
           title: project.name,
           inform: project.introduction,
-          created_at: project.CreatedAt,
+          created_at: project.created_at,
           like,
           like_count: likes.length,
         };

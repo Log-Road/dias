@@ -38,7 +38,7 @@ export class RoadController {
   @UseGuards(JwtValidateGuard)
   async getArchive(
     @Query("comp-id") comp_id: string,
-    getArchiveRequestDto: GetArchiveRequestDto,
+    @Body() getArchiveRequestDto: GetArchiveRequestDto,
   ) {
     const data = await this.roadService.getArchive(
       comp_id,
