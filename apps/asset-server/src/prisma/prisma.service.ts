@@ -50,9 +50,9 @@ export class PrismaService
     });
   }
 
-  async findAllAwardsByContestId(contest_id: string) {
+  async findAllAwardsByContestId(contestId: string) {
     return await this.awards.findMany({
-      where: { contest_id },
+      where: { contest_id: contestId },
       select: {
         id: true,
         name: true,
@@ -64,18 +64,18 @@ export class PrismaService
     return await this.projects.findMany();
   }
 
-  async countLikesByProjectId(project_id: string) {
+  async countLikesByProjectId(projectId: string) {
     return await this.like.count({
-      where: { project_id },
+      where: { project_id: projectId },
     });
   }
 
-  async findOneLikeByProjectIdAndUserId(project_id: string, user_id: string) {
+  async findOneLikeByProjectIdAndUserId(projectId: string, userId: string) {
     return await this.like.findUnique({
       where: {
         project_id_user_id: {
-          project_id,
-          user_id,
+          project_id: projectId,
+          user_id: userId,
         },
       },
     });
@@ -96,16 +96,16 @@ export class PrismaService
     });
   }
 
-  async findAllProjectByContestId(contest_id: string) {
+  async findAllProjectByContestId(contestId: string) {
     return await this.projects.findMany({
-      where: { contest_id },
+      where: { contest_id: contestId },
       orderBy: { created_at: "desc" },
     });
   }
 
-  async findAllLikeByProjectId(project_id: string) {
+  async findAllLikeByProjectId(projectId: string) {
     return await this.like.findMany({
-      where: { project_id },
+      where: { project_id: projectId },
       select: { user_id: true },
     });
   }
