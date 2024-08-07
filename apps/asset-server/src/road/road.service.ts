@@ -174,7 +174,7 @@ export class RoadService {
     };
   }
 
-  async competition(
+  async getCompetition(
     id: string,
     page: number,
     req: CompetitionRequestDto,
@@ -197,7 +197,7 @@ export class RoadService {
         );
         const likeUserIdList: string[] = likes.map((like) => like.user_id);
         const isLikeChacked =
-          req.user != null && likeUserIdList.includes(req.user.userId);
+          req.user != null && likeUserIdList.includes(req.user.id);
 
         return {
           id: project.id,

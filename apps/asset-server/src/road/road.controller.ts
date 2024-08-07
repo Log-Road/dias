@@ -60,6 +60,12 @@ export class RoadController {
     @Query() page: string,
     @Body() req: CompetitionRequestDto,
   ) {
-    this.roadService.competition(id, parseInt(page), req);
+    const data = await this.roadService.getCompetition(id, parseInt(page), req);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "OK",
+    };
   }
 }

@@ -9,6 +9,7 @@ import {
   Projects,
 } from "../../prisma/client";
 import { ROLE } from "../../../../dias/src/prisma/client";
+import { jest } from "@jest/globals";
 
 describe("RoadService", () => {
   let service: RoadService;
@@ -358,6 +359,97 @@ describe("RoadService", () => {
         ],
       },
       id: "1",
+      projects: [
+        {
+          id: "1",
+          image: "image1",
+          author_category: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project1",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          created_at: new Date("2024-07-10"),
+          like: true,
+          like_count: 4,
+        },
+        {
+          id: "2",
+          image: "image1",
+          author_category: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project2",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          created_at: new Date("2024-07-10"),
+          like: true,
+          like_count: 4,
+        },
+      ],
+    });
+  });
+
+  it("get compitition test", async () => {
+    const projects: Promise<Projects[]> = Promise.resolve([
+      {
+        id: "1",
+        name: "project1",
+        contest_id: "1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        status: PROJECT_STATUS.APPROVAL,
+        auth_category: CATEGORY.CLUB,
+        introduction:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        description:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        place: "대덕마이스터고",
+        created_at: new Date("2024-07-10"),
+      },
+      {
+        id: "2",
+        name: "project2",
+        contest_id: "1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        status: PROJECT_STATUS.APPROVAL,
+        auth_category: CATEGORY.CLUB,
+        introduction:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        description:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        place: "대덕마이스터고",
+        created_at: new Date("2024-07-10"),
+      },
+    ]);
+
+    const likes: Promise<{ user_id: string }[]> = Promise.resolve([
+      { user_id: "1" },
+      { user_id: "4" },
+      { user_id: "7" },
+      { user_id: "8" },
+    ]);
+
+    jest
+      .spyOn(prismaService, "findAllProjectByContestId")
+      .mockReturnValue(projects);
+    jest.spyOn(prismaService, "findAllLikeByProjectId").mockReturnValue(likes);
+
+    const result = await service.getCompetition("1", 1, {
+      user: {
+        id: "1",
+        userId: "loginId",
+        name: "오송주",
+        email: "dhthdwn7920@gmail.com",
+        password: "string",
+        role: ROLE.Student,
+        number: 2209,
+        provided: "access_token",
+      },
+    });
+
+    expect(result).toEqual({
       projects: [
         {
           id: "1",

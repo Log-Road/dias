@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { RoadController } from "../road.controller";
 import { RoadService } from "../road.service";
 import { CATEGORY } from "../../prisma/client";
+import { CompetitionResponseDto } from "../dto/response/competition/competition.response.dto";
 
 describe("RoadController", () => {
   let controller: RoadController;
@@ -17,6 +18,7 @@ describe("RoadController", () => {
             mainpage: jest.fn(),
             getContests: jest.fn(),
             getArchive: jest.fn(),
+            getCompetition: jest.fn(),
           },
         },
       ],
@@ -300,6 +302,70 @@ describe("RoadController", () => {
           ],
         },
         id: "1",
+        projects: [
+          {
+            id: "1",
+            image: "image1",
+            author_category: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project1",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            created_at: new Date("2024-07-10"),
+            like: false,
+            like_count: 4,
+          },
+          {
+            id: "2",
+            image: "image1",
+            author_category: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project2",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            created_at: new Date("2024-07-10"),
+            like: false,
+            like_count: 4,
+          },
+        ],
+      },
+      statusCode: 200,
+      statusMsg: "OK",
+    });
+  });
+
+  it("[200] 대회 프로젝트들 반환", async () => {
+    const project: Promise<CompetitionResponseDto> = Promise.resolve({
+      projects: [
+        {
+          id: "1",
+          image: "image1",
+          author_category: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project1",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          created_at: new Date("2024-07-10"),
+          like: false,
+          like_count: 4,
+        },
+        {
+          id: "2",
+          image: "image1",
+          author_category: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project2",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          created_at: new Date("2024-07-10"),
+          like: false,
+          like_count: 4,
+        },
+      ],
+    });
+
+    jest.spyOn(service, "getCompetition").mockReturnValue(project);
+
+    const result = await controller.getCompetition("1", "1", null);
+
+    expect(result).toEqual({
+      data: {
         projects: [
           {
             id: "1",
