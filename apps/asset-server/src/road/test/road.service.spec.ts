@@ -31,6 +31,7 @@ describe("RoadService", () => {
             findContestsOnGoing: jest.fn(),
             findAllProjectByContestId: jest.fn(),
             findAllLikeByProjectId: jest.fn(),
+            findPagedProjectByContestId: jest.fn(),
           },
         },
       ],
@@ -432,7 +433,7 @@ describe("RoadService", () => {
     ]);
 
     jest
-      .spyOn(prismaService, "findAllProjectByContestId")
+      .spyOn(prismaService, "findPagedProjectByContestId")
       .mockReturnValue(projects);
     jest.spyOn(prismaService, "findAllLikeByProjectId").mockReturnValue(likes);
 

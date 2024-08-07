@@ -103,6 +103,15 @@ export class PrismaService
     });
   }
 
+  async findPagedProjectByContestId(contestId: string, page: number) {
+    return await this.projects.findMany({
+      where: { contest_id: contestId },
+      orderBy: { created_at: "desc" },
+      skip: (page - 1) * 12,
+      take: 12,
+    });
+  }
+
   async findAllLikeByProjectId(projectId: string) {
     return await this.like.findMany({
       where: { project_id: projectId },

@@ -56,8 +56,8 @@ export class RoadController {
   @Get("/competition")
   @UseGuards(JwtValidateGuard)
   async getCompetition(
-    @Query() id: string,
-    @Query() page: string,
+    @Query("id") id: string,
+    @Query("page") page: string,
     @Body() req: CompetitionRequestDto,
   ) {
     const data = await this.roadService.getCompetition(id, parseInt(page), req);

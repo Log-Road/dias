@@ -13,6 +13,7 @@ import { CompetitionDto } from "./dto/response/getArchive/competition.dto";
 import { ProjectDto } from "./dto/response/common/project.dto";
 import { CompetitionResponseDto } from "./dto/response/competition/competition.response.dto";
 import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
+import { Projects } from "../prisma/client";
 
 @Injectable()
 export class RoadService {
@@ -179,14 +180,12 @@ export class RoadService {
     page: number,
     req: CompetitionRequestDto,
   ): Promise<CompetitionResponseDto> {
-    // 프로젝트 검색후 페이지에 따라 글 추출
-    const projects = (
-      await this.prismaService.findAllProjectByContestId(id)
-    ).slice((page - 1) * 12, page * 12);
-
-    if (projects.length <= 0) {
+    let projects: Projects[];
+    try {
+      projects = await this.prismaService.findPagedProjectByContestId(id, page);
+    } catch {
       throw new NotFoundException(
-        "존재하지 않는 대회, 또는 페이지를 요청했습니다.",
+        "존재하지 않는 대회, 또는 페이지를 요청했습니다",
       );
     }
 
@@ -196,7 +195,7 @@ export class RoadService {
           project.id,
         );
         const likeUserIdList: string[] = likes.map((like) => like.user_id);
-        const isLikeChacked =
+        const isLikeChecked =
           req.user != null && likeUserIdList.includes(req.user.id);
 
         return {
@@ -207,7 +206,7 @@ export class RoadService {
           title: project.name,
           inform: project.introduction,
           created_at: project.created_at,
-          like: isLikeChacked,
+          like: isLikeChecked,
           like_count: likes.length,
         };
       }),
