@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException, Inject } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { NowAndArchiveItemDto } from "./dto/response/mainpage/nowAndArchiveItem.dto";
 import { AwardItemDto } from "./dto/response/mainpage/awardItem.dto";
@@ -6,13 +6,13 @@ import { RecentlyItemDto } from "./dto/response/mainpage/recentlyItem.dto";
 import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
 import { MainpageResponseDto } from "./dto/response/mainpage/mainpage.response.dto";
 import { ProjectItemDto } from "./dto/response/mainpage/projectItem.dto";
-import { Contests } from "../prisma/client";
 import { GetContestResponseDto } from "./dto/response/getContests/getContest.response.dto";
 import { GetArchiveRequestDto } from "./dto/request/getArchive.request.dto";
 import { GetArchiveResponseDto } from "./dto/response/getArchive/getArchive.response.dto";
 import { CompetitionDto } from "./dto/response/getArchive/competition.dto";
-import { ProjectDto } from "./dto/response/getArchive/project.dto";
-import { identity } from "rxjs";
+import { ProjectDto } from "./dto/response/common/project.dto";
+import { CompetitionResponseDto } from "./dto/response/competition/competition.response.dto";
+import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
 
 @Injectable()
 export class RoadService {
@@ -172,5 +172,47 @@ export class RoadService {
       id: comp_id,
       projects: processedProjects,
     };
+  }
+
+  async competition(
+    id: string,
+    page: number,
+    req: CompetitionRequestDto,
+  ): Promise<CompetitionResponseDto> {
+    // 프로젝트 검색후 페이지에 따라 글 추출
+    const projects = (
+      await this.prismaService.findAllProjectByContestId(id)
+    ).slice((page - 1) * 12, page * 12);
+
+    if (projects.length <= 0) {
+      throw new NotFoundException(
+        "존재하지 않는 대회, 또는 페이지를 요청했습니다.",
+      );
+    }
+
+    const processedProjects: ProjectDto[] = await Promise.all(
+      projects.map(async (project) => {
+        const likes = await this.prismaService.findAllLikeByProjectId(
+          project.id,
+        );
+        const likeUserIdList: string[] = likes.map((like) => like.user_id);
+        const isLikeChacked =
+          req.user != null && likeUserIdList.includes(req.user.userId);
+
+        return {
+          id: project.id,
+          image: project.image,
+          author_category: project.auth_category,
+          author: project.members,
+          title: project.name,
+          inform: project.introduction,
+          created_at: project.created_at,
+          like: isLikeChacked,
+          like_count: likes.length,
+        };
+      }),
+    );
+
+    return { projects: processedProjects };
   }
 }
