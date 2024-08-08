@@ -15,7 +15,7 @@ export class ProjectDto {
   image: string;
 
   @IsString()
-  author_category: CATEGORY;
+  authorCategory: CATEGORY;
 
   @IsArray()
   author: string[];
@@ -27,11 +27,11 @@ export class ProjectDto {
   inform: string;
 
   @IsDate()
-  created_at: Date;
+  createdAt: Date;
 
   @IsBoolean()
   like: boolean;
 
   @IsNumber()
-  like_count: number;
+  likeCount: number;
 }

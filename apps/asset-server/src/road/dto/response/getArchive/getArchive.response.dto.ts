@@ -1,6 +1,6 @@
 import { IsArray, IsObject, IsString } from "class-validator";
 import { CompetitionDto } from "./competition.dto";
-import { ProjectDto } from "./project.dto";
+import { ProjectDto } from "../common/project.dto";
 
 export class GetArchiveResponseDto {
   @IsObject()

@@ -5,6 +5,7 @@ import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
 import { MainpageResponseDto } from "./dto/response/mainpage/mainpage.response.dto";
 import { GetContestResponseDto } from "./dto/response/getContests/getContest.response.dto";
 import { GetArchiveRequestDto } from "./dto/request/getArchive.request.dto";
+import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
 
 @Controller("road")
 export class RoadController {
@@ -44,6 +45,22 @@ export class RoadController {
       comp_id,
       getArchiveRequestDto,
     );
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "OK",
+    };
+  }
+
+  @Get("/competition")
+  @UseGuards(JwtValidateGuard)
+  async getCompetition(
+    @Query("id") id: string,
+    @Query("page") page: string,
+    @Body() req: CompetitionRequestDto,
+  ) {
+    const data = await this.roadService.getCompetition(id, parseInt(page), req);
 
     return {
       data,
