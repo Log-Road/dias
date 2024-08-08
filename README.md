@@ -1,4 +1,4 @@
-# DIAS ![Static Badge](https://img.shields.io/badge/version-0.6.1-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
+# DIAS ![Static Badge](https://img.shields.io/badge/version-0.6.3-white?style=flat-square&label=version&labelColor=424ca6&color=000000)
 
 <p style="text-align: center;">
 

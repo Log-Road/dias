@@ -18,7 +18,6 @@ export interface IClubService {
   getClub(req: GetClubRequestDto): Promise<GetClubResponseDto>;
   modifyClub(
     params: ModifyClubRequestDtoParams,
-    req: ModifyClubRequestDto,
   ): Promise<ModifyClubResponseDto>;
   deleteClub(
     params: DeleteClubRequestDtoParams,
