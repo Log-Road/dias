@@ -157,13 +157,13 @@ export class RoadService {
         return {
           id: project.id,
           image: project.image,
-          author_category: project.auth_category,
+          authorCategory: project.auth_category,
           author: project.members,
           title: project.name,
           inform: project.introduction,
-          created_at: project.created_at,
+          createdAt: project.created_at,
           like,
-          like_count: likes.length,
+          likeCount: likes.length,
         };
       }),
     );
@@ -201,13 +201,13 @@ export class RoadService {
         return {
           id: project.id,
           image: project.image,
-          author_category: project.auth_category,
+          authorCategory: project.auth_category,
           author: project.members,
           title: project.name,
           inform: project.introduction,
-          created_at: project.created_at,
+          createdAt: project.created_at,
           like: isLikeChecked,
-          like_count: likes.length,
+          likeCount: likes.length,
         };
       }),
     );

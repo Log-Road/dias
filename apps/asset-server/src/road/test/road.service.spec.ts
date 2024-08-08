@@ -1,13 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoadService } from "../road.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import {
-  CATEGORY,
-  Contests,
-  CONTEST_STATUS,
-  PROJECT_STATUS,
-  Projects,
-} from "../../prisma/client";
+import { CATEGORY, PROJECT_STATUS, Projects } from "../../prisma/client";
 import { ROLE } from "../../../../dias/src/prisma/client";
 import { jest } from "@jest/globals";
 
@@ -364,24 +358,24 @@ describe("RoadService", () => {
         {
           id: "1",
           image: "image1",
-          author_category: CATEGORY.CLUB,
+          authorCategory: CATEGORY.CLUB,
           author: ["홍길동", "김아무개", "성이름"],
           title: "project1",
           inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          created_at: new Date("2024-07-10"),
+          createdAt: new Date("2024-07-10"),
           like: true,
-          like_count: 4,
+          likeCount: 4,
         },
         {
           id: "2",
           image: "image1",
-          author_category: CATEGORY.CLUB,
+          authorCategory: CATEGORY.CLUB,
           author: ["홍길동", "김아무개", "성이름"],
           title: "project2",
           inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          created_at: new Date("2024-07-10"),
+          createdAt: new Date("2024-07-10"),
           like: true,
-          like_count: 4,
+          likeCount: 4,
         },
       ],
     });
@@ -455,24 +449,24 @@ describe("RoadService", () => {
         {
           id: "1",
           image: "image1",
-          author_category: CATEGORY.CLUB,
+          authorCategory: CATEGORY.CLUB,
           author: ["홍길동", "김아무개", "성이름"],
           title: "project1",
           inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          created_at: new Date("2024-07-10"),
+          createdAt: new Date("2024-07-10"),
           like: true,
-          like_count: 4,
+          likeCount: 4,
         },
         {
           id: "2",
           image: "image1",
-          author_category: CATEGORY.CLUB,
+          authorCategory: CATEGORY.CLUB,
           author: ["홍길동", "김아무개", "성이름"],
           title: "project2",
           inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          created_at: new Date("2024-07-10"),
+          createdAt: new Date("2024-07-10"),
           like: true,
-          like_count: 4,
+          likeCount: 4,
         },
       ],
     });
