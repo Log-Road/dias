@@ -5,5 +5,5 @@ export class ModifyClubRequestDto {
 }
 
 export class ModifyClubRequestDtoParams {
-  "club_id": string;
+  "clubId": string;
 }
