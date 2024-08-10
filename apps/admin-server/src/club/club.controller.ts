@@ -1,11 +1,15 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Inject,
   Logger,
+  Param,
+  Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
 import { ClubService } from "./club.service";
 import { IClubController } from "./club.controller.interface";
@@ -15,10 +19,7 @@ import {
   DeleteClubRequestDto,
 } from "./dto/req/deleteClub.request.dto";
 import { GetClubRequestDto } from "./dto/req/getClub.request.dto";
-import {
-  ModifyClubRequestDtoParams,
-  ModifyClubRequestDto,
-} from "./dto/req/modifyClub.request.dto";
+import { ModifyClubRequestDtoParams } from "./dto/req/modifyClub.request.dto";
 import { PostClubRequestDto } from "./dto/req/postClub.request.dto";
 import { DeleteClubResponseDto } from "./dto/res/deleteClub.response.dto";
 import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
@@ -59,11 +60,18 @@ export class ClubController implements IClubController {
     };
   }
 
+  @Patch("modify/:clubId")
   async modifyClub(
-    params: ModifyClubRequestDtoParams,
-    req: ModifyClubRequestDto,
+    @Param() params: ModifyClubRequestDtoParams,
   ): Promise<Res<ModifyClubResponseDto>> {
-    throw new Error("Method not implemented.");
+    if (!params) throw new BadRequestException();
+    const data = await this.service.modifyClub(params);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "",
+    };
   }
 
   async deleteClub(
