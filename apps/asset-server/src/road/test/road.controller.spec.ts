@@ -1,8 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoadController } from "../road.controller";
 import { RoadService } from "../road.service";
-import { CATEGORY } from "../../prisma/client";
+import { CATEGORY, PROJECT_STATUS } from "../../prisma/client";
 import { CompetitionResponseDto } from "../dto/response/competition/competition.response.dto";
+import { GetProjectResponseDto } from "../dto/response/getProject.response.dto";
 
 describe("RoadController", () => {
   let controller: RoadController;
@@ -19,6 +20,7 @@ describe("RoadController", () => {
             getContests: jest.fn(),
             getArchive: jest.fn(),
             getCompetition: jest.fn(),
+            getProjectDetail: jest.fn(),
           },
         },
       ],
@@ -390,6 +392,58 @@ describe("RoadController", () => {
             likeCount: 4,
           },
         ],
+      },
+      statusCode: 200,
+      statusMsg: "OK",
+    });
+  });
+
+  it("[200] 프로젝트 상세페이지 반환", async () => {
+    const data: Promise<GetProjectResponseDto> = Promise.resolve({
+      id: "1",
+      contest: {
+        id: "1",
+        name: "2024 대마고 해커톤",
+      },
+      title: "project1",
+      image: "image1",
+      members: ["홍길동", "김아무개", "성이름"],
+      skills: ["Nest.js", "prisma", "React"],
+      isAssigned: PROJECT_STATUS.APPROVAL,
+      authorCategory: CATEGORY.CLUB,
+      inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      content:
+        "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+      videoLink: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+      isAuthor: false,
+      like: false,
+      likeCount: 4,
+    });
+
+    jest.spyOn(service, "getProjectDetail").mockReturnValue(data);
+
+    const result = await controller.getProjectDetail(null, "1");
+
+    expect(result).toEqual({
+      data: {
+        id: "1",
+        contest: {
+          id: "1",
+          name: "2024 대마고 해커톤",
+        },
+        title: "project1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        isAssigned: PROJECT_STATUS.APPROVAL,
+        authorCategory: CATEGORY.CLUB,
+        inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        content:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        videoLink: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        isAuthor: false,
+        like: false,
+        likeCount: 4,
       },
       statusCode: 200,
       statusMsg: "OK",

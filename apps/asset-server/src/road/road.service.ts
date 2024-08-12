@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Inject } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  Inject,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { NowAndArchiveItemDto } from "./dto/response/mainpage/nowAndArchiveItem.dto";
 import { AwardItemDto } from "./dto/response/mainpage/awardItem.dto";
@@ -13,7 +18,9 @@ import { CompetitionDto } from "./dto/response/getArchive/competition.dto";
 import { ProjectDto } from "./dto/response/common/project.dto";
 import { CompetitionResponseDto } from "./dto/response/competition/competition.response.dto";
 import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
-import { Projects } from "../prisma/client";
+import { Contests, Like, PROJECT_STATUS, Projects } from "../prisma/client";
+import { ProjectRequestDto } from "./dto/request/project.request.dto";
+import { GetProjectResponseDto } from "./dto/response/getProject.response.dto";
 
 @Injectable()
 export class RoadService {
@@ -213,5 +220,53 @@ export class RoadService {
     );
 
     return { projects: processedProjects };
+  }
+
+  async getProjectDetail(
+    req: ProjectRequestDto,
+    id: string,
+  ): Promise<GetProjectResponseDto> {
+    const project: Projects =
+      await this.prismaService.findOneProjectByProjectId(id);
+
+    if (!project) {
+      throw new NotFoundException("해당 아이디의 프로젝트를 찾을 수 없습니다.");
+    }
+
+    const isAuthor = project.members.includes(req.user.name);
+    const isProjectPendingOrRejected =
+      project.status === PROJECT_STATUS.PENDING ||
+      project.status === PROJECT_STATUS.REJECTED;
+
+    if (!isAuthor && isProjectPendingOrRejected) {
+      throw new UnauthorizedException("접근 권한이 없습니다");
+    }
+
+    const contest: { id: string; name: string } =
+      await this.prismaService.findOneContestByContestId(project.contest_id);
+
+    const likes: string[] = (
+      await this.prismaService.findAllLikeByProjectId(id)
+    ).map((like) => like.user_id);
+
+    return {
+      id,
+      contest: {
+        id: contest.id,
+        name: contest.name,
+      },
+      authorCategory: project.auth_category,
+      members: project.members,
+      image: project.image,
+      title: project.name,
+      inform: project.introduction,
+      skills: project.skills,
+      content: project.description,
+      videoLink: project.video_link,
+      like: likes.includes(req.user.id),
+      likeCount: likes.length,
+      isAuthor,
+      isAssigned: project.status,
+    };
   }
 }
