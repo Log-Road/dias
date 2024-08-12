@@ -56,8 +56,11 @@ export class ClubService implements IClubService {
 
   async deleteClub(
     params: DeleteClubRequestDtoParams,
-    req: DeleteClubRequestDto,
   ): Promise<DeleteClubResponseDto> {
-    throw new Error("Method not implemented.");
+    const { clubId } = params;
+
+    await this.prisma.deleteClub(clubId);
+
+    return;
   }
 }

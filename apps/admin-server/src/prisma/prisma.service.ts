@@ -77,12 +77,28 @@ export class PrismaService
   async patchClubStatus(clubId: string) {
     try {
       const thisClub = await this.findClub(clubId);
+      if (!thisClub) throw new NotFoundException();
       return await this.club.update({
         where: {
           club_id: clubId,
         },
         data: {
           is_active: !thisClub.is_active,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async deleteClub(clubId: string) {
+    try {
+      const thisClub = await this.findClub(clubId);
+      if (!thisClub) throw new NotFoundException();
+      return await this.club.delete({
+        where: {
+          club_id: clubId,
         },
       });
     } catch (e) {

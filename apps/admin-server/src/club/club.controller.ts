@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Logger,
@@ -74,10 +75,17 @@ export class ClubController implements IClubController {
     };
   }
 
+  @Delete("/:clubId")
   async deleteClub(
-    params: DeleteClubRequestDtoParams,
-    req: DeleteClubRequestDto,
+    @Param() params: DeleteClubRequestDtoParams,
   ): Promise<Res<DeleteClubResponseDto>> {
-    throw new Error("Method not implemented.");
+    if (!params) throw new BadRequestException();
+    const data = await this.service.deleteClub(params);
+
+    return {
+      data,
+      statusCode: 204,
+      statusMsg: "",
+    };
   }
 }
