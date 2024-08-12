@@ -5,5 +5,5 @@ export class DeleteClubRequestDto {
 }
 
 export class DeleteClubRequestDtoParams {
-  "club_id": string;
+  "clubId": string;
 }
