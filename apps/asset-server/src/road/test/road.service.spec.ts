@@ -610,7 +610,7 @@ describe("RoadService", () => {
       .mockReturnValue(project);
     jest.spyOn(prismaService, "findAllLikeByProjectId").mockReturnValue(likes);
 
-    const result: SearchResponseDto = await service.search(
+    const result: SearchResponseDto = await service.searchProject(
       {
         user: {
           id: "1",

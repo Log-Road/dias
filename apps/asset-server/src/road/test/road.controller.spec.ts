@@ -22,7 +22,7 @@ describe("RoadController", () => {
             getArchive: jest.fn(),
             getCompetition: jest.fn(),
             getProjectDetail: jest.fn(),
-            search: jest.fn(),
+            searchProject: jest.fn(),
           },
         },
       ],
@@ -480,7 +480,7 @@ describe("RoadController", () => {
       ],
     });
 
-    jest.spyOn(service, "search").mockReturnValue(data);
+    jest.spyOn(service, "searchProject").mockReturnValue(data);
 
     const result = await controller.searchProjects(null, "1", "project");
 

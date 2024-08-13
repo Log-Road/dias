@@ -91,9 +91,13 @@ export class RoadController {
   async searchProjects(
     @Body() req: SearchRequestDto,
     @Query("page") page: string,
-    @Query("word") word,
+    @Query("word") word: string,
   ) {
-    const data = await this.roadService.search(req, parseInt(page), word);
+    const data = await this.roadService.searchProject(
+      req,
+      parseInt(page),
+      word,
+    );
 
     return {
       data,

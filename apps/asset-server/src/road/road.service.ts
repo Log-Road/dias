@@ -274,7 +274,7 @@ export class RoadService {
     };
   }
 
-  async search(
+  async searchProject(
     req: SearchRequestDto,
     page: number,
     word: string,

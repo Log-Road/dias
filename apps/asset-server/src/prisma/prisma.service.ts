@@ -132,7 +132,7 @@ export class PrismaService
 
   async findAllProjectsContainsKeyword(keyword: string, page: number) {
     return await this.projects.findMany({
-      where: { name: { contains: keyword } },
+      where: { name: { contains: keyword, mode: "insensitive" } },
       orderBy: { created_at: "desc" },
       skip: (page - 1) * 12,
       take: 12,
