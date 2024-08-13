@@ -123,7 +123,7 @@ export class PrismaService
     return await this.projects.findUnique({ where: { id } });
   }
 
-  async findOneContestByContestId(id: string) {
+  async findOneContestNameAndIdByContestId(id: string) {
     return await this.contests.findUnique({
       where: { id },
       select: { id: true, name: true },

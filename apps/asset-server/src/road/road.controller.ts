@@ -72,7 +72,10 @@ export class RoadController {
 
   @Get("/project")
   @UseGuards(JwtValidateGuard)
-  async getProjectDetail(req: ProjectRequestDto, @Query("id") id: string) {
+  async getProjectDetail(
+    @Body() req: ProjectRequestDto,
+    @Query("id") id: string,
+  ) {
     const data = await this.roadService.getProjectDetail(req, id);
 
     return {

@@ -243,7 +243,9 @@ export class RoadService {
     }
 
     const contest: { id: string; name: string } =
-      await this.prismaService.findOneContestByContestId(project.contest_id);
+      await this.prismaService.findOneContestNameAndIdByContestId(
+        project.contest_id,
+      );
 
     const likes: string[] = (
       await this.prismaService.findAllLikeByProjectId(id)
