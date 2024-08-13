@@ -113,7 +113,7 @@ export class AuthService implements IAuthService {
     return req.user;
   }
 
-  async verification(req: VerificationRequestDto): Promise<Boolean> {
+  async verification(req: VerificationRequestDto): Promise<boolean> {
     const { email, str } = req;
 
     const val = await this.redis.get(email);
