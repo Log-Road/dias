@@ -7,6 +7,7 @@ import { GetContestResponseDto } from "./dto/response/getContests/getContest.res
 import { GetArchiveRequestDto } from "./dto/request/getArchive.request.dto";
 import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
 import { ProjectRequestDto } from "./dto/request/project.request.dto";
+import { SearchRequestDto } from "./dto/request/search.request.dto";
 
 @Controller("road")
 export class RoadController {
@@ -82,6 +83,22 @@ export class RoadController {
       data,
       statusCode: 200,
       statusMsg: "OK",
+    };
+  }
+
+  @Get("/search")
+  @UseGuards(JwtValidateGuard)
+  async searchProjects(
+    @Body() req: SearchRequestDto,
+    @Query("page") page: string,
+    @Query("word") word,
+  ) {
+    const data = await this.roadService.search(req, parseInt(page), word);
+
+    return {
+      data,
+      statusMsg: "OK",
+      statusCode: 200,
     };
   }
 }

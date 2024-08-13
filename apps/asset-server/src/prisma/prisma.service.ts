@@ -129,4 +129,13 @@ export class PrismaService
       select: { id: true, name: true },
     });
   }
+
+  async findAllProjectsContainsKeyword(keyword: string, page: number) {
+    return await this.projects.findMany({
+      where: { name: { contains: keyword } },
+      orderBy: { created_at: "desc" },
+      skip: (page - 1) * 12,
+      take: 12,
+    });
+  }
 }
