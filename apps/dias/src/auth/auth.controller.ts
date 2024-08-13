@@ -16,6 +16,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -34,6 +35,7 @@ import { JwtStrategyService } from "./strategies/jwt/jwt.strategy.service";
 import { GoogleSignUpRequestDto } from "./dto/request/googleSignUp.request.dto";
 import { GoogleStrategyService } from "./strategies/google/google.strategy.service";
 import { GoogleAuthGuard } from "./strategies/google/google.auth.guard";
+import { VerificationRequestDto } from "./dto/request/verification.request.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -66,7 +68,7 @@ export class AuthController implements IAuthController {
 
     return {
       data,
-      statusCode: 201, 
+      statusCode: 201,
       statusMsg: "로그인",
     };
   }
@@ -156,29 +158,31 @@ export class AuthController implements IAuthController {
   }
 
   @ApiOperation({
-    summary: ""
+    summary: "이메일로 발송한 인증 코드에 대한 검증 API",
   })
   @ApiOkResponse({
-    description: ""
+    description: "정확한 이메일과 인증 코드를 통해 인증에 성공한 경우",
   })
   @ApiBadRequestResponse({
-    description: ""
+    description: "요청 본문 형식 또는 타입 등이 올바르지 않은 경우",
   })
   @ApiNotFoundResponse({
-    description: ""
+    description: "이메일 인증 요청 기록이 없을 경우",
+  })
+  @ApiConflictResponse({
+    description: "인증 코드가 올바르지 않은 경우"
   })
   @ApiInternalServerErrorResponse({
-    description: ""
+    description: "기타 데이터베이스 관련 오류",
   })
-  async verification(
-    @Body() request
-  ) {
-    const data = await this.service
+  @Post("/verify")
+  async verification(@Body() request: VerificationRequestDto) {
+    const data = await this.service.verification(request);
 
     return {
       data,
       statusCode: 200,
       statusMsg: "인증 완료",
-    }
+    };
   }
 }

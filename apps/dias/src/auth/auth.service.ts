@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -92,7 +98,7 @@ export class AuthService implements IAuthService {
             "
             id="Authentication"
           >
-            ${hashSync(rand, Number(process.env.SALT))}
+            ${rand}
           </div>
         </body>
       </html>
@@ -111,10 +117,14 @@ export class AuthService implements IAuthService {
     const { email, str } = req;
 
     const val = await this.redis.get(email);
+    if (!val) {
+      throw new NotFoundException("해당 이메일 인증 요청 기록이 없습니다.");
+    }
     if (compareSync(str, val)) {
       this.redis.set(email, null);
       return true;
+    } else {
+      throw new ConflictException("인증 코드가 올바르지 않습니다.");
     }
-    return false;
   }
 }
