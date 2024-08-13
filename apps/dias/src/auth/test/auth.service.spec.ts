@@ -14,13 +14,19 @@ import { SESClient } from "@aws-sdk/client-ses";
 import SendEmail from "../../middleware/send-email";
 import { JwtStrategyService } from "../strategies/jwt/jwt.strategy.service";
 import { GoogleStrategyService } from "../strategies/google/google.strategy.service";
+import { RedisModule, RedisService } from "@liaoliaots/nestjs-redis";
 
 describe("AuthService", () => {
+  jest.useFakeTimers();
+
+  let module: TestingModule;
+
   let service: AuthService;
   let prisma: PrismaService;
   let jwt: JwtService;
   let util: AuthUtil;
   let jwtStrategy: JwtStrategyService;
+  let redisService: RedisService;
 
   const accessToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTcxMTMyNjM1OSwiZXhwIjoxNzExMzQwNzU5fQ.0UbgRd-ZxhNdAnFvVtatAiNpALsxEkf-vDTpy9zfNIQ";
@@ -29,7 +35,7 @@ describe("AuthService", () => {
   const expiredAt = "2024-03-25T03:25:59.238Z";
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         AuthService,
         PrismaService,
@@ -42,6 +48,19 @@ describe("AuthService", () => {
         JwtStrategyService,
         GoogleStrategyService,
       ],
+      imports: [
+        RedisModule.forRoot(
+          {
+            readyLog: true,
+            config: {
+              host: process.env.REDIS_HOST,
+              port: Number(process.env.REDIS_PORT),
+              password: process.env.REDIS_PASSWORD,
+            },
+          },
+          true,
+        ),
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
@@ -49,6 +68,7 @@ describe("AuthService", () => {
     jwt = module.get<JwtService>(JwtService);
     util = module.get<AuthUtil>(AuthUtil);
     jwtStrategy = module.get<JwtStrategyService>(JwtStrategyService);
+    redisService = module.get<RedisService>(RedisService);
 
     util.genAccessToken = jest.fn().mockImplementation(
       async () =>
@@ -63,6 +83,11 @@ describe("AuthService", () => {
           refreshToken,
         },
     );
+  });
+
+  afterAll(async () => {
+    await redisService.getClient().quit();
+    await module.close();
   });
 
   describe("regenerate refreshtoken", () => {
@@ -101,7 +126,7 @@ describe("AuthService", () => {
 
       await expect(
         async () => await jwtStrategy.verifyToken(request),
-      ).rejects.toThrowError(new NotFoundException("존재하지 않는 유저"));
+      ).rejects.toThrow(new NotFoundException("존재하지 않는 유저"));
     });
 
     it("[500] Internal Server Error - Bearer Token 양식 위반", async () => {
@@ -109,7 +134,7 @@ describe("AuthService", () => {
 
       await expect(
         async () => await jwtStrategy.verifyToken(request),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         new InternalServerErrorException("jwt must be provided"),
       );
     });
@@ -123,7 +148,7 @@ describe("AuthService", () => {
 
       await expect(
         async () => await jwtStrategy.verifyToken(request),
-      ).rejects.toThrowError(new InternalServerErrorException());
+      ).rejects.toThrow(new InternalServerErrorException());
     });
   });
 });
