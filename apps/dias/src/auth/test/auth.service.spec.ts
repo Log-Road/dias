@@ -17,6 +17,8 @@ import { GoogleStrategyService } from "../strategies/google/google.strategy.serv
 import { RedisModule, RedisService } from "@liaoliaots/nestjs-redis";
 
 describe("AuthService", () => {
+  jest.useFakeTimers();
+
   let module: TestingModule;
 
   let service: AuthService;
@@ -124,7 +126,7 @@ describe("AuthService", () => {
 
       await expect(
         async () => await jwtStrategy.verifyToken(request),
-      ).rejects.toThrowError(new NotFoundException("존재하지 않는 유저"));
+      ).rejects.toThrow(new NotFoundException("존재하지 않는 유저"));
     });
 
     it("[500] Internal Server Error - Bearer Token 양식 위반", async () => {
@@ -132,7 +134,7 @@ describe("AuthService", () => {
 
       await expect(
         async () => await jwtStrategy.verifyToken(request),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         new InternalServerErrorException("jwt must be provided"),
       );
     });
@@ -146,7 +148,7 @@ describe("AuthService", () => {
 
       await expect(
         async () => await jwtStrategy.verifyToken(request),
-      ).rejects.toThrowError(new InternalServerErrorException());
+      ).rejects.toThrow(new InternalServerErrorException());
     });
   });
 });
