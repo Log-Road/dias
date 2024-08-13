@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { RoadService } from "./road.service";
 import { JwtValidateGuard } from "../guard/jwtValidater/jwtValidater.guard";
 import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
@@ -90,14 +97,10 @@ export class RoadController {
   @UseGuards(JwtValidateGuard)
   async searchProjects(
     @Body() req: SearchRequestDto,
-    @Query("page") page: string,
+    @Query("page", ParseIntPipe) page: number,
     @Query("word") word: string,
   ) {
-    const data = await this.roadService.searchProject(
-      req,
-      parseInt(page),
-      word,
-    );
+    const data = await this.roadService.searchProject(req, page, word);
 
     return {
       data,
