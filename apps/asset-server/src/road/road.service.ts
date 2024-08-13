@@ -21,6 +21,8 @@ import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
 import { Contests, Like, PROJECT_STATUS, Projects } from "../prisma/client";
 import { ProjectRequestDto } from "./dto/request/project.request.dto";
 import { GetProjectResponseDto } from "./dto/response/getProject.response.dto";
+import { SearchRequestDto } from "./dto/request/search.request.dto";
+import { SearchResponseDto } from "./dto/response/search.response.dto";
 
 @Injectable()
 export class RoadService {
@@ -270,5 +272,37 @@ export class RoadService {
       isAuthor,
       isAssigned: project.status,
     };
+  }
+
+  async searchProject(
+    req: SearchRequestDto,
+    page: number,
+    word: string,
+  ): Promise<SearchResponseDto> {
+    const projects: Projects[] =
+      await this.prismaService.findAllProjectsContainsKeyword(word, page);
+
+    const result: ProjectDto[] = await Promise.all(
+      projects.map(async (project) => {
+        const likes = await this.prismaService.findAllLikeByProjectId(
+          project.id,
+        );
+        const isLiked = likes.some((like) => like.user_id === req.user.id);
+
+        return {
+          id: project.id,
+          image: project.image,
+          authorCategory: project.auth_category,
+          author: project.members,
+          title: project.name,
+          inform: project.introduction,
+          createdAt: project.created_at,
+          like: isLiked,
+          likeCount: likes.length,
+        };
+      }),
+    );
+
+    return { result };
   }
 }

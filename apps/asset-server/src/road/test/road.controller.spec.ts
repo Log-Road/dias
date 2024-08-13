@@ -4,6 +4,7 @@ import { RoadService } from "../road.service";
 import { CATEGORY, PROJECT_STATUS } from "../../prisma/client";
 import { CompetitionResponseDto } from "../dto/response/competition/competition.response.dto";
 import { GetProjectResponseDto } from "../dto/response/getProject.response.dto";
+import { SearchResponseDto } from "../dto/response/search.response.dto";
 
 describe("RoadController", () => {
   let controller: RoadController;
@@ -21,6 +22,7 @@ describe("RoadController", () => {
             getArchive: jest.fn(),
             getCompetition: jest.fn(),
             getProjectDetail: jest.fn(),
+            searchProject: jest.fn(),
           },
         },
       ],
@@ -444,6 +446,70 @@ describe("RoadController", () => {
         isAuthor: false,
         like: false,
         likeCount: 4,
+      },
+      statusCode: 200,
+      statusMsg: "OK",
+    });
+  });
+
+  it("[200] 프로젝트 검색", async () => {
+    const data: Promise<SearchResponseDto> = Promise.resolve({
+      result: [
+        {
+          id: "1",
+          image: "image1",
+          authorCategory: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project1",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          createdAt: new Date("2024-07-10"),
+          like: true,
+          likeCount: 4,
+        },
+        {
+          id: "2",
+          image: "image1",
+          authorCategory: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project2",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          createdAt: new Date("2024-07-10"),
+          like: true,
+          likeCount: 4,
+        },
+      ],
+    });
+
+    jest.spyOn(service, "searchProject").mockReturnValue(data);
+
+    const result = await controller.searchProjects(null, 1, "project");
+
+    expect(result).toEqual({
+      data: {
+        result: [
+          {
+            id: "1",
+            image: "image1",
+            authorCategory: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project1",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            createdAt: new Date("2024-07-10"),
+            like: true,
+            likeCount: 4,
+          },
+          {
+            id: "2",
+            image: "image1",
+            authorCategory: CATEGORY.CLUB,
+            author: ["홍길동", "김아무개", "성이름"],
+            title: "project2",
+            inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            createdAt: new Date("2024-07-10"),
+            like: true,
+            likeCount: 4,
+          },
+        ],
       },
       statusCode: 200,
       statusMsg: "OK",

@@ -10,6 +10,7 @@ import {
 import { ROLE } from "../../../../dias/src/prisma/client";
 import { jest } from "@jest/globals";
 import { GetProjectResponseDto } from "../dto/response/getProject.response.dto";
+import { SearchResponseDto } from "../dto/response/search.response.dto";
 
 describe("RoadService", () => {
   let service: RoadService;
@@ -34,6 +35,7 @@ describe("RoadService", () => {
             findPagedProjectByContestId: jest.fn(),
             findOneProjectByProjectId: jest.fn(),
             findOneContestNameAndIdByContestId: jest.fn(),
+            findAllProjectsContainsKeyword: jest.fn(),
           },
         },
       ],
@@ -555,6 +557,101 @@ describe("RoadService", () => {
       isAuthor: true,
       like: true,
       likeCount: 4,
+    });
+  });
+
+  it("search test", async () => {
+    const project: Promise<Projects[]> = Promise.resolve([
+      {
+        id: "1",
+        name: "project1",
+        contest_id: "1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        status: PROJECT_STATUS.APPROVAL,
+        auth_category: CATEGORY.CLUB,
+        introduction:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        description:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        place: "대덕마이스터고",
+        created_at: new Date("2024-07-10"),
+      },
+      {
+        id: "2",
+        name: "project2",
+        contest_id: "1",
+        image: "image1",
+        members: ["홍길동", "김아무개", "성이름"],
+        skills: ["Nest.js", "prisma", "React"],
+        status: PROJECT_STATUS.APPROVAL,
+        auth_category: CATEGORY.CLUB,
+        introduction:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        description:
+          "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+        video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+        place: "대덕마이스터고",
+        created_at: new Date("2024-07-10"),
+      },
+    ]);
+
+    const likes: Promise<{ user_id: string }[]> = Promise.resolve([
+      { user_id: "1" },
+      { user_id: "4" },
+      { user_id: "7" },
+      { user_id: "8" },
+    ]);
+
+    jest
+      .spyOn(prismaService, "findAllProjectsContainsKeyword")
+      .mockReturnValue(project);
+    jest.spyOn(prismaService, "findAllLikeByProjectId").mockReturnValue(likes);
+
+    const result: SearchResponseDto = await service.searchProject(
+      {
+        user: {
+          id: "1",
+          userId: "loginId",
+          name: "홍길동",
+          email: "dhthdwn7920@gmail.com",
+          password: "string",
+          role: ROLE.Student,
+          number: 2209,
+          provided: "access_token",
+        },
+      },
+      1,
+      "해커톤",
+    );
+
+    expect(result).toEqual({
+      result: [
+        {
+          id: "1",
+          image: "image1",
+          authorCategory: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project1",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          createdAt: new Date("2024-07-10"),
+          like: true,
+          likeCount: 4,
+        },
+        {
+          id: "2",
+          image: "image1",
+          authorCategory: CATEGORY.CLUB,
+          author: ["홍길동", "김아무개", "성이름"],
+          title: "project2",
+          inform: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          createdAt: new Date("2024-07-10"),
+          like: true,
+          likeCount: 4,
+        },
+      ],
     });
   });
 });

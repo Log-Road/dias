@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { RoadService } from "./road.service";
 import { JwtValidateGuard } from "../guard/jwtValidater/jwtValidater.guard";
 import { MainpageRequestDto } from "./dto/request/mainpage.request.dto";
@@ -7,6 +14,7 @@ import { GetContestResponseDto } from "./dto/response/getContests/getContest.res
 import { GetArchiveRequestDto } from "./dto/request/getArchive.request.dto";
 import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
 import { ProjectRequestDto } from "./dto/request/project.request.dto";
+import { SearchRequestDto } from "./dto/request/search.request.dto";
 
 @Controller("road")
 export class RoadController {
@@ -82,6 +90,22 @@ export class RoadController {
       data,
       statusCode: 200,
       statusMsg: "OK",
+    };
+  }
+
+  @Get("/search")
+  @UseGuards(JwtValidateGuard)
+  async searchProjects(
+    @Body() req: SearchRequestDto,
+    @Query("page", ParseIntPipe) page: number,
+    @Query("word") word: string,
+  ) {
+    const data = await this.roadService.searchProject(req, page, word);
+
+    return {
+      data,
+      statusMsg: "OK",
+      statusCode: 200,
     };
   }
 }
