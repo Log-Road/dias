@@ -482,7 +482,7 @@ describe("RoadController", () => {
 
     jest.spyOn(service, "searchProject").mockReturnValue(data);
 
-    const result = await controller.searchProjects(null, "1", "project");
+    const result = await controller.searchProjects(null, 1, "project");
 
     expect(result).toEqual({
       data: {
