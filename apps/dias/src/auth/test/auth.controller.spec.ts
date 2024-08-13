@@ -14,16 +14,20 @@ import SendEmail from "../../middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
 import { JwtStrategyService } from "../strategies/jwt/jwt.strategy.service";
 import { GoogleStrategyService } from "../strategies/google/google.strategy.service";
+import { RedisModule, RedisService } from "@liaoliaots/nestjs-redis";
 
 describe("AuthController", () => {
+  let module: TestingModule;
+
   let controller: AuthController;
   let service: AuthService;
   let jwt: JwtService;
   let prisma: PrismaService;
   let jwtStrategy: JwtStrategyService;
+  let redisService: RedisService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         AuthService,
@@ -35,7 +39,20 @@ describe("AuthController", () => {
         SendEmail,
         SESClient,
         JwtStrategyService,
-        GoogleStrategyService
+        GoogleStrategyService,
+      ],
+      imports: [
+        RedisModule.forRoot(
+          {
+            readyLog: true,
+            config: {
+              host: process.env.REDIS_HOST,
+              port: Number(process.env.REDIS_PORT),
+              password: process.env.REDIS_PASSWORD,
+            },
+          },
+          true,
+        ),
       ],
     }).compile();
 
@@ -44,6 +61,12 @@ describe("AuthController", () => {
     jwt = module.get<JwtService>(JwtService);
     prisma = module.get<PrismaService>(PrismaService);
     jwtStrategy = module.get<JwtStrategyService>(JwtStrategyService);
+    redisService = module.get<RedisService>(RedisService);
+  });
+
+  afterAll(async () => {
+    await redisService.getClient().quit();
+    await module.close();
   });
 
   describe("regenerate refreshtoken", () => {

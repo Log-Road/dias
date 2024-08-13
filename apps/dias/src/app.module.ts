@@ -20,20 +20,23 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
         process.env.NODE_ENV == "prod"
           ? ".env"
           : process.env.NODE_ENV == "dev"
-          ? ".env.dev"
-          : ".env.local",
+            ? ".env.dev"
+            : ".env.local",
     }),
     WinstonModule.forRoot({
       instance: WinstonInstance,
     }),
-    RedisModule.forRoot({
-      readyLog: true,
-      config: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-        password: process.env.REDIS_PASSWORD
-      }
-    }),
+    RedisModule.forRoot(
+      {
+        readyLog: true,
+        config: {
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD,
+        },
+      },
+      true,
+    ),
     AuthModule,
     UserModule,
   ],
