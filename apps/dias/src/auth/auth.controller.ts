@@ -154,4 +154,31 @@ export class AuthController implements IAuthController {
       statusMsg: "이메일 발송 완료",
     };
   }
+
+  @ApiOperation({
+    summary: ""
+  })
+  @ApiOkResponse({
+    description: ""
+  })
+  @ApiBadRequestResponse({
+    description: ""
+  })
+  @ApiNotFoundResponse({
+    description: ""
+  })
+  @ApiInternalServerErrorResponse({
+    description: ""
+  })
+  async verification(
+    @Body() request
+  ) {
+    const data = await this.service
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "인증 완료",
+    }
+  }
 }
