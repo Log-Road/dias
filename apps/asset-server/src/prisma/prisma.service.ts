@@ -118,4 +118,15 @@ export class PrismaService
       select: { user_id: true },
     });
   }
+
+  async findOneProjectByProjectId(id: string) {
+    return await this.projects.findUnique({ where: { id } });
+  }
+
+  async findOneContestNameAndIdByContestId(id: string) {
+    return await this.contests.findUnique({
+      where: { id },
+      select: { id: true, name: true },
+    });
+  }
 }
