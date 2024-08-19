@@ -1,4 +1,10 @@
-import { ConflictException, Inject, Injectable, Logger } from "@nestjs/common";
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { IClubService } from "./club.service.interface";
 import {
   DeleteClubRequestDtoParams,
@@ -53,6 +59,9 @@ export class ClubService implements IClubService {
     params: ModifyClubRequestDtoParams,
   ): Promise<ModifyClubResponseDto> {
     const { clubId } = params;
+
+    const isExistingClub = await this.prisma.findClub(clubId);
+    if (!isExistingClub) throw new NotFoundException();
 
     await this.prisma.patchClubStatus(clubId);
     const thisClub = await this.prisma.findClub(clubId);

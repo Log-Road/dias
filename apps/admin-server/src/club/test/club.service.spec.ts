@@ -4,20 +4,22 @@ import {
   ConflictException,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { PostClubRequestDto } from "../dto/req/postClub.request.dto";
 import { GetClubRequestDto } from "../dto/req/getClub.request.dto";
+import { ModifyClubRequestDtoParams } from "../dto/req/modifyClub.request.dto";
 
 describe("ClubService", () => {
   let service: ClubService;
   let prisma: PrismaService;
   let userPrisma: UserPrismaService;
 
-  const clubDatabase = {};
-  const userDatabase = {};
+  let clubDatabase = {};
+  let userDatabase = {};
 
   const prismaMock = {
     saveClub: jest.fn(async (clubName: string, isActive?: boolean) => {
@@ -25,6 +27,17 @@ describe("ClubService", () => {
       return {
         club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
       };
+    }),
+    findClub: jest.fn(async (clubId: string) => {
+      if (clubId == "a0a66122-d17c-4768-aaef-5e566e93606a") {
+        return {
+          club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+          club_name: "Log",
+          is_active: true,
+        };
+      } else {
+        return null;
+      }
     }),
     findClubByName: jest.fn(async (clubName: string) => {
       const isExist = clubDatabase[clubName];
@@ -43,6 +56,13 @@ describe("ClubService", () => {
           is_active: false,
         },
       ];
+    }),
+    patchClubStatus: jest.fn(async (clubId: string) => {
+      return {
+        club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+        club_name: "Log",
+        is_active: false,
+      };
     }),
   };
   const userPrismaMock = {};
@@ -68,6 +88,9 @@ describe("ClubService", () => {
 
     prismaMock.saveClub.mockClear();
     prismaMock.findClubByName.mockClear();
+
+    clubDatabase = {};
+    userDatabase = {};
   });
 
   describe("PostClub", () => {
@@ -94,8 +117,6 @@ describe("ClubService", () => {
       await expect(async () => {
         await service.postClub(request);
       }).rejects.toThrow(new ConflictException());
-
-      delete clubDatabase["Log"];
     });
 
     it("[500]", async () => {
@@ -156,18 +177,57 @@ describe("ClubService", () => {
     });
   });
 
-  // describe("PatchClub", () => {
-  //   // 200, 400, 404, 409, 500
-  //   it("[200]", () => {});
+  describe("ModifyClub", () => {
+    clubDatabase["Log"] = true;
+    const request: ModifyClubRequestDtoParams = {
+      clubId: "a0a66122-d17c-4768-aaef-5e566e93606a",
+    };
 
-  //   it("[400]", () => {});
+    it("[200]", async () => {
+      prismaMock
+        .findClub
+        .mockImplementation(async (clubId: string) => {
+          return {
+            club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+            club_name: "Log",
+            is_active: false,
+          };
+        }
+      );
+      const res = await service.modifyClub(request);
 
-  //   it("[404]", () => {});
+      expect(prismaMock.patchClubStatus).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findClub).toHaveBeenCalledTimes(2);
+      expect(res).toEqual({
+        club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+        club_name: "Log",
+        is_active: false,
+      });
+    });
 
-  //   it("[409]", () => {});
+    it("[404]", async () => {
+      prismaMock
+        .findClub
+        .mockImplementationOnce(null);
 
-  //   it("[500]", () => {});
-  // });
+      await expect(async () => {
+        await service.modifyClub(request);
+      }).rejects.toThrow(new NotFoundException());
+    });
+
+    it("[500]", async () => {
+      prismaMock
+        .patchClubStatus
+          .mockImplementation(() => {
+            throw new InternalServerErrorException();
+        }
+      );
+
+      await expect(async () => {
+        await service.modifyClub(request);
+      }).rejects.toThrow(new InternalServerErrorException());
+    });
+  });
 
   // describe("DeleteClub", () => {
   //   // 200, 400, 404, 409, 500
