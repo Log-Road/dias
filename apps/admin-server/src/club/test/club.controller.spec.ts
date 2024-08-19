@@ -3,36 +3,48 @@ import { ClubController } from "../club.controller";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../../prisma/prisma.service";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
-import { BadRequestException, ForbiddenException, Logger, UnauthorizedException } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClubService } from "../club.service";
 import { PostClubRequestDto } from "../dto/req/postClub.request.dto";
+import { GetClubRequestDto } from "../dto/req/getClub.request.dto";
+import { ModifyClubRequestDtoParams } from "../dto/req/modifyClub.request.dto";
+import { DeleteClubRequestDtoParams } from "../dto/req/deleteClub.request.dto";
 
 describe("ClubController", () => {
   let controller: ClubController;
-
-  const clubDatabase = {};
-  const userDatabase = {};
-
-  const prismaMock = {
-    saveClub: jest.fn(async (clubName: string, isActive?: boolean) => {
-      clubDatabase[clubName] = isActive ?? true;
-      return {
-        club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
-      };
-    }),
-    findClubByName: jest.fn(async (clubName: string) => {
-      const isExist = clubDatabase[clubName];
-      return isExist ?? null;
-    }),
-  };
-  const userPrismaMock = {};
 
   const serviceMock = {
     postClub: jest.fn(async (req: PostClubRequestDto) => {
       return {
         club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
       };
+    }),
+    getClub: jest.fn(async (req: GetClubRequestDto) => {
+      return {
+        clubs: [
+          {
+            club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+            club_name: "Log",
+            is_active: true,
+          },
+          {
+            club_id: "c61f97ad-0fe0-444d-93b8-435f3e35f78d",
+            club_name: "Road",
+            is_active: false,
+          },
+        ],
+      };
+    }),
+    modifyClub: jest.fn(async (req: ModifyClubRequestDtoParams) => {
+      return {
+        club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+        club_name: "Log",
+        is_active: false,
+      };
+    }),
+    deleteClub: jest.fn(async (req: DeleteClubRequestDtoParams) => {
+      return;
     }),
   };
 
@@ -45,23 +57,14 @@ describe("ClubController", () => {
           useValue: serviceMock,
         },
         ConfigService,
-        {
-          provide: PrismaService,
-          useValue: prismaMock,
-        },
-        {
-          provide: UserPrismaService,
-          useValue: userPrismaMock,
-        },
+        PrismaService,
+        UserPrismaService,
         JwtService,
         Logger,
       ],
     }).compile();
 
     controller = module.get<ClubController>(ClubController);
-
-    prismaMock.saveClub.mockClear();
-    prismaMock.findClubByName.mockClear();
   });
 
   describe("PostClub", () => {
@@ -83,25 +86,85 @@ describe("ClubController", () => {
         statusMsg: "",
       });
     });
+  });
 
-    // input validation test 어케하지
+  describe("GetClub", () => {
+    const request: GetClubRequestDto = {
+      user: {
+        id: "bd312ed6-b688-4477-8c33-28152f225231",
+        userId: "iixanx",
+        name: "Yu Nahyun",
+        email: "log-road@dsm.hs.kr",
+        number: 3224,
+        password: "dkjqo2jokdn92",
+        provided: "local",
+        role: "Admin",
+      },
+    };
 
-    // it("[400]", async () => {
-    //   await expect(async () => {
+    it("[200]", async () => {
+      const res = await controller.getClub(request);
 
-    //   }).rejects.toThrow(new BadRequestException());
-    // });
+      expect(serviceMock.getClub).toHaveBeenCalledTimes(1);
+      expect(serviceMock.getClub).toHaveBeenCalledWith(request);
+      expect(res).toEqual({
+        data: {
+          clubs: [
+            {
+              club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+              club_name: "Log",
+              is_active: true,
+            },
+            {
+              club_id: "c61f97ad-0fe0-444d-93b8-435f3e35f78d",
+              club_name: "Road",
+              is_active: false,
+            },
+          ],
+        },
+        statusCode: 200,
+        statusMsg: "",
+      });
+    });
+  });
 
-    // it("[401]", async () => {
-    //   await expect(async () => {
+  describe("ModifyClub", () => {
+    const request: ModifyClubRequestDtoParams = {
+      clubId: "a0a66122-d17c-4768-aaef-5e566e93606a",
+    };
 
-    //   }).rejects.toThrow(new UnauthorizedException());
-    // });
+    it("[200]", async () => {
+      const res = await controller.modifyClub(request);
 
-    // it("[403]", async () => {
-    //   await expect(async () => {
+      expect(serviceMock.modifyClub).toHaveBeenCalledTimes(1);
+      expect(serviceMock.modifyClub).toHaveBeenCalledWith(request);
+      expect(res).toEqual({
+        data: {
+          club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+          club_name: "Log",
+          is_active: false,
+        },
+        statusCode: 200,
+        statusMsg: "",
+      });
+    });
+  });
 
-    //   }).rejects.toThrow(new ForbiddenException());
-    // });
+  describe("DeleteClub", () => {
+    const request: DeleteClubRequestDtoParams = {
+      clubId: "a0a66122-d17c-4768-aaef-5e566e93606a",
+    };
+
+    it("[204]", async () => {
+      const res = await controller.deleteClub(request);
+
+      expect(serviceMock.deleteClub).toHaveBeenCalledTimes(1);
+      expect(serviceMock.deleteClub).toHaveBeenCalledWith(request);
+      expect(res).toEqual({
+        data: undefined,
+        statusCode: 204,
+        statusMsg: "",
+      });
+    });
   });
 });
