@@ -74,6 +74,19 @@ export class PrismaService
     }
   }
 
+  async findClubByName(clubName: string) {
+    try {
+      return await this.club.findFirst({
+        where: {
+          club_name: clubName,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
   async patchClubStatus(clubId: string) {
     try {
       const thisClub = await this.findClub(clubId);
