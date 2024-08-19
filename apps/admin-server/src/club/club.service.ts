@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { IClubService } from "./club.service.interface";
 import {
   DeleteClubRequestDtoParams,
@@ -26,12 +32,18 @@ export class ClubService implements IClubService {
   ) {}
 
   async postClub(req: PostClubRequestDto): Promise<PostClubResponseDto> {
-    const { is_active, club_name } = req;
+    const isActive = req.is_active;
+    const clubName = req.club_name;
 
-    const clubId = (await this.prisma.saveClub(club_name, is_active)).club_id;
+    const isExistingClub = await this.prisma.findClubByName(clubName);
+    if (isExistingClub) {
+      throw new ConflictException();
+    }
+
+    const club = await this.prisma.saveClub(clubName, isActive);
 
     return {
-      club_id: clubId,
+      club_id: club.club_id,
     };
   }
 
@@ -48,6 +60,9 @@ export class ClubService implements IClubService {
   ): Promise<ModifyClubResponseDto> {
     const { clubId } = params;
 
+    const isExistingClub = await this.prisma.findClub(clubId);
+    if (!isExistingClub) throw new NotFoundException();
+
     await this.prisma.patchClubStatus(clubId);
     const thisClub = await this.prisma.findClub(clubId);
 
@@ -58,6 +73,9 @@ export class ClubService implements IClubService {
     params: DeleteClubRequestDtoParams,
   ): Promise<DeleteClubResponseDto> {
     const { clubId } = params;
+
+    const isExistingClub = await this.prisma.findClub(clubId);
+    if (!isExistingClub) throw new NotFoundException();
 
     await this.prisma.deleteClub(clubId);
 
