@@ -62,7 +62,7 @@ describe("ClubService", () => {
       };
     }),
     deleteClub: jest.fn(async (clubId: string) => {
-      delete clubDatabase["Log"];
+      clubDatabase["Log"] = undefined;
     }),
   };
   const userPrismaMock = {};
