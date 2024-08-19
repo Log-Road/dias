@@ -74,6 +74,9 @@ export class ClubService implements IClubService {
   ): Promise<DeleteClubResponseDto> {
     const { clubId } = params;
 
+    const isExistingClub = await this.prisma.findClub(clubId);
+    if (!isExistingClub) throw new NotFoundException();
+
     await this.prisma.deleteClub(clubId);
 
     return;

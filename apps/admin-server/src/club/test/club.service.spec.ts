@@ -12,6 +12,7 @@ import { ConfigService } from "@nestjs/config";
 import { PostClubRequestDto } from "../dto/req/postClub.request.dto";
 import { GetClubRequestDto } from "../dto/req/getClub.request.dto";
 import { ModifyClubRequestDtoParams } from "../dto/req/modifyClub.request.dto";
+import { DeleteClubRequestDtoParams } from "../dto/req/deleteClub.request.dto";
 
 describe("ClubService", () => {
   let service: ClubService;
@@ -29,15 +30,11 @@ describe("ClubService", () => {
       };
     }),
     findClub: jest.fn(async (clubId: string) => {
-      if (clubId == "a0a66122-d17c-4768-aaef-5e566e93606a") {
-        return {
-          club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
-          club_name: "Log",
-          is_active: true,
-        };
-      } else {
-        return null;
-      }
+      return {
+        club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+        club_name: "Log",
+        is_active: true,
+      };
     }),
     findClubByName: jest.fn(async (clubName: string) => {
       const isExist = clubDatabase[clubName];
@@ -64,6 +61,9 @@ describe("ClubService", () => {
         is_active: false,
       };
     }),
+    deleteClub: jest.fn(async (clubId: string) => {
+      delete clubDatabase["Log"];
+    }),
   };
   const userPrismaMock = {};
 
@@ -87,7 +87,11 @@ describe("ClubService", () => {
     service = module.get<ClubService>(ClubService);
 
     prismaMock.saveClub.mockClear();
+    prismaMock.findClub.mockClear();
     prismaMock.findClubByName.mockClear();
+    prismaMock.findClubs.mockClear();
+    prismaMock.patchClubStatus.mockClear();
+    prismaMock.deleteClub.mockClear();
 
     clubDatabase = {};
     userDatabase = {};
@@ -184,16 +188,13 @@ describe("ClubService", () => {
     };
 
     it("[200]", async () => {
-      prismaMock
-        .findClub
-        .mockImplementation(async (clubId: string) => {
-          return {
-            club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
-            club_name: "Log",
-            is_active: false,
-          };
-        }
-      );
+      prismaMock.findClub.mockImplementation(async (clubId: string) => {
+        return {
+          club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+          club_name: "Log",
+          is_active: false,
+        };
+      });
       const res = await service.modifyClub(request);
 
       expect(prismaMock.patchClubStatus).toHaveBeenCalledTimes(1);
@@ -206,9 +207,7 @@ describe("ClubService", () => {
     });
 
     it("[404]", async () => {
-      prismaMock
-        .findClub
-        .mockImplementationOnce(null);
+      prismaMock.findClub.mockImplementationOnce(null);
 
       await expect(async () => {
         await service.modifyClub(request);
@@ -216,12 +215,9 @@ describe("ClubService", () => {
     });
 
     it("[500]", async () => {
-      prismaMock
-        .patchClubStatus
-          .mockImplementation(() => {
-            throw new InternalServerErrorException();
-        }
-      );
+      prismaMock.patchClubStatus.mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
 
       await expect(async () => {
         await service.modifyClub(request);
@@ -229,16 +225,41 @@ describe("ClubService", () => {
     });
   });
 
-  // describe("DeleteClub", () => {
-  //   // 200, 400, 404, 409, 500
-  //   it("[200]", () => {});
+  describe("DeleteClub", () => {
+    const request: DeleteClubRequestDtoParams = {
+      clubId: "a0a66122-d17c-4768-aaef-5e566e93606a",
+    };
 
-  //   it("[400]", () => {});
+    it("[204]", async () => {
+      clubDatabase["Log"] = true;
 
-  //   it("[404]", () => {});
+      const res = await service.deleteClub(request);
 
-  //   it("[409]", () => {});
+      expect(prismaMock.findClub).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findClub).toHaveBeenCalledWith(request.clubId);
+      expect(prismaMock.deleteClub).toHaveBeenCalledTimes(1);
+      expect(prismaMock.deleteClub).toHaveBeenCalledWith(request.clubId);
+      expect(res).toBeFalsy();
+    });
 
-  //   it("[500]", () => {});
-  // });
+    it("[404]", async () => {
+      prismaMock.findClub.mockImplementation(null);
+
+      await expect(async () => {
+        await service.deleteClub(request);
+      }).rejects.toThrow(new NotFoundException());
+    });
+
+    it("[500]", async () => {
+      clubDatabase["Log"] = true;
+
+      prismaMock.deleteClub.mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+
+      await expect(async () => {
+        await service.deleteClub(request);
+      }).rejects.toThrow(new NotFoundException());
+    });
+  });
 });
