@@ -10,14 +10,12 @@ import {
   Patch,
   Post,
   UseGuards,
-  UseInterceptors,
 } from "@nestjs/common";
 import { ClubService } from "./club.service";
 import { IClubController } from "./club.controller.interface";
 import { Res } from "../dtos/response.dto";
 import {
   DeleteClubRequestDtoParams,
-  DeleteClubRequestDto,
 } from "./dto/req/deleteClub.request.dto";
 import { GetClubRequestDto } from "./dto/req/getClub.request.dto";
 import { ModifyClubRequestDtoParams } from "./dto/req/modifyClub.request.dto";

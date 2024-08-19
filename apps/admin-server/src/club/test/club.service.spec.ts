@@ -9,6 +9,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
 import { PostClubRequestDto } from "../dto/req/postClub.request.dto";
+import { GetClubRequestDto } from "../dto/req/getClub.request.dto";
 
 describe("ClubService", () => {
   let service: ClubService;
@@ -28,6 +29,20 @@ describe("ClubService", () => {
     findClubByName: jest.fn(async (clubName: string) => {
       const isExist = clubDatabase[clubName];
       return isExist ?? null;
+    }),
+    findClubs: jest.fn(async () => {
+      return [
+        {
+          club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+          club_name: "Log",
+          is_active: true,
+        },
+        {
+          club_id: "c61f97ad-0fe0-444d-93b8-435f3e35f78d",
+          club_name: "Road",
+          is_active: false,
+        },
+      ];
     }),
   };
   const userPrismaMock = {};
@@ -61,7 +76,7 @@ describe("ClubService", () => {
       club_name: "Log",
     };
 
-    it("[200]", async () => {
+    it("[201]", async () => {
       const res = await service.postClub(request);
       expect(prismaMock.saveClub).toHaveBeenCalledTimes(1);
       expect(prismaMock.saveClub).toHaveBeenCalledWith(
@@ -94,14 +109,52 @@ describe("ClubService", () => {
     });
   });
 
-  // describe("GetClub", () => {
-  //   // 200, 400, 500 # No-404 : This API get a LIST of clubs
-  //   it("[200]", () => {});
+  describe("GetClub", () => {
+    // No-404 : This API get a LIST of clubs
+    const request: GetClubRequestDto = {
+      user: {
+        id: "bd312ed6-b688-4477-8c33-28152f225231",
+        userId: "iixanx",
+        name: "Yu Nahyun",
+        email: "log-road@dsm.hs.kr",
+        number: 3224,
+        password: "dkjqo2jokdn92",
+        provided: "local",
+        role: "Admin",
+      },
+    };
 
-  //   it("[400]", () => {});
+    it("[200]", async () => {
+      const res = await service.getClub(request);
 
-  //   it("[500]", () => {});
-  // });
+      expect(prismaMock.findClubs).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findClubs).toHaveBeenCalledWith();
+      expect(res).toEqual({
+        clubs: [
+          {
+            club_id: "a0a66122-d17c-4768-aaef-5e566e93606a",
+            club_name: "Log",
+            is_active: true,
+          },
+          {
+            club_id: "c61f97ad-0fe0-444d-93b8-435f3e35f78d",
+            club_name: "Road",
+            is_active: false,
+          },
+        ],
+      });
+    });
+
+    it("[500]", async () => {
+      prismaMock.findClubs.mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+
+      await expect(async () => {
+        await service.getClub(request);
+      }).rejects.toThrow(new InternalServerErrorException());
+    });
+  });
 
   // describe("PatchClub", () => {
   //   // 200, 400, 404, 409, 500
