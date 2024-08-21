@@ -9,10 +9,10 @@ import {
 import { PrismaService } from "../../prisma/prisma.service";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
-import { PostClubRequestDto } from "../dto/req/postClub.request.dto";
-import { GetClubRequestDto } from "../dto/req/getClub.request.dto";
-import { ModifyClubRequestDtoParams } from "../dto/req/modifyClub.request.dto";
-import { DeleteClubRequestDtoParams } from "../dto/req/deleteClub.request.dto";
+import { PostClubRequestDto } from "../dto/request/postClub.request.dto";
+import { GetClubRequestDto } from "../dto/request/getClub.request.dto";
+import { ModifyClubRequestDtoParams } from "../dto/request/modifyClub.request.dto";
+import { DeleteClubRequestDtoParams } from "../dto/request/deleteClub.request.dto";
 
 describe("ClubService", () => {
   let service: ClubService;

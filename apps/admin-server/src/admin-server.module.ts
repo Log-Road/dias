@@ -3,6 +3,7 @@ import { ClubModule } from "./club/club.module";
 import { ConfigModule } from "@nestjs/config";
 import { WinstonInstance } from "apps/dias/src/utils/winston.util";
 import { WinstonModule } from "nest-winston";
+import { CompetitionModule } from './competition/competition.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { WinstonModule } from "nest-winston";
       instance: WinstonInstance,
     }),
     ClubModule,
+    CompetitionModule,
   ],
   controllers: [],
   providers: [],

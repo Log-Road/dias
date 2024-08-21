@@ -14,6 +14,7 @@ model Contests {
   name       String
   start_date DateTime   @default(now())
   end_date   DateTime   @default(now())
+  place      String
   purpose    String
   audience   String
   Awards     Awards[]

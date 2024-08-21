@@ -50,6 +50,42 @@ export class PrismaService
     }
   }
 
+  async saveCompetition(competition) {
+    const { name, startDate, endDate, purpose, audience, place } = competition;
+
+    try {
+      return await this.contests.create({
+        data: {
+          name,
+          start_date: startDate,
+          end_date: endDate,
+          purpose,
+          audience,
+          place
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async saveAwards(awards) {
+    const { contestId, count, name } = awards;
+    try {
+      return await this.awards.create({
+        data: {
+          contest_id: contestId,
+          count,
+          name,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
   async findClubs() {
     try {
       return await this.club.findMany();
