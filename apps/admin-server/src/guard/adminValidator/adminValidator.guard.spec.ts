@@ -7,9 +7,15 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { ROLE } from "../../../../dias/src/prisma/client";
+import { ConfigService } from "@nestjs/config";
+
+const configService = new ConfigService();
 
 describe("AdminValidatorGuard", () => {
   let guard: AdminValidateGuard;
+
+  const authorization = configService.get<string>("TESTING_TOKEN")
+  const password = configService.get<string>("TESTING_PASSWORD")
 
   const jwtGuardMock = {
     canActivate: jest.fn(async (context: ExecutionContext) => {
@@ -58,8 +64,7 @@ describe("AdminValidatorGuard", () => {
         string_id: "admin",
         name: "admin",
         email: "zxcv@asdf.qwer",
-        password:
-          "$2b$10$J/nx4iLm.pFujphaz0bOn.9jOkDymdLHjJUN/B6ic820BJVyJuu1e",
+        password,
         role: ROLE.Admin,
         account_provided: "local",
       },
@@ -68,8 +73,7 @@ describe("AdminValidatorGuard", () => {
         string_id: "student",
         name: "student",
         email: "qwer@asdf.zxcv",
-        password:
-          "$2b$10$J/nx4iLm.pFujphaz0bOn.9jOkDymdLHjJUN/B6ic820BJVyJuu1e",
+        password,
         role: ROLE.Student,
         student_number: "1234",
         account_provided: "local",
@@ -79,8 +83,7 @@ describe("AdminValidatorGuard", () => {
         string_id: "teacher",
         name: "teacher",
         email: "asdf@qwer.zxcv",
-        password:
-          "$2b$10$J/nx4iLm.pFujphaz0bOn.9jOkDymdLHjJUN/B6ic820BJVyJuu1e",
+        password,
         role: ROLE.Teacher,
         account_provided: "local",
       },
@@ -98,8 +101,7 @@ describe("AdminValidatorGuard", () => {
               host: "localhost:8080",
               "content-type": "application/json",
               "user-agent": "insomnia/8.6.1",
-              authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJkMzMyZWQ2LWI2ODgtNDQ3Ny04YzMzLTI4MTUyZjAyNTIzMSIsImlhdCI6MTcyMzQ0Njg0NSwiZXhwIjoxNzIzNDQ4NjQ1fQ.CU5tVFBXXjsmEOmQygBDEjrdlbxWJc1aAc2Rgs_0Kbg",
+              authorization,
               accept: "*/*",
               "content-length": "45",
             },
@@ -128,6 +130,8 @@ describe("AdminValidatorGuard", () => {
     });
 
     it("[401] (1) 토큰 형식 오류", async () => {
+      const authorization = "aheijka.dl.2kiodhjoal"
+
       req = {
         switchToHttp: jest.fn().mockReturnValue({
           getRequest: jest.fn().mockReturnValue({
@@ -135,8 +139,7 @@ describe("AdminValidatorGuard", () => {
               host: "localhost:8080",
               "content-type": "application/json",
               "user-agent": "insomnia/8.6.1",
-              authorization:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJkMzMyZWQ2LWI2ODgtNDQ3Ny04YzMzLTI4MTUyZjAyNTIzMSIsImlhdCI6MTcyMzQ0Njg0NSwiZXhwIjoxNzIzNDQ4NjQ1fQ.CU5tVFBXXjsmEOmQygBDEjrdlbxWJc1aAc2Rgs_0Kbg",
+              authorization,
               accept: "*/*",
               "content-length": "45",
             },
@@ -153,6 +156,8 @@ describe("AdminValidatorGuard", () => {
     });
 
     it("[401] (2) 잘못된 토큰", async () => {
+      const authorization = "aheijka.dl.2kiodhjoal"
+
       req = {
         switchToHttp: jest.fn().mockReturnValue({
           getRequest: jest.fn().mockReturnValue({
@@ -160,8 +165,7 @@ describe("AdminValidatorGuard", () => {
               host: "localhost:8080",
               "content-type": "application/json",
               "user-agent": "insomnia/8.6.1",
-              authorization:
-                "BeyJhbGciOiJIUzI1NisInR5cCI6IkpXVCJ9.eyJpZCI6ImJkMzMyZWQ2LWI2ODgtNDQ3Ny04YzMzLTI4MTUyZjAyNTIzMSIsImlhdCI6MTcyMzQ0Njg0NSwiZXhwIjoxNzIzNDQ4NjQ1fQ.CU5tVFBXXjsmEOmQygBDEjrdlbxWJc1aAc2Rgs_0Kbg",
+              authorization,
               accept: "*/*",
               "content-length": "45",
             },
@@ -185,8 +189,7 @@ describe("AdminValidatorGuard", () => {
               host: "localhost:8080",
               "content-type": "application/json",
               "user-agent": "insomnia/8.6.1",
-              authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJkMzMyZWQ2LWI2ODgtNDQ3Ny04YzMzLTI4MTUyZjAyNTIzMSIsImlhdCI6MTcyMzQ0Njg0NSwiZXhwIjoxNzIzNDQ4NjQ1fQ.CU5tVFBXXjsmEOmQygBDEjrdlbxWJc1aAc2Rgs_0Kbg",
+              authorization,
               accept: "*/*",
               "content-length": "45",
             },
@@ -221,8 +224,7 @@ describe("AdminValidatorGuard", () => {
               host: "localhost:8080",
               "content-type": "application/json",
               "user-agent": "insomnia/8.6.1",
-              authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJkMzMyZWQ2LWI2ODgtNDQ3Ny04YzMzLTI4MTUyZjAyNTIzMSIsImlhdCI6MTcyMzQ0Njg0NSwiZXhwIjoxNzIzNDQ4NjQ1fQ.CU5tVFBXXjsmEOmQygBDEjrdlbxWJc1aAc2Rgs_0Kbg",
+              authorization,
               accept: "*/*",
               "content-length": "45",
             },

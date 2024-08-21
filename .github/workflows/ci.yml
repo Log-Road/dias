@@ -60,6 +60,8 @@ jobs:
           echo REDIS_HOST=${{secrets.REDIS_HOST}} >> .env
           echo REDIS_PORT=${{secrets.REDIS_PORT}} >> .env
           echo REDIS_PASSWORD=${{secrets.REDIS_PASSWORD}} >> .env
+          echo TESTING_TOKEN=${{secrets.TESTING_TOKEN}} >> .env
+          echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
       - name: prisma set
         run: |
