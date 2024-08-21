@@ -10,6 +10,7 @@ import { PostClubRequestDto } from "../dto/req/postClub.request.dto";
 import { GetClubRequestDto } from "../dto/req/getClub.request.dto";
 import { ModifyClubRequestDtoParams } from "../dto/req/modifyClub.request.dto";
 import { DeleteClubRequestDtoParams } from "../dto/req/deleteClub.request.dto";
+import { JwtAuthGuard } from "../../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
 
 describe("ClubController", () => {
   let controller: ClubController;
@@ -61,6 +62,7 @@ describe("ClubController", () => {
         UserPrismaService,
         JwtService,
         Logger,
+        JwtAuthGuard
       ],
     }).compile();
 
