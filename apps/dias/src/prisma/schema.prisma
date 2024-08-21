@@ -16,7 +16,7 @@ model User {
   email    String @unique @map("user_email")
   password String @map("user_password")
   role     ROLE   @default(Student) @map("user_role")
-  number   Int?   @unique @map("user__Student_number")
+  number   Int?   @unique @map("user_student_number")
   provided String @default("jwt") @map("user_account_provided")
   @@map("user")
 }
