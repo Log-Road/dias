@@ -9,7 +9,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
 } from "@nestjs/common";
 import { ClubService } from "./club.service";
 import { IClubController } from "./club.controller.interface";
@@ -22,10 +21,7 @@ import { DeleteClubResponseDto } from "./dto/response/deleteClub.response.dto";
 import { GetClubResponseDto } from "./dto/response/getClub.response.dto";
 import { ModifyClubResponseDto } from "./dto/response/modifyClub.response.dto";
 import { PostClubResponseDto } from "./dto/response/postClub.response.dto";
-import { JwtAuthGuard } from "../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
-import { AdminValidateGuard } from "../guard/adminValidator/adminValidator.guard";
 
-@UseGuards(JwtAuthGuard, AdminValidateGuard)
 @Controller("club")
 export class ClubController implements IClubController {
   constructor(

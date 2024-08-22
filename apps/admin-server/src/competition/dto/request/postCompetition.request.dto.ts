@@ -1,3 +1,4 @@
+import { UseInterceptors, UsePipes } from "@nestjs/common"
 import { IsArray, IsDateString, IsString } from "class-validator"
 
 export class PostCompetitionRequestDto {

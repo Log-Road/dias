@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from "@nestjs/common";
 import { ICompetitionController } from "./competition.controller.interface";
 import { Res } from "../dtos/response.dto";
@@ -24,16 +23,13 @@ import { GetVotingPrefectureResponseDto } from "./dto/response/getVotingPrefectu
 import { PatchCompetitionResponseDto } from "./dto/response/patchCompetition.response.dto";
 import { PostAwardsResponseDto } from "./dto/response/postAwards.response.dto";
 import { PostCOmpetitionResponseDto } from "./dto/response/postCompetition.response.dto";
-import { JwtAuthGuard } from "apps/dias/src/auth/strategies/jwt/jwt.auth.guard";
-import { AdminValidateGuard } from "../guard/adminValidator/adminValidator.guard";
 import { CompetitionService } from "./competition.service";
 
-@UseGuards(JwtAuthGuard, AdminValidateGuard)
 @Controller("competition")
 export class CompetitionController implements ICompetitionController {
   constructor(
-    @Inject(Logger) private readonly logger: Logger,
     private service: CompetitionService,
+    @Inject(Logger) private logger: Logger,
   ) {}
 
   @Post()

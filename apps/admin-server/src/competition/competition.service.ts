@@ -29,7 +29,7 @@ export class CompetitionService implements ICompetitionService {
     const { awards, ...competitions } = request;
 
     const contestId = (await this.prisma.saveCompetition(competitions)).id;
-    await this.prisma.saveAwards(Object.apply(awards, contestId));
+    await this.prisma.saveAwards(Object.apply(awards, { contestId }));
 
     return {
       id: contestId,

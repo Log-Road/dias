@@ -23,7 +23,6 @@ export class AdminValidateGuard implements CanActivate {
     await this.jwtAuthGuard.canActivate(context);
 
     if (req.body.user.role != ROLE.Admin) {
-      // console.log(req.body.user.role)
       throw new ForbiddenException();
     }
 
