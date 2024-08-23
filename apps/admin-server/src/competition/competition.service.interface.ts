@@ -19,7 +19,7 @@ export interface ICompetitionService {
     id: string,
     request: PostAwardsRequestDto,
   ): Promise<PostAwardsResponseDto>;
-  getCompetitionList(): Promise<GetCompetitionListResponseDto>;
+  getCompetitionList(page: string): Promise<GetCompetitionListResponseDto>;
   getRecentCompetitions(): Promise<GetRecentCompetitionsResponseDto>;
   getCompetition(id: string): Promise<GetCompetitionResponseDto>;
   getVotingPrefecture(id: string): Promise<GetVotingPrefectureResponseDto>;

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -41,8 +42,8 @@ export class CompetitionController implements ICompetitionController {
     return {
       data,
       statusCode: 201,
-      statusMsg: ""
-    }
+      statusMsg: "",
+    };
   }
 
   @Post("/awarding/:id")
@@ -55,13 +56,23 @@ export class CompetitionController implements ICompetitionController {
     return {
       data,
       statusCode: 201,
-      statusMsg: ""
-    }
+      statusMsg: "",
+    };
   }
 
-  @Get()
-  async getCompetitionList(): Promise<Res<GetCompetitionListResponseDto>> {
-    throw new Error("Method not implemented.");
+  @Get(":page")
+  async getCompetitionList(
+    @Param("page") page?: string,
+  ): Promise<Res<GetCompetitionListResponseDto>> {
+    if (!page) page = "0";
+    if (Number.isNaN(Number(page))) throw new BadRequestException();
+    const data = await this.service.getCompetitionList(page);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "",
+    };
   }
 
   @Get("recent")

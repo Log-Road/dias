@@ -10,10 +10,11 @@ datasource db {
 }
 
 model Contests {
-  id         String     @id() @default(uuid())
+  id         String             @id() @default(uuid())
   name       String
-  start_date DateTime   @default(now())
-  end_date   DateTime   @default(now())
+  start_date DateTime           @default(now())
+  end_date   DateTime           @default(now())
+  status     COMPETITION_STATUS @default(ONGOING)
   place      String
   purpose    String
   audience   String
@@ -25,14 +26,14 @@ model Contests {
 }
 
 model Projects {
-  id            String   @id() @default(uuid())
+  id            String         @id() @default(uuid())
   contest_id    String
-  contest       Contests @relation(references: [id], fields: [contest_id])
+  contest       Contests       @relation(references: [id], fields: [contest_id])
   name          String
   image         String
   members       String[]
   skills        String[]
-  status        STATUS
+  status        PROJECT_STATUS
   auth_category CATEGORY
   introduction  String
   description   String
@@ -40,7 +41,7 @@ model Projects {
   place         String
   Vote          Vote[]
   Like          Like[]
-  CreatedAt     DateTime @default(now())
+  CreatedAt     DateTime       @default(now())
 }
 
 model Awards {
@@ -88,7 +89,14 @@ model Winner {
   @@unique([award_id, user_id])
 }
 
-enum STATUS {
+enum COMPETITION_STATUS {
+  ONGOING
+  IN_PROGRESS
+  PENDING_AWARD
+  CLOSED
+}
+
+enum PROJECT_STATUS {
   PENDING
   APPROVAL
   REJECTED

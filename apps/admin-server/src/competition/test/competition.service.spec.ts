@@ -6,6 +6,7 @@ import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/
 import { PrismaService } from "../../prisma/prisma.service";
 import { PostCompetitionRequestDto } from "../dto/request/postCompetition.request.dto";
 import { PostAwardsRequestDto } from "../dto/request/postAwards.request.dto";
+import { COMPETITION_STATUS } from "../../prisma/client";
 
 describe("CompetitionService", () => {
   let service: CompetitionService;
@@ -14,11 +15,12 @@ describe("CompetitionService", () => {
     [key: string]: {
       id: number;
       name: string;
-      startDate: string;
-      endDate: string;
+      start_date: Date;
+      end_date: Date;
       purpose: string;
       audience: string;
       place: string;
+      status: COMPETITION_STATUS;
     };
   } = {};
   let awardDatabase: {
@@ -42,11 +44,12 @@ describe("CompetitionService", () => {
     saveCompetition: jest.fn(
       async (competition: {
         name: string;
-        startDate: string;
-        endDate: string;
+        start_date: Date;
+        end_date: Date;
         purpose: string;
         audience: string;
         place: string;
+        status: COMPETITION_STATUS;
       }) => {
         const id = Object.keys(competitionDatabase).length;
         competitionDatabase[id] = Object.assign({ id }, competition);
@@ -73,6 +76,9 @@ describe("CompetitionService", () => {
     findCompetitionById: jest.fn(async (id: string) => {
       return competitionDatabase[id];
     }),
+    findCompetitionList: jest.fn(async (page: number) => {
+      return Object.values(competitionDatabase).slice(page, page + 15);
+    }),
   };
   const userPrismaMock = {};
 
@@ -97,6 +103,7 @@ describe("CompetitionService", () => {
     prismaMock.saveAwards.mockClear();
     prismaMock.saveWinner.mockClear();
     prismaMock.findCompetitionById.mockClear();
+    prismaMock.findCompetitionList.mockClear();
   });
 
   describe("PostCompetition", () => {
@@ -168,11 +175,12 @@ describe("CompetitionService", () => {
       competitionDatabase["1"] = {
         id: 1,
         name: "test",
-        startDate: "2024-08-19T00:00:00Z",
-        endDate: "2024-08-21T23:59:59Z",
+        start_date: new Date("2024-08-19T00:00:00Z"),
+        end_date: new Date("2024-08-21T23:59:59Z"),
         purpose: "학생들의 협업 능력 향상 및 코드 검수 정도 확인",
         audience: "대덕소프트웨어마이스터고등학교 2학년",
         place: "청죽관",
+        status: "ONGOING",
       };
 
       awardDatabase["1"] = {
@@ -233,6 +241,67 @@ describe("CompetitionService", () => {
       ).rejects.toThrow(new NotFoundException());
       expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
       expect(prismaMock.findCompetitionById).toHaveBeenCalledWith("1");
+    });
+  });
+
+  describe("GetCompetitionList", () => {
+    const page: string = "0";
+
+    it("[200]", async () => {
+      competitionDatabase = {
+        "0": {
+          id: 0,
+          name: "test",
+          start_date: new Date("2024-08-19T00:00:00Z"),
+          end_date: new Date("2024-08-21T23:59:59Z"),
+          purpose: "학생들의 협업 능력 향상 및 코드 검수 정도 확인",
+          audience: "대덕소프트웨어마이스터고등학교 2학년",
+          place: "청죽관",
+          status: "ONGOING",
+        },
+        "1": {
+          id: 1,
+          name: "test",
+          start_date: new Date("2024-08-19T00:00:00Z"),
+          end_date: new Date("2024-08-21T23:59:59Z"),
+          purpose: "학생들의 협업 능력 향상 및 코드 검수 정도 확인",
+          audience: "대덕소프트웨어마이스터고등학교 2학년",
+          place: "청죽관",
+          status: "IN_PROGRESS",
+        },
+      };
+
+      const res = await service.getCompetitionList(page);
+
+      expect(prismaMock.findCompetitionList).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionList).toHaveBeenCalledWith(Number(page));
+      expect(res).toEqual({
+        list: [
+          {
+            id: 0,
+            name: "test",
+            startDate: "2024-08-19T00:00:00.000Z",
+            endDate: "2024-08-21T23:59:59.000Z",
+            status: "ONGOING",
+          },
+          {
+            id: 1,
+            name: "test",
+            startDate: "2024-08-19T00:00:00.000Z",
+            endDate: "2024-08-21T23:59:59.000Z",
+            status: "IN_PROGRESS",
+          },
+        ],
+      });
+    });
+
+    it("[404]", async () => {
+      await expect(async () => {
+        await service.getCompetitionList(page);
+      }).rejects.toThrow(new NotFoundException());
+
+      expect(prismaMock.findCompetitionList).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionList).toHaveBeenCalledWith(Number(page));
     });
   });
 });
