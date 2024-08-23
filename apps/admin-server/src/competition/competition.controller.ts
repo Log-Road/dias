@@ -50,7 +50,13 @@ export class CompetitionController implements ICompetitionController {
     @Param("id") id: string,
     @Body() request: PostAwardsRequestDto,
   ): Promise<Res<PostAwardsResponseDto>> {
-    throw new Error("Method not implemented.");
+    const data = await this.service.postAwards(id, request);
+
+    return {
+      data,
+      statusCode: 201,
+      statusMsg: ""
+    }
   }
 
   @Get()

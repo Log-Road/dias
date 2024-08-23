@@ -1,5 +1,5 @@
-import { GetNonVoerListRequestDto } from "./dto/request/getNonVoterList.request.dto";
-import { PatchComeptitionRequestDto } from "./dto/request/patchCompetition.request.dto";
+import { GetNonVoterListRequestDto } from "./dto/request/getNonVoterList.request.dto";
+import { PatchCompetitionRequestDto } from "./dto/request/patchCompetition.request.dto";
 import { PostAwardsRequestDto } from "./dto/request/postAwards.request.dto";
 import { PostCompetitionRequestDto } from "./dto/request/postCompetition.request.dto";
 import { GetCompetitionResponseDto } from "./dto/response/getCompetition.response.dto";
@@ -9,12 +9,12 @@ import { GetRecentCompetitionsResponseDto } from "./dto/response/getRecentCompet
 import { GetVotingPrefectureResponseDto } from "./dto/response/getVotingPrefecture.response.dto";
 import { PatchCompetitionResponseDto } from "./dto/response/patchCompetition.response.dto";
 import { PostAwardsResponseDto } from "./dto/response/postAwards.response.dto";
-import { PostCOmpetitionResponseDto } from "./dto/response/postCompetition.response.dto";
+import { PostCompetitionResponseDto } from "./dto/response/postCompetition.response.dto";
 
 export interface ICompetitionService {
   postCompetition(
     request: PostCompetitionRequestDto,
-  ): Promise<PostCOmpetitionResponseDto>;
+  ): Promise<PostCompetitionResponseDto>;
   postAwards(
     id: string,
     request: PostAwardsRequestDto,
@@ -24,10 +24,10 @@ export interface ICompetitionService {
   getCompetition(id: string): Promise<GetCompetitionResponseDto>;
   getVotingPrefecture(id: string): Promise<GetVotingPrefectureResponseDto>;
   getNonVoterList(
-    request: GetNonVoerListRequestDto,
+    request: GetNonVoterListRequestDto,
   ): Promise<GetNonVoterListResponseDto>;
   patchCompetition(
     id: string,
-    request: PatchComeptitionRequestDto,
+    request: PatchCompetitionRequestDto,
   ): Promise<PatchCompetitionResponseDto>;
 }

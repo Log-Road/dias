@@ -6,6 +6,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { CompetitionService } from "../competition.service";
 import { Logger } from "@nestjs/common";
 import { PostCompetitionRequestDto } from "../dto/request/postCompetition.request.dto";
+import { PostAwardsRequestDto } from "../dto/request/postAwards.request.dto";
 
 describe("CompetitionController", () => {
   let controller: CompetitionController;
@@ -18,6 +19,9 @@ describe("CompetitionController", () => {
       return {
         id: 0,
       };
+    }),
+    postAwards: jest.fn(() => {
+      return {};
     }),
   };
 
@@ -66,6 +70,28 @@ describe("CompetitionController", () => {
       expect(serviceMock.postCompetition).toHaveBeenCalledTimes(1);
       expect(serviceMock.postCompetition).toHaveBeenCalledWith(request);
       expect(res).toEqual({ data: { id: 0 }, statusCode: 201, statusMsg: "" });
+    });
+  });
+
+  describe("PostAwards", () => {
+    const request: PostAwardsRequestDto = {
+      list: [
+        {
+          awardId: "1",
+          userId: ["1"],
+        },
+      ],
+    };
+    it("[201]", async () => {
+      const res = await controller.postAwards("1", request);
+
+      expect(serviceMock.postAwards).toHaveBeenCalledTimes(1);
+      expect(serviceMock.postAwards).toHaveBeenCalledWith("1", request);
+      expect(res).toEqual({
+        data: {},
+        statusCode: 201,
+        statusMsg: "",
+      });
     });
   });
 });
