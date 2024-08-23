@@ -9,8 +9,25 @@ import { PostCompetitionRequestDto } from "../dto/request/postCompetition.reques
 describe("CompetitionService", () => {
   let service: CompetitionService;
 
-  let competitionDatabase: Object = {};
-  let awardDatabase: Object = {};
+  let competitionDatabase: {
+    [key: number]: {
+      id: number;
+      name: string;
+      startDate: string;
+      endDate: string;
+      purpose: string;
+      audience: string;
+      place: string;
+    };
+  } = {};
+  let awardDatabase: {
+    [key: number]: {
+      id: number;
+      contestId: string;
+      count: number;
+      name: string;
+    };
+  } = {};
 
   const prismaMock = {
     saveCompetition: jest.fn(
@@ -88,9 +105,18 @@ describe("CompetitionService", () => {
       expect(prismaMock.saveCompetition).toHaveBeenCalledTimes(1);
       expect(prismaMock.saveAwards).toHaveBeenCalledTimes(3);
       expect(prismaMock.saveCompetition).toHaveBeenCalledWith(competition);
-      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(1, Object.assign(awards[0], { contestId: 0 }))
-      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(2, Object.assign(awards[1], { contestId: 0 }))
-      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(3, Object.assign(awards[2], { contestId: 0 }))
+      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(
+        1,
+        Object.assign(awards[0], { contestId: 0 }),
+      );
+      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(
+        2,
+        Object.assign(awards[1], { contestId: 0 }),
+      );
+      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(
+        3,
+        Object.assign(awards[2], { contestId: 0 }),
+      );
       expect(res).toEqual({ id: 0 });
     });
   });
