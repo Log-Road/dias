@@ -1,9 +1,9 @@
-import { IsArray, IsDateString, IsString, MaxLength } from "class-validator";
+import { ArrayMaxSize, IsArray, IsDateString, IsString } from "class-validator";
 
 export class GetRecentCompetitionsResponseDto {
   @IsArray()
-  @MaxLength(8)
-  list: List[]
+  @ArrayMaxSize(8)
+  list: List[];
 }
 
 class List {

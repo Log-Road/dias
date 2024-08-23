@@ -51,12 +51,12 @@ export class PrismaService
   }
 
   async saveCompetition(competition: {
-    name: string;
-    startDate: string;
-    endDate: string;
-    purpose: string;
-    audience: string;
-    place: string;
+    name: string,
+    startDate: string,
+    endDate: string,
+    purpose: string,
+    audience: string,
+    place: string,
   }) {
     const { name, startDate, endDate, purpose, audience, place } = competition;
 
@@ -68,7 +68,7 @@ export class PrismaService
           end_date: endDate,
           purpose,
           audience,
-          place,
+          place
         },
       });
     } catch (e) {
@@ -77,7 +77,11 @@ export class PrismaService
     }
   }
 
-  async saveAwards(awards: { contestId: string; count: number; name: string }) {
+  async saveAwards(awards: {
+    contestId: string,
+    count: number,
+    name: string,
+  }) {
     const { contestId, count, name } = awards;
     try {
       return await this.awards.create({

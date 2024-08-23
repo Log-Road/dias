@@ -11,8 +11,8 @@ import {
 } from "@nestjs/common";
 import { ICompetitionController } from "./competition.controller.interface";
 import { Res } from "../dtos/response.dto";
-import { GetNonVoerListRequestDto } from "./dto/request/getNonVoterList.request.dto";
-import { PatchComeptitionRequestDto } from "./dto/request/patchCompetition.request.dto";
+import { GetNonVoterListRequestDto } from "./dto/request/getNonVoterList.request.dto";
+import { PatchCompetitionRequestDto } from "./dto/request/patchCompetition.request.dto";
 import { PostAwardsRequestDto } from "./dto/request/postAwards.request.dto";
 import { PostCompetitionRequestDto } from "./dto/request/postCompetition.request.dto";
 import { GetCompetitionResponseDto } from "./dto/response/getCompetition.response.dto";
@@ -22,7 +22,7 @@ import { GetRecentCompetitionsResponseDto } from "./dto/response/getRecentCompet
 import { GetVotingPrefectureResponseDto } from "./dto/response/getVotingPrefecture.response.dto";
 import { PatchCompetitionResponseDto } from "./dto/response/patchCompetition.response.dto";
 import { PostAwardsResponseDto } from "./dto/response/postAwards.response.dto";
-import { PostCOmpetitionResponseDto } from "./dto/response/postCompetition.response.dto";
+import { PostCompetitionResponseDto } from "./dto/response/postCompetition.response.dto";
 import { CompetitionService } from "./competition.service";
 
 @Controller("competition")
@@ -35,7 +35,7 @@ export class CompetitionController implements ICompetitionController {
   @Post()
   async postCompetition(
     @Body() request: PostCompetitionRequestDto,
-  ): Promise<Res<PostCOmpetitionResponseDto>> {
+  ): Promise<Res<PostCompetitionResponseDto>> {
     const data = await this.service.postCompetition(request);
 
     return {
@@ -81,7 +81,7 @@ export class CompetitionController implements ICompetitionController {
 
   @Get("list?")
   async getNonVoterList(
-    @Query() request: GetNonVoerListRequestDto,
+    @Query() request: GetNonVoterListRequestDto,
   ): Promise<Res<GetNonVoterListResponseDto>> {
     throw new Error("Method not implemented.");
   }
@@ -89,7 +89,7 @@ export class CompetitionController implements ICompetitionController {
   @Patch(":id")
   async patchCompetition(
     @Param("id") id: string,
-    @Body() request: PatchComeptitionRequestDto,
+    @Body() request: PatchCompetitionRequestDto,
   ): Promise<Res<PatchCompetitionResponseDto>> {
     throw new Error("Method not implemented.");
   }

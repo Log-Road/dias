@@ -1,6 +1,6 @@
 import { IsString } from "class-validator";
 
-export class GetNonVoerListRequestDto {
+export class GetNonVoterListRequestDto {
   @IsString()
   id: string;
 

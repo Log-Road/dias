@@ -1,14 +1,15 @@
-import { IsArray, IsString } from "class-validator"
+import { IsArray, IsString } from "class-validator";
 
 export class PostAwardsRequestDto {
   @IsArray()
-  list: Awards[]
+  list: Awards[];
 }
 
 class Awards {
   @IsString()
-  awardId: string
-  
+  awardId: string;
+
   @IsArray()
-  userId: string[]
+  @IsString({ each: true })
+  userId: string[];
 }

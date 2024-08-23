@@ -1,3 +1,3 @@
-export class PostCOmpetitionResponseDto {
+export class PostCompetitionResponseDto {
   id: string
 }

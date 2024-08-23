@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ICompetitionService } from "./competition.service.interface";
-import { GetNonVoerListRequestDto } from "./dto/request/getNonVoterList.request.dto";
-import { PatchComeptitionRequestDto } from "./dto/request/patchCompetition.request.dto";
+import { GetNonVoterListRequestDto } from "./dto/request/getNonVoterList.request.dto";
+import { PatchCompetitionRequestDto } from "./dto/request/patchCompetition.request.dto";
 import { PostAwardsRequestDto } from "./dto/request/postAwards.request.dto";
 import { PostCompetitionRequestDto } from "./dto/request/postCompetition.request.dto";
 import { GetCompetitionResponseDto } from "./dto/response/getCompetition.response.dto";
@@ -11,7 +11,7 @@ import { GetRecentCompetitionsResponseDto } from "./dto/response/getRecentCompet
 import { GetVotingPrefectureResponseDto } from "./dto/response/getVotingPrefecture.response.dto";
 import { PatchCompetitionResponseDto } from "./dto/response/patchCompetition.response.dto";
 import { PostAwardsResponseDto } from "./dto/response/postAwards.response.dto";
-import { PostCOmpetitionResponseDto } from "./dto/response/postCompetition.response.dto";
+import { PostCompetitionResponseDto } from "./dto/response/postCompetition.response.dto";
 import { PrismaService as UserPrismaService } from "../../../dias/src/prisma/prisma.service";
 import { PrismaService } from "../prisma/prisma.service";
 
@@ -25,11 +25,13 @@ export class CompetitionService implements ICompetitionService {
 
   async postCompetition(
     request: PostCompetitionRequestDto,
-  ): Promise<PostCOmpetitionResponseDto> {
+  ): Promise<PostCompetitionResponseDto> {
     const { awards, ...competitions } = request;
 
     const contestId = (await this.prisma.saveCompetition(competitions)).id;
-    await this.prisma.saveAwards(Object.apply(awards, { contestId }));
+    awards.map(async (award) => {
+      await this.prisma.saveAwards(Object.assign(award, { contestId }));
+    });
 
     return {
       id: contestId,
@@ -62,14 +64,14 @@ export class CompetitionService implements ICompetitionService {
   }
 
   async getNonVoterList(
-    request: GetNonVoerListRequestDto,
+    request: GetNonVoterListRequestDto,
   ): Promise<GetNonVoterListResponseDto> {
     throw new Error("Method not implemented.");
   }
 
   async patchCompetition(
     id: string,
-    request: PatchComeptitionRequestDto,
+    request: PatchCompetitionRequestDto,
   ): Promise<PatchCompetitionResponseDto> {
     throw new Error("Method not implemented.");
   }

@@ -8,7 +8,7 @@ import {
   IsString,
 } from "class-validator";
 
-export class PatchComeptitionRequestDto {
+export class PatchCompetitionRequestDto {
   @IsOptional()
   @IsString()
   name?: string;
