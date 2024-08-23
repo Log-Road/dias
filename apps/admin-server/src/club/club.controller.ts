@@ -9,25 +9,19 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
 } from "@nestjs/common";
 import { ClubService } from "./club.service";
 import { IClubController } from "./club.controller.interface";
 import { Res } from "../dtos/response.dto";
-import {
-  DeleteClubRequestDtoParams,
-} from "./dto/req/deleteClub.request.dto";
-import { GetClubRequestDto } from "./dto/req/getClub.request.dto";
-import { ModifyClubRequestDtoParams } from "./dto/req/modifyClub.request.dto";
-import { PostClubRequestDto } from "./dto/req/postClub.request.dto";
-import { DeleteClubResponseDto } from "./dto/res/deleteClub.response.dto";
-import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
-import { ModifyClubResponseDto } from "./dto/res/modifyClub.response.dto";
-import { PostClubResponseDto } from "./dto/res/postClub.response.dto";
-import { JwtAuthGuard } from "../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
-import { AdminValidateGuard } from "../guard/adminValidator/adminValidator.guard";
+import { DeleteClubRequestDtoParams } from "./dto/request/deleteClub.request.dto";
+import { GetClubRequestDto } from "./dto/request/getClub.request.dto";
+import { ModifyClubRequestDtoParams } from "./dto/request/modifyClub.request.dto";
+import { PostClubRequestDto } from "./dto/request/postClub.request.dto";
+import { DeleteClubResponseDto } from "./dto/response/deleteClub.response.dto";
+import { GetClubResponseDto } from "./dto/response/getClub.response.dto";
+import { ModifyClubResponseDto } from "./dto/response/modifyClub.response.dto";
+import { PostClubResponseDto } from "./dto/response/postClub.response.dto";
 
-@UseGuards(JwtAuthGuard, AdminValidateGuard)
 @Controller("club")
 export class ClubController implements IClubController {
   constructor(

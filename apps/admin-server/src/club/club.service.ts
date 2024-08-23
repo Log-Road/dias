@@ -9,17 +9,17 @@ import { IClubService } from "./club.service.interface";
 import {
   DeleteClubRequestDtoParams,
   DeleteClubRequestDto,
-} from "./dto/req/deleteClub.request.dto";
-import { GetClubRequestDto } from "./dto/req/getClub.request.dto";
+} from "./dto/request/deleteClub.request.dto";
+import { GetClubRequestDto } from "./dto/request/getClub.request.dto";
 import {
   ModifyClubRequestDtoParams,
   ModifyClubRequestDto,
-} from "./dto/req/modifyClub.request.dto";
-import { PostClubRequestDto } from "./dto/req/postClub.request.dto";
-import { DeleteClubResponseDto } from "./dto/res/deleteClub.response.dto";
-import { GetClubResponseDto } from "./dto/res/getClub.response.dto";
-import { ModifyClubResponseDto } from "./dto/res/modifyClub.response.dto";
-import { PostClubResponseDto } from "./dto/res/postClub.response.dto";
+} from "./dto/request/modifyClub.request.dto";
+import { PostClubRequestDto } from "./dto/request/postClub.request.dto";
+import { DeleteClubResponseDto } from "./dto/response/deleteClub.response.dto";
+import { GetClubResponseDto } from "./dto/response/getClub.response.dto";
+import { ModifyClubResponseDto } from "./dto/response/modifyClub.response.dto";
+import { PostClubResponseDto } from "./dto/response/postClub.response.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { PrismaService as UserPrismaService } from "../../../dias/src/prisma/prisma.service";
 
