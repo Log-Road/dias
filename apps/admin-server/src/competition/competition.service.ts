@@ -50,13 +50,20 @@ export class CompetitionService implements ICompetitionService {
       throw new NotFoundException();
     }
 
-    list.map(async (award) => {
-      const { awardId, userId } = award;
+    await Promise.all(
+      list.map(async (award) => {
+        const { awardId, userId } = award;
 
-      userId.map(async (id) => {
-        await this.prisma.saveWinner(competitionId, { awardId, userId: id });
-      });
-    });
+        await Promise.all(
+          userId.map(async (id) => {
+            await this.prisma.saveWinner(competitionId, {
+              awardId,
+              userId: id,
+            });
+          }),
+        );
+      }),
+    );
 
     return {};
   }
