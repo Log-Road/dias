@@ -86,11 +86,11 @@ describe("CompetitionService", () => {
       const res = await service.postCompetition(request);
 
       expect(prismaMock.saveCompetition).toHaveBeenCalledTimes(1);
-      expect(prismaMock.saveAwards).toHaveBeenCalledTimes(1);
+      expect(prismaMock.saveAwards).toHaveBeenCalledTimes(3);
       expect(prismaMock.saveCompetition).toHaveBeenCalledWith(competition);
-      expect(prismaMock.saveAwards).toHaveBeenCalledWith(
-        Object.apply(awards, { contestId: 0 }),
-      );
+      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(1, Object.assign(awards[0], { contestId: 0 }))
+      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(2, Object.assign(awards[1], { contestId: 0 }))
+      expect(prismaMock.saveAwards).toHaveBeenNthCalledWith(3, Object.assign(awards[2], { contestId: 0 }))
       expect(res).toEqual({ id: 0 });
     });
   });
