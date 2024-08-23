@@ -185,6 +185,19 @@ export class PrismaService
     }
   }
 
+  async findCompetitionById(competitionId: string) {
+    try {
+      return await this.contests.findUnique({
+        where: {
+          id: competitionId,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
   async patchClubStatus(clubId: string) {
     try {
       const thisClub = await this.findClub(clubId);
