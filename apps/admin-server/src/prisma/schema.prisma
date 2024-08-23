@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./client"
+  provider      = "prisma-client-js"
+  output        = "./client"
   binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl", "linux-musl-openssl-3.0.x"]
 }
 
@@ -20,25 +20,27 @@ model Contests {
   Awards     Awards[]
   Projects   Projects[]
   Vote       Vote[]
+
+  Winner Winner[]
 }
 
 model Projects {
-  id             String   @id() @default(uuid())
-  contest_id     String
-  contest        Contests @relation(references: [id], fields: [contest_id])
-  name           String
-  image          String
-  members        String[]
-  skills         String[]
-  status         STATUS
-  auth_category  CATEGORY
-  introduction   String
-  description    String
-  video_link     String
-  place          String
-  Vote           Vote[]
-  Like           Like[]
-  CreatedAt      DateTime @default(now())
+  id            String   @id() @default(uuid())
+  contest_id    String
+  contest       Contests @relation(references: [id], fields: [contest_id])
+  name          String
+  image         String
+  members       String[]
+  skills        String[]
+  status        STATUS
+  auth_category CATEGORY
+  introduction  String
+  description   String
+  video_link    String
+  place         String
+  Vote          Vote[]
+  Like          Like[]
+  CreatedAt     DateTime @default(now())
 }
 
 model Awards {
@@ -47,6 +49,8 @@ model Awards {
   contest    Contests @relation(references: [id], fields: [contest_id])
   name       String
   count      Int
+
+  Winner Winner[]
 }
 
 model Vote {
@@ -68,9 +72,20 @@ model Like {
 }
 
 model Club {
-  club_id String @id @default(uuid())
-  club_name String @unique
+  club_id   String  @id @default(uuid())
+  club_name String  @unique
   is_active Boolean @default(true)
+}
+
+model Winner {
+  id         String   @id @default(uuid())
+  award_id   String
+  contest_id String
+  user_id    String
+  award      Awards   @relation(references: [id], fields: [award_id])
+  contest    Contests @relation(references: [id], fields: [contest_id])
+
+  @@unique([award_id, user_id])
 }
 
 enum STATUS {

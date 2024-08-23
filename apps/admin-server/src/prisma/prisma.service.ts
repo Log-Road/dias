@@ -51,12 +51,12 @@ export class PrismaService
   }
 
   async saveCompetition(competition: {
-    name: string,
-    startDate: string,
-    endDate: string,
-    purpose: string,
-    audience: string,
-    place: string,
+    name: string;
+    startDate: string;
+    endDate: string;
+    purpose: string;
+    audience: string;
+    place: string;
   }) {
     const { name, startDate, endDate, purpose, audience, place } = competition;
 
@@ -68,7 +68,7 @@ export class PrismaService
           end_date: endDate,
           purpose,
           audience,
-          place
+          place,
         },
       });
     } catch (e) {
@@ -77,11 +77,7 @@ export class PrismaService
     }
   }
 
-  async saveAwards(awards: {
-    contestId: string,
-    count: number,
-    name: string,
-  }) {
+  async saveAwards(awards: { contestId: string; count: number; name: string }) {
     const { contestId, count, name } = awards;
     try {
       return await this.awards.create({
@@ -89,6 +85,25 @@ export class PrismaService
           contest_id: contestId,
           count,
           name,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async saveWinner(
+    contestId: string,
+    winner: { awardId: string; userId: string },
+  ) {
+    try {
+      const { awardId, userId } = winner;
+      return await this.winner.create({
+        data: {
+          contest_id: contestId,
+          award_id: awardId,
+          user_id: userId,
         },
       });
     } catch (e) {
@@ -126,6 +141,19 @@ export class PrismaService
       return await this.club.findFirst({
         where: {
           club_name: clubName,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async findCompetitionById(competitionId: string) {
+    try {
+      return await this.contests.findUnique({
+        where: {
+          id: competitionId,
         },
       });
     } catch (e) {

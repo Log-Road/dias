@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { ICompetitionService } from "./competition.service.interface";
 import { GetNonVoterListRequestDto } from "./dto/request/getNonVoterList.request.dto";
 import { PatchCompetitionRequestDto } from "./dto/request/patchCompetition.request.dto";
@@ -39,10 +39,33 @@ export class CompetitionService implements ICompetitionService {
   }
 
   async postAwards(
-    id: string,
+    competitionId: string,
     request: PostAwardsRequestDto,
   ): Promise<PostAwardsResponseDto> {
-    throw new Error("Method not implemented.");
+    const { list } = request;
+
+    const thisCompetition =
+      await this.prisma.findCompetitionById(competitionId);
+    if (!thisCompetition) {
+      throw new NotFoundException();
+    }
+
+    await Promise.all(
+      list.map(async (award) => {
+        const { awardId, userId } = award;
+
+        await Promise.all(
+          userId.map(async (id) => {
+            await this.prisma.saveWinner(competitionId, {
+              awardId,
+              userId: id,
+            });
+          }),
+        );
+      }),
+    );
+
+    return {};
   }
 
   async getCompetitionList(): Promise<GetCompetitionListResponseDto> {

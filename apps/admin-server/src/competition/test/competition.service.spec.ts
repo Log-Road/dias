@@ -1,16 +1,17 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CompetitionService } from "../competition.service";
-import { Logger } from "@nestjs/common";
+import { Logger, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import { PostCompetitionRequestDto } from "../dto/request/postCompetition.request.dto";
+import { PostAwardsRequestDto } from "../dto/request/postAwards.request.dto";
 
 describe("CompetitionService", () => {
   let service: CompetitionService;
 
   let competitionDatabase: {
-    [key: number]: {
+    [key: string]: {
       id: number;
       name: string;
       startDate: string;
@@ -21,11 +22,19 @@ describe("CompetitionService", () => {
     };
   } = {};
   let awardDatabase: {
-    [key: number]: {
+    [key: string]: {
       id: number;
       contestId: string;
       count: number;
       name: string;
+    };
+  } = {};
+  let winnerDatabase: {
+    [key: string]: {
+      id: number;
+      contestId: string;
+      awardId: string;
+      userId: string;
     };
   } = {};
 
@@ -51,6 +60,19 @@ describe("CompetitionService", () => {
         return awardDatabase[id];
       },
     ),
+    saveWinner: jest.fn(
+      async (
+        contestId: string,
+        winner: { awardId: string; userId: string },
+      ) => {
+        const { awardId, userId } = winner;
+        const id = Object.keys(winnerDatabase).length;
+        winnerDatabase[id] = { id, userId, awardId, contestId };
+      },
+    ),
+    findCompetitionById: jest.fn(async (id: string) => {
+      return competitionDatabase[id];
+    }),
   };
   const userPrismaMock = {};
 
@@ -69,9 +91,12 @@ describe("CompetitionService", () => {
 
     competitionDatabase = {};
     awardDatabase = {};
+    winnerDatabase = {};
 
     prismaMock.saveCompetition.mockClear();
     prismaMock.saveAwards.mockClear();
+    prismaMock.saveWinner.mockClear();
+    prismaMock.findCompetitionById.mockClear();
   });
 
   describe("PostCompetition", () => {
@@ -118,6 +143,96 @@ describe("CompetitionService", () => {
         Object.assign(awards[2], { contestId: 0 }),
       );
       expect(res).toEqual({ id: 0 });
+    });
+  });
+
+  describe("PostAwards", () => {
+    const request: PostAwardsRequestDto = {
+      list: [
+        {
+          awardId: "1",
+          userId: ["1"],
+        },
+        {
+          awardId: "2",
+          userId: ["2", "3"],
+        },
+        {
+          awardId: "3",
+          userId: ["4", "5", "6"],
+        },
+      ],
+    };
+
+    it("[201]", async () => {
+      competitionDatabase["1"] = {
+        id: 1,
+        name: "test",
+        startDate: "2024-08-19T00:00:00Z",
+        endDate: "2024-08-21T23:59:59Z",
+        purpose: "학생들의 협업 능력 향상 및 코드 검수 정도 확인",
+        audience: "대덕소프트웨어마이스터고등학교 2학년",
+        place: "청죽관",
+      };
+
+      awardDatabase["1"] = {
+        id: 1,
+        contestId: "1",
+        count: 1,
+        name: "금상",
+      };
+
+      awardDatabase["2"] = {
+        id: 2,
+        contestId: "1",
+        count: 2,
+        name: "은상",
+      };
+
+      awardDatabase["3"] = {
+        id: 3,
+        contestId: "1",
+        count: 3,
+        name: "동상",
+      };
+
+      const res = await service.postAwards("1", request);
+
+      expect(prismaMock.saveWinner).toHaveBeenCalledTimes(6);
+      expect(prismaMock.saveWinner).toHaveBeenNthCalledWith(1, "1", {
+        awardId: "1",
+        userId: "1",
+      });
+      expect(prismaMock.saveWinner).toHaveBeenNthCalledWith(2, "1", {
+        awardId: "2",
+        userId: "2",
+      });
+      expect(prismaMock.saveWinner).toHaveBeenNthCalledWith(3, "1", {
+        awardId: "2",
+        userId: "3",
+      });
+      expect(prismaMock.saveWinner).toHaveBeenNthCalledWith(4, "1", {
+        awardId: "3",
+        userId: "4",
+      });
+      expect(prismaMock.saveWinner).toHaveBeenNthCalledWith(5, "1", {
+        awardId: "3",
+        userId: "5",
+      });
+      expect(prismaMock.saveWinner).toHaveBeenNthCalledWith(6, "1", {
+        awardId: "3",
+        userId: "6",
+      });
+      expect(res).toEqual({});
+    });
+
+    it("[404]", async () => {
+      prismaMock.findCompetitionById.mockImplementation(() => undefined);
+      expect(
+        async () => await service.postAwards("1", request),
+      ).rejects.toThrow(new NotFoundException());
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith("1");
     });
   });
 });
