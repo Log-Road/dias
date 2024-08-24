@@ -200,7 +200,8 @@ export class PrismaService
 
   async findCompetitionList(page: number) {
     try {
-      const result = await this.contests.findMany({ // page >= 0
+      const result = await this.contests.findMany({
+        // page >= 0
         skip: page * 15,
         take: 15,
         select: {
