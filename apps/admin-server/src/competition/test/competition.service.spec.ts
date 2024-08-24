@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CompetitionService } from "../competition.service";
-import { Logger, NotFoundException } from "@nestjs/common";
+import { InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { PrismaService } from "../../prisma/prisma.service";
@@ -303,5 +303,18 @@ describe("CompetitionService", () => {
       expect(prismaMock.findCompetitionList).toHaveBeenCalledTimes(1);
       expect(prismaMock.findCompetitionList).toHaveBeenCalledWith(Number(page));
     });
+
+    it("[500]", async () => {
+      prismaMock.findCompetitionList.mockImplementation(() => {
+        throw new InternalServerErrorException();
+      })
+
+      await expect(async() => {
+        await service.getCompetitionList(page);
+      }).rejects.toThrow(new InternalServerErrorException());
+
+      expect(prismaMock.findCompetitionList).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionList).toHaveBeenCalledWith(Number(page));
+    })
   });
 });

@@ -23,6 +23,19 @@ describe("CompetitionController", () => {
     postAwards: jest.fn(() => {
       return {};
     }),
+    getCompetitionList: jest.fn(() => {
+      return {
+        list: [
+          {
+            id: "aae60e9d7f20",
+            status: "ONGOING",
+            name: "test",
+            startDate: "2024-08-19T00:00:00.000Z",
+            endDate: "2024-08-21T23:59:59.000Z",
+          },
+        ],
+      };
+    }),
   };
 
   beforeEach(async () => {
@@ -92,6 +105,32 @@ describe("CompetitionController", () => {
         statusCode: 201,
         statusMsg: "",
       });
+    });
+  });
+
+  describe("GetCompeititionList", () => {
+    const request = "1";
+
+    it("[200]", async () => {
+      const res = await controller.getCompetitionList(request);
+
+      expect(res).toEqual({
+        data: {
+          list: [
+            {
+              id: "aae60e9d7f20",
+              status: "ONGOING",
+              name: "test",
+              startDate: "2024-08-19T00:00:00.000Z",
+              endDate: "2024-08-21T23:59:59.000Z",
+            },
+          ],
+        },
+        statusCode: 200,
+        statusMsg: "",
+      });
+      expect(serviceMock.getCompetitionList).toHaveBeenCalledTimes(1);
+      expect(serviceMock.getCompetitionList).toHaveBeenCalledWith(request);
     });
   });
 });
