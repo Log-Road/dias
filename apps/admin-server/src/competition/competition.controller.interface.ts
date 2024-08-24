@@ -20,7 +20,7 @@ export interface ICompetitionController {
     id: string,
     request: PostAwardsRequestDto,
   ): Promise<Res<PostAwardsResponseDto>>;
-  getCompetitionList(): Promise<Res<GetCompetitionListResponseDto>>;
+  getCompetitionList(page: string): Promise<Res<GetCompetitionListResponseDto>>;
   getRecentCompetitions(): Promise<Res<GetRecentCompetitionsResponseDto>>;
   getCompetition(id: string): Promise<Res<GetCompetitionResponseDto>>;
   getVotingPrefecture(id: string): Promise<Res<GetVotingPrefectureResponseDto>>;

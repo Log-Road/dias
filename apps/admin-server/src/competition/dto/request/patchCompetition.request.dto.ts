@@ -1,4 +1,4 @@
-import { STATUS } from "../../../prisma/client";
+import { COMPETITION_STATUS } from "../../../prisma/client";
 import {
   IsArray,
   IsDateString,
@@ -14,8 +14,8 @@ export class PatchCompetitionRequestDto {
   name?: string;
 
   @IsOptional()
-  @IsEnum(STATUS)
-  status?: STATUS;
+  @IsEnum(COMPETITION_STATUS)
+  status?: COMPETITION_STATUS;
 
   @IsOptional()
   @IsDateString()

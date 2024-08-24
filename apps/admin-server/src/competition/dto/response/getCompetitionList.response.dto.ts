@@ -1,16 +1,17 @@
-import { IsArray, IsDateString, IsString } from "class-validator";
+import { COMPETITION_STATUS } from "../../../prisma/client";
+import { IsArray, IsDateString, IsEnum, IsString } from "class-validator";
 
 export class GetCompetitionListResponseDto {
   @IsArray()
-  list: List[]
+  list: List[];
 }
 
 class List {
   @IsString()
   id: string;
 
-  @IsString()
-  status: string;
+  @IsEnum(COMPETITION_STATUS)
+  status: COMPETITION_STATUS;
 
   @IsString()
   name: string;
@@ -20,10 +21,4 @@ class List {
 
   @IsDateString()
   endDate: string;
-
-  @IsString()
-  purpose: string;
-
-  @IsString()
-  audience: string;
 }
