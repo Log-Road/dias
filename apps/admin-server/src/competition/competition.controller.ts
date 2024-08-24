@@ -65,7 +65,7 @@ export class CompetitionController implements ICompetitionController {
     @Param("page") page?: string,
   ): Promise<Res<GetCompetitionListResponseDto>> {
     if (!page) page = "0";
-    if (Number.isNaN(Number(page))) throw new BadRequestException();
+    if (Number.isNaN(Number(page)) || Number(page) < 0) throw new BadRequestException();
     const data = await this.service.getCompetitionList(page);
 
     return {
