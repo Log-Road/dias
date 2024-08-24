@@ -1,11 +1,6 @@
 import { IsArray, IsDateString, IsString } from "class-validator";
 
 export class GetCompetitionResponseDto {
-  @IsArray()
-  list: List[]
-}
-
-class List {
   @IsString()
   id: string;
 
@@ -26,4 +21,7 @@ class List {
 
   @IsString()
   audience: string;
+
+  @IsString()
+  place: string;
 }

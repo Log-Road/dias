@@ -4,9 +4,10 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CompetitionService } from "../competition.service";
-import { Logger } from "@nestjs/common";
+import { BadRequestException, Logger } from "@nestjs/common";
 import { PostCompetitionRequestDto } from "../dto/request/postCompetition.request.dto";
 import { PostAwardsRequestDto } from "../dto/request/postAwards.request.dto";
+import { COMPETITION_STATUS } from "../../prisma/client";
 
 describe("CompetitionController", () => {
   let controller: CompetitionController;
@@ -36,6 +37,19 @@ describe("CompetitionController", () => {
         ],
       };
     }),
+    getCompetition: jest.fn(() => {
+      return {
+        id: "1",
+        name: "제 N회 고등학생 알고리즘 풀이 경진 대회",
+        startDate: new Date("2024-08-16T00:00:00.000Z").toISOString(),
+        endDate: new Date("2024-08-30T23:59:59.000Z").toISOString(),
+        purpose:
+          "문제 풀이 실력 향상 및 알고리즘을 효과적으로 알리는 등 어쩌구",
+        audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
+        place: "대덕소프트웨어마이스터고등학교",
+        status: COMPETITION_STATUS.ONGOING,
+      };
+    }),
   };
 
   beforeEach(async () => {
@@ -51,6 +65,11 @@ describe("CompetitionController", () => {
     }).compile();
 
     controller = module.get<CompetitionController>(CompetitionController);
+
+    serviceMock.postCompetition.mockClear();
+    serviceMock.postAwards.mockClear();
+    serviceMock.getCompetitionList.mockClear();
+    serviceMock.getCompetition.mockClear();
   });
 
   describe("PostCompetition", () => {
@@ -109,9 +128,8 @@ describe("CompetitionController", () => {
   });
 
   describe("GetCompeititionList", () => {
-    const request = "1";
-
     it("[200]", async () => {
+      const request = "1";
       const res = await controller.getCompetitionList(request);
 
       expect(res).toEqual({
@@ -131,6 +149,61 @@ describe("CompetitionController", () => {
       });
       expect(serviceMock.getCompetitionList).toHaveBeenCalledTimes(1);
       expect(serviceMock.getCompetitionList).toHaveBeenCalledWith(request);
+    });
+
+    it("[400] NaN", async () => {
+      const request = "This is not a number";
+
+      await expect(async () => {
+        await controller.getCompetitionList(request);
+      }).rejects.toThrow(new BadRequestException("Parameter have to valid"));
+      expect(serviceMock.getCompetitionList).toHaveBeenCalledTimes(0);
+    });
+
+    it("[400] Negative", async () => {
+      const request = "-1";
+
+      await expect(async () => {
+        await controller.getCompetitionList(request);
+      }).rejects.toThrow(new BadRequestException("Parameter have to valid"));
+      expect(serviceMock.getCompetitionList).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe("GetCompetition", () => {
+    const request = "1";
+
+    it("[200]", async () => {
+      const res = await controller.getCompetition(request);
+
+      expect(serviceMock.getCompetition).toHaveBeenCalledTimes(1);
+      expect(serviceMock.getCompetition).toHaveBeenCalledWith(request);
+      expect(res).toEqual({
+        data: {
+          id: "1",
+          name: "제 N회 고등학생 알고리즘 풀이 경진 대회",
+          startDate: new Date("2024-08-16T00:00:00.000Z").toISOString(),
+          endDate: new Date("2024-08-30T23:59:59.000Z").toISOString(),
+          purpose:
+            "문제 풀이 실력 향상 및 알고리즘을 효과적으로 알리는 등 어쩌구",
+          audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
+          place: "대덕소프트웨어마이스터고등학교",
+          status: COMPETITION_STATUS.ONGOING,
+        },
+        statusCode: 200,
+        statusMsg: "",
+      });
+    });
+
+    it("[400]", async () => {
+      const request = "";
+
+      await expect(
+        async () => await controller.getCompetition(request),
+      ).rejects.toThrow(
+        new BadRequestException("Must included parameter as id"),
+      );
+      expect(serviceMock.getCompetition).toHaveBeenCalledTimes(0);
     });
   });
 });

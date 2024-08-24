@@ -14,6 +14,7 @@ import { PostAwardsResponseDto } from "./dto/response/postAwards.response.dto";
 import { PostCompetitionResponseDto } from "./dto/response/postCompetition.response.dto";
 import { PrismaService as UserPrismaService } from "../../../dias/src/prisma/prisma.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { COMPETITION_STATUS } from "../prisma/client";
 
 @Injectable()
 export class CompetitionService implements ICompetitionService {
@@ -74,7 +75,7 @@ export class CompetitionService implements ICompetitionService {
     const list = await this.prisma.findCompetitionList(Number(page));
     if (list.length < 1) throw new NotFoundException();
 
-    const aliasList = list.map(x => {
+    const aliasList = list.map((x) => {
       return {
         id: x.id,
         status: x.status,
@@ -92,7 +93,20 @@ export class CompetitionService implements ICompetitionService {
   }
 
   async getCompetition(id: string): Promise<GetCompetitionResponseDto> {
-    throw new Error("Method not implemented.");
+    const comp = await this.prisma.findCompetitionById(id);
+
+    if (!comp) throw new NotFoundException();
+
+    return {
+      id,
+      name: comp.name,
+      status: comp.status,
+      startDate: comp.start_date.toISOString(),
+      endDate: comp.end_date.toISOString(),
+      purpose: comp.purpose,
+      audience: comp.audience,
+      place: comp.place,
+    };
   }
 
   async getVotingPrefecture(

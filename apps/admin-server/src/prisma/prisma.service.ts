@@ -138,11 +138,13 @@ export class PrismaService
 
   async findClubByName(clubName: string) {
     try {
-      return await this.club.findFirst({
+      const result = await this.club.findFirst({
         where: {
           club_name: clubName,
         },
       });
+
+      return result;
     } catch (e) {
       this.logger.error(e);
       throw new InternalServerErrorException(e);
@@ -164,7 +166,8 @@ export class PrismaService
 
   async findCompetitionList(page: number) {
     try {
-      const result = await this.contests.findMany({ // page >= 0
+      const result = await this.contests.findMany({
+        // page >= 0
         skip: page * 15,
         take: 15,
         select: {

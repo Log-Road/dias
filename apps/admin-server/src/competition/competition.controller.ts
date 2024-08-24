@@ -62,10 +62,13 @@ export class CompetitionController implements ICompetitionController {
 
   @Get(":page")
   async getCompetitionList(
-    @Param("page") page?: string,
+    @Param("page") page: string,
   ): Promise<Res<GetCompetitionListResponseDto>> {
     if (!page) page = "0";
-    if (Number.isNaN(Number(page)) || Number(page) < 0) throw new BadRequestException();
+    if (isNaN(Number(page)) || Number(page) < 0) {
+      throw new BadRequestException("Parameter have to valid");
+    }
+
     const data = await this.service.getCompetitionList(page);
 
     return {
@@ -86,7 +89,15 @@ export class CompetitionController implements ICompetitionController {
   async getCompetition(
     @Param("id") id: string,
   ): Promise<Res<GetCompetitionResponseDto>> {
-    throw new Error("Method not implemented.");
+    if (!id) throw new BadRequestException("Must included parameter as id");
+
+    const data = await this.service.getCompetition(id);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: "",
+    };
   }
 
   @Get("per/:id")

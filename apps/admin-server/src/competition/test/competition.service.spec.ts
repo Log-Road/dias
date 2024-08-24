@@ -1,6 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { CompetitionService } from "../competition.service";
-import { InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import {
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { PrismaService } from "../../prisma/prisma.service";
@@ -13,7 +17,7 @@ describe("CompetitionService", () => {
 
   let competitionDatabase: {
     [key: string]: {
-      id: number;
+      id: string;
       name: string;
       start_date: Date;
       end_date: Date;
@@ -25,7 +29,7 @@ describe("CompetitionService", () => {
   } = {};
   let awardDatabase: {
     [key: string]: {
-      id: number;
+      id: string;
       contestId: string;
       count: number;
       name: string;
@@ -33,7 +37,7 @@ describe("CompetitionService", () => {
   } = {};
   let winnerDatabase: {
     [key: string]: {
-      id: number;
+      id: string;
       contestId: string;
       awardId: string;
       userId: string;
@@ -51,14 +55,14 @@ describe("CompetitionService", () => {
         place: string;
         status: COMPETITION_STATUS;
       }) => {
-        const id = Object.keys(competitionDatabase).length;
+        const id = String(Object.keys(competitionDatabase).length);
         competitionDatabase[id] = Object.assign({ id }, competition);
         return competitionDatabase[id];
       },
     ),
     saveAwards: jest.fn(
       async (awards: { contestId: string; count: number; name: string }) => {
-        const id = Object.keys(awardDatabase).length;
+        const id = String(Object.keys(awardDatabase).length);
         awardDatabase[id] = Object.assign({ id }, awards);
         return awardDatabase[id];
       },
@@ -69,7 +73,7 @@ describe("CompetitionService", () => {
         winner: { awardId: string; userId: string },
       ) => {
         const { awardId, userId } = winner;
-        const id = Object.keys(winnerDatabase).length;
+        const id = String(Object.keys(winnerDatabase).length);
         winnerDatabase[id] = { id, userId, awardId, contestId };
       },
     ),
@@ -149,7 +153,7 @@ describe("CompetitionService", () => {
         3,
         Object.assign(awards[2], { contestId: 0 }),
       );
-      expect(res).toEqual({ id: 0 });
+      expect(res).toEqual({ id: "0" });
     });
   });
 
@@ -173,7 +177,7 @@ describe("CompetitionService", () => {
 
     it("[201]", async () => {
       competitionDatabase["1"] = {
-        id: 1,
+        id: "1",
         name: "test",
         start_date: new Date("2024-08-19T00:00:00Z"),
         end_date: new Date("2024-08-21T23:59:59Z"),
@@ -184,21 +188,21 @@ describe("CompetitionService", () => {
       };
 
       awardDatabase["1"] = {
-        id: 1,
+        id: "1",
         contestId: "1",
         count: 1,
         name: "금상",
       };
 
       awardDatabase["2"] = {
-        id: 2,
+        id: "2",
         contestId: "1",
         count: 2,
         name: "은상",
       };
 
       awardDatabase["3"] = {
-        id: 3,
+        id: "3",
         contestId: "1",
         count: 3,
         name: "동상",
@@ -250,7 +254,7 @@ describe("CompetitionService", () => {
     it("[200]", async () => {
       competitionDatabase = {
         "0": {
-          id: 0,
+          id: "0",
           name: "test",
           start_date: new Date("2024-08-19T00:00:00Z"),
           end_date: new Date("2024-08-21T23:59:59Z"),
@@ -260,7 +264,7 @@ describe("CompetitionService", () => {
           status: "ONGOING",
         },
         "1": {
-          id: 1,
+          id: "1",
           name: "test",
           start_date: new Date("2024-08-19T00:00:00Z"),
           end_date: new Date("2024-08-21T23:59:59Z"),
@@ -278,14 +282,14 @@ describe("CompetitionService", () => {
       expect(res).toEqual({
         list: [
           {
-            id: 0,
+            id: "0",
             name: "test",
             startDate: "2024-08-19T00:00:00.000Z",
             endDate: "2024-08-21T23:59:59.000Z",
             status: "ONGOING",
           },
           {
-            id: 1,
+            id: "1",
             name: "test",
             startDate: "2024-08-19T00:00:00.000Z",
             endDate: "2024-08-21T23:59:59.000Z",
@@ -307,14 +311,69 @@ describe("CompetitionService", () => {
     it("[500]", async () => {
       prismaMock.findCompetitionList.mockImplementation(() => {
         throw new InternalServerErrorException();
-      })
+      });
 
-      await expect(async() => {
+      await expect(async () => {
         await service.getCompetitionList(page);
       }).rejects.toThrow(new InternalServerErrorException());
 
       expect(prismaMock.findCompetitionList).toHaveBeenCalledTimes(1);
       expect(prismaMock.findCompetitionList).toHaveBeenCalledWith(Number(page));
-    })
+    });
+  });
+
+  describe("GetCompetition", () => {
+    const request = "1";
+
+    it("[200]", async () => {
+      prismaMock.findCompetitionById.mockReturnValueOnce(
+        Promise.resolve({
+          id: "1",
+          name: "제 N회 고등학생 알고리즘 풀이 경진 대회",
+          start_date: new Date("2024-08-16T00:00:00.000Z"),
+          end_date: new Date("2024-08-30T23:59:59.000Z"),
+          purpose:
+            "문제 풀이 실력 향상 및 알고리즘을 효과적으로 알리는 등 어쩌구",
+          audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
+          place: "대덕소프트웨어마이스터고등학교",
+          status: COMPETITION_STATUS.ONGOING,
+        }),
+      );
+
+      const res = await service.getCompetition(request);
+
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(request);
+      expect(res).toEqual({
+        id: "1",
+        name: "제 N회 고등학생 알고리즘 풀이 경진 대회",
+        startDate: new Date("2024-08-16T00:00:00.000Z").toISOString(),
+        endDate: new Date("2024-08-30T23:59:59.000Z").toISOString(),
+        purpose:
+          "문제 풀이 실력 향상 및 알고리즘을 효과적으로 알리는 등 어쩌구",
+        audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
+        place: "대덕소프트웨어마이스터고등학교",
+        status: COMPETITION_STATUS.ONGOING,
+      });
+    });
+
+    it("[404]", async () => {
+      await expect(async () => {
+        await service.getCompetition(request);
+      }).rejects.toThrow(new NotFoundException());
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(request);
+    });
+
+    it("[500]", async () => {
+      prismaMock.findCompetitionById.mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+      await expect(async () => {
+        await service.getCompetition(request);
+      }).rejects.toThrow(new InternalServerErrorException());
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(request);
+    });
   });
 });
