@@ -34,10 +34,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
             ${{ runner.os }}
-              
+
       - name: Install package
         if: steps.cache.outputs.cache-hit == 'true'
-        run: pnpm i
+        run: pnpm i --no-frozen-lockfile
 
       - name: env set
         working-directory: ./
