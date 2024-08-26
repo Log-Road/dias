@@ -125,6 +125,11 @@ export class CompetitionService implements ICompetitionService {
     id: string,
     request: PatchCompetitionRequestDto,
   ): Promise<PatchCompetitionResponseDto> {
-    throw new Error("Method not implemented.");
+    const thisComp = await this.prisma.findCompetitionById(id);
+    if (!thisComp) throw new NotFoundException();
+
+    await this.prisma.patchCompetition(id, request);
+
+    return { id };
   }
 }

@@ -36,18 +36,4 @@ export class PatchCompetitionRequestDto {
   @IsOptional()
   @IsString()
   place?: string;
-
-  @IsOptional()
-  @IsArray()
-  awards?: Awards[];
-}
-
-class Awards {
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsNumber()
-  count?: number;
 }
