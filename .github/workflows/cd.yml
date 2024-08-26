@@ -33,7 +33,7 @@ jobs:
 
       - name: Install package
         if: steps.cache.outputs.cache-hit == 'true'
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --no-frozen-lockfile
 
       - name: env set
         working-directory: ./
