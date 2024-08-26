@@ -220,11 +220,10 @@ describe("CompetitionController", () => {
       status: "ONGOING",
       startDate: "2024-08-27T00:00:00.000Z",
       endDate: "2024-08-30T23:59:59.000Z",
-      purpose:
-        "학생들의 알고리즘 풀이 능력 향상 및 중학생 대상으로 본교 홍보",
+      purpose: "학생들의 알고리즘 풀이 능력 향상 및 중학생 대상으로 본교 홍보",
       audience: "전국 중학생 중 본 대회의 예선 통과자",
       place: "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실",
-    }
+    };
     it("[200] update all", async () => {
       const res = await controller.patchCompetition(id, request);
       expect(res).toEqual({
@@ -232,8 +231,8 @@ describe("CompetitionController", () => {
           id: "1",
         },
         statusCode: 200,
-        statusMsg: ""
-      })
+        statusMsg: "",
+      });
       expect(serviceMock.patchCompetition).toHaveBeenCalledTimes(1);
       expect(serviceMock.patchCompetition).toHaveBeenCalledWith(id, request);
     });

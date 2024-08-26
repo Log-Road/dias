@@ -124,7 +124,7 @@ export class CompetitionController implements ICompetitionController {
     return {
       data,
       statusCode: 200,
-      statusMsg: ""
-    }
+      statusMsg: "",
+    };
   }
 }
