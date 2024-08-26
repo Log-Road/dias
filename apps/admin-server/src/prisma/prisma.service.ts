@@ -216,25 +216,27 @@ export class PrismaService
     },
   ) {
     try {
-      const thisComp = await this.contests.findUnique({
-        where: {
-          id,
-        },
-      });
+      await this.$transaction(async (prisma) => {
+        const thisComp = await this.contests.findUnique({
+          where: {
+            id,
+          },
+        });
 
-      await this.contests.update({
-        where: {
-          id,
-        },
-        data: {
-          name: obj.name ?? thisComp.name,
-          status: obj.status ?? thisComp.status,
-          start_date: new Date(obj.startDate ?? thisComp.start_date),
-          end_date: new Date(obj.endDate ?? thisComp.end_date),
-          purpose: obj.purpose ?? thisComp.purpose,
-          audience: obj.audience ?? thisComp.audience,
-          place: obj.place ?? thisComp.place,
-        },
+        await this.contests.update({
+          where: {
+            id,
+          },
+          data: {
+            name: obj.name ?? thisComp.name,
+            status: obj.status ?? thisComp.status,
+            start_date: new Date(obj.startDate ?? thisComp.start_date),
+            end_date: new Date(obj.endDate ?? thisComp.end_date),
+            purpose: obj.purpose ?? thisComp.purpose,
+            audience: obj.audience ?? thisComp.audience,
+            place: obj.place ?? thisComp.place,
+          },
+        });
       });
     } catch (e) {
       this.logger.error(e);
