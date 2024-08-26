@@ -119,6 +119,12 @@ export class CompetitionController implements ICompetitionController {
     @Param("id") id: string,
     @Body() request: PatchCompetitionRequestDto,
   ): Promise<Res<PatchCompetitionResponseDto>> {
-    throw new Error("Method not implemented.");
+    const data = await this.service.patchCompetition(id, request);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: ""
+    }
   }
 }

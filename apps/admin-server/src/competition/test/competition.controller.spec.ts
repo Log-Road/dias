@@ -8,6 +8,7 @@ import { BadRequestException, Logger } from "@nestjs/common";
 import { PostCompetitionRequestDto } from "../dto/request/postCompetition.request.dto";
 import { PostAwardsRequestDto } from "../dto/request/postAwards.request.dto";
 import { COMPETITION_STATUS } from "../../prisma/client";
+import { PatchCompetitionRequestDto } from "../dto/request/patchCompetition.request.dto";
 
 describe("CompetitionController", () => {
   let controller: CompetitionController;
@@ -48,6 +49,11 @@ describe("CompetitionController", () => {
         audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
         place: "대덕소프트웨어마이스터고등학교",
         status: COMPETITION_STATUS.ONGOING,
+      };
+    }),
+    patchCompetition: jest.fn(() => {
+      return {
+        id: "1",
       };
     }),
   };
@@ -204,6 +210,32 @@ describe("CompetitionController", () => {
         new BadRequestException("Must included parameter as id"),
       );
       expect(serviceMock.getCompetition).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe("PatchCompetition", () => {
+    const id = "1";
+    const request: PatchCompetitionRequestDto = {
+      name: "대덕소프트웨어마이스터고등학교 전국 중학생 알고리즘 대회",
+      status: "ONGOING",
+      startDate: "2024-08-27T00:00:00.000Z",
+      endDate: "2024-08-30T23:59:59.000Z",
+      purpose:
+        "학생들의 알고리즘 풀이 능력 향상 및 중학생 대상으로 본교 홍보",
+      audience: "전국 중학생 중 본 대회의 예선 통과자",
+      place: "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실",
+    }
+    it("[200] update all", async () => {
+      const res = await controller.patchCompetition(id, request);
+      expect(res).toEqual({
+        data: {
+          id: "1",
+        },
+        statusCode: 200,
+        statusMsg: ""
+      })
+      expect(serviceMock.patchCompetition).toHaveBeenCalledTimes(1);
+      expect(serviceMock.patchCompetition).toHaveBeenCalledWith(id, request);
     });
   });
 });

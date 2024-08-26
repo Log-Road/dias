@@ -8,7 +8,7 @@ import {
   OnModuleInit,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PrismaClient } from "./client";
+import { COMPETITION_STATUS, PrismaClient } from "./client";
 
 @Injectable()
 export class PrismaService
@@ -230,6 +230,47 @@ export class PrismaService
         data: {
           is_active: !thisClub.is_active,
         },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async patchCompetition(
+    id: string,
+    obj: {
+      name?: string;
+      status?: COMPETITION_STATUS;
+      startDate?: string;
+      endDate?: string;
+      purpose?: string;
+      audience?: string;
+      place?: string;
+    },
+  ) {
+    try {
+      await this.$transaction(async (prisma) => {
+        const thisComp = await this.contests.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        await this.contests.update({
+          where: {
+            id,
+          },
+          data: {
+            name: obj.name ?? thisComp.name,
+            status: obj.status ?? thisComp.status,
+            start_date: new Date(obj.startDate ?? thisComp.start_date),
+            end_date: new Date(obj.endDate ?? thisComp.end_date),
+            purpose: obj.purpose ?? thisComp.purpose,
+            audience: obj.audience ?? thisComp.audience,
+            place: obj.place ?? thisComp.place,
+          },
+        });
       });
     } catch (e) {
       this.logger.error(e);

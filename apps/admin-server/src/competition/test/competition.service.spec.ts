@@ -11,6 +11,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { PostCompetitionRequestDto } from "../dto/request/postCompetition.request.dto";
 import { PostAwardsRequestDto } from "../dto/request/postAwards.request.dto";
 import { COMPETITION_STATUS } from "../../prisma/client";
+import { PatchCompetitionRequestDto } from "../dto/request/patchCompetition.request.dto";
 
 describe("CompetitionService", () => {
   let service: CompetitionService;
@@ -83,6 +84,32 @@ describe("CompetitionService", () => {
     findCompetitionList: jest.fn(async (page: number) => {
       return Object.values(competitionDatabase).slice(page, page + 15);
     }),
+    patchCompetition: jest.fn(
+      async (
+        id: string,
+        obj: {
+          name?: string;
+          status?: COMPETITION_STATUS;
+          startDate?: string;
+          endDate?: string;
+          purpose?: string;
+          audience?: string;
+          place?: string;
+        },
+      ) => {
+        const comp = competitionDatabase[id];
+        competitionDatabase[id] = {
+          id,
+          name: obj.name ?? comp.name,
+          status: obj.status ?? comp.status,
+          start_date: new Date(obj.startDate ?? comp.start_date),
+          end_date: new Date(obj.endDate ?? comp.end_date),
+          purpose: obj.purpose ?? comp.purpose,
+          audience: obj.audience ?? comp.audience,
+          place: obj.place ?? comp.place,
+        };
+      },
+    ),
   };
   const userPrismaMock = {};
 
@@ -99,7 +126,19 @@ describe("CompetitionService", () => {
 
     service = module.get<CompetitionService>(CompetitionService);
 
-    competitionDatabase = {};
+    competitionDatabase = {
+      "0": {
+        id: "0",
+        name: "대덕소프트웨어마이스터고등학교 전국 중학생 알고리즘 대회",
+        status: "ONGOING",
+        start_date: new Date("2024-08-27T00:00:00.000Z"),
+        end_date: new Date("2024-08-30T23:59:59.000Z"),
+        purpose:
+          "학생들의 알고리즘 풀이 능력 향상 및 중학생 대상으로 본교 홍보",
+        audience: "전국 중학생 중 본 대회의 예선 통과자",
+        place: "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실",
+      },
+    };
     awardDatabase = {};
     winnerDatabase = {};
 
@@ -108,6 +147,7 @@ describe("CompetitionService", () => {
     prismaMock.saveWinner.mockClear();
     prismaMock.findCompetitionById.mockClear();
     prismaMock.findCompetitionList.mockClear();
+    prismaMock.patchCompetition.mockClear();
   });
 
   describe("PostCompetition", () => {
@@ -153,7 +193,7 @@ describe("CompetitionService", () => {
         3,
         Object.assign(awards[2], { contestId: 0 }),
       );
-      expect(res).toEqual({ id: "0" });
+      expect(res).toEqual({ id: "1" });
     });
   });
 
@@ -239,7 +279,7 @@ describe("CompetitionService", () => {
     });
 
     it("[404]", async () => {
-      prismaMock.findCompetitionById.mockImplementation(() => undefined);
+      prismaMock.findCompetitionById.mockImplementationOnce(() => undefined);
       expect(
         async () => await service.postAwards("1", request),
       ).rejects.toThrow(new NotFoundException());
@@ -300,6 +340,7 @@ describe("CompetitionService", () => {
     });
 
     it("[404]", async () => {
+      competitionDatabase = {};
       await expect(async () => {
         await service.getCompetitionList(page);
       }).rejects.toThrow(new NotFoundException());
@@ -323,41 +364,29 @@ describe("CompetitionService", () => {
   });
 
   describe("GetCompetition", () => {
-    const request = "1";
+    const request = "0";
 
     it("[200]", async () => {
-      prismaMock.findCompetitionById.mockReturnValueOnce(
-        Promise.resolve({
-          id: "1",
-          name: "제 N회 고등학생 알고리즘 풀이 경진 대회",
-          start_date: new Date("2024-08-16T00:00:00.000Z"),
-          end_date: new Date("2024-08-30T23:59:59.000Z"),
-          purpose:
-            "문제 풀이 실력 향상 및 알고리즘을 효과적으로 알리는 등 어쩌구",
-          audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
-          place: "대덕소프트웨어마이스터고등학교",
-          status: COMPETITION_STATUS.ONGOING,
-        }),
-      );
-
       const res = await service.getCompetition(request);
 
       expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
       expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(request);
       expect(res).toEqual({
-        id: "1",
-        name: "제 N회 고등학생 알고리즘 풀이 경진 대회",
-        startDate: new Date("2024-08-16T00:00:00.000Z").toISOString(),
+        id: "0",
+        name: "대덕소프트웨어마이스터고등학교 전국 중학생 알고리즘 대회",
+        status: "ONGOING",
+        startDate: new Date("2024-08-27T00:00:00.000Z").toISOString(),
         endDate: new Date("2024-08-30T23:59:59.000Z").toISOString(),
         purpose:
-          "문제 풀이 실력 향상 및 알고리즘을 효과적으로 알리는 등 어쩌구",
-        audience: "대전 소재 고등학교 1 ~ 2학년에 재학중인 학생",
-        place: "대덕소프트웨어마이스터고등학교",
-        status: COMPETITION_STATUS.ONGOING,
+          "학생들의 알고리즘 풀이 능력 향상 및 중학생 대상으로 본교 홍보",
+        audience: "전국 중학생 중 본 대회의 예선 통과자",
+        place: "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실",
       });
     });
 
     it("[404]", async () => {
+      prismaMock.findCompetitionById.mockImplementationOnce(() => undefined);
+
       await expect(async () => {
         await service.getCompetition(request);
       }).rejects.toThrow(new NotFoundException());
@@ -366,7 +395,7 @@ describe("CompetitionService", () => {
     });
 
     it("[500]", async () => {
-      prismaMock.findCompetitionById.mockImplementation(() => {
+      prismaMock.findCompetitionById.mockImplementationOnce(() => {
         throw new InternalServerErrorException();
       });
       await expect(async () => {
@@ -374,6 +403,104 @@ describe("CompetitionService", () => {
       }).rejects.toThrow(new InternalServerErrorException());
       expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
       expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(request);
+    });
+  });
+
+  describe("PatchCompetition", () => {
+    const id = "0";
+    const request: PatchCompetitionRequestDto = {};
+
+    it("[200] update all", async () => {
+      const request: PatchCompetitionRequestDto = {
+        name: "전국 중학생 알고리즘 대회",
+        status: "IN_PROGRESS",
+        startDate: "2024-08-27T10:00:00.000Z",
+        endDate: "2024-08-29T23:59:59.000Z",
+        purpose: "본교 홍보 및 중학생의 알고리즘 풀이 능력 향상 등",
+        audience: "대전 관내 중학생",
+        place:
+          "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실 및 정보보안 1 ~ 3실",
+      };
+
+      const res = await service.patchCompetition(id, request);
+      expect(res).toEqual({ id: "0" });
+      expect(competitionDatabase).toEqual({
+        "0": {
+          id: "0",
+          name: "전국 중학생 알고리즘 대회",
+          status: "IN_PROGRESS",
+          start_date: new Date("2024-08-27T10:00:00Z"),
+          end_date: new Date("2024-08-29T23:59:59Z"),
+          purpose: "본교 홍보 및 중학생의 알고리즘 풀이 능력 향상 등",
+          audience: "대전 관내 중학생",
+          place:
+            "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실 및 정보보안 1 ~ 3실",
+        },
+      });
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(id);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledTimes(1);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledWith(id, request);
+    });
+
+    it("[200] update partial", async () => {
+      const request: PatchCompetitionRequestDto = {
+        status: "CLOSED",
+        startDate: "2024-08-27T10:00:00Z",
+        purpose: "본교 홍보 및 중학생의 알고리즘 풀이 능력 향상 등",
+      };
+
+      const res = await service.patchCompetition(id, request);
+      expect(res).toEqual({ id: "0" });
+      expect(competitionDatabase).toEqual({
+        "0": {
+          id: "0",
+          name: "대덕소프트웨어마이스터고등학교 전국 중학생 알고리즘 대회",
+          status: "CLOSED",
+          start_date: new Date("2024-08-27T10:00:00.000Z"),
+          end_date: new Date("2024-08-30T23:59:59.000Z"),
+          purpose: "본교 홍보 및 중학생의 알고리즘 풀이 능력 향상 등",
+          audience: "전국 중학생 중 본 대회의 예선 통과자",
+          place: "대덕소프트웨어마이스터고등학교 소프트웨어개발 1 ~ 3실",
+        },
+      });
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(id);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledTimes(1);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledWith(id, request);
+    });
+
+    it("[404]", async () => {
+      prismaMock.findCompetitionById.mockImplementationOnce(() => {
+        return null;
+      });
+
+      await expect(
+        async () => await service.patchCompetition(id, request),
+      ).rejects.toThrow(new NotFoundException());
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(id);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledTimes(0);
+    });
+
+    it("[500]", async () => {
+      const request: PatchCompetitionRequestDto = {
+        status: "IN_PROGRESS",
+        startDate: "2024-08-27T10:00:00.000Z",
+        purpose: "본교 홍보 및 중학생의 알고리즘 풀이 능력 향상 등",
+      };
+
+      prismaMock.patchCompetition.mockImplementation(() => {
+        throw new InternalServerErrorException();
+      });
+
+      await expect(
+        async () => await service.patchCompetition(id, request),
+      ).rejects.toThrow(new InternalServerErrorException());
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledTimes(1);
+      expect(prismaMock.findCompetitionById).toHaveBeenCalledWith(id);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledTimes(1);
+      expect(prismaMock.patchCompetition).toHaveBeenCalledWith(id, request);
     });
   });
 });
