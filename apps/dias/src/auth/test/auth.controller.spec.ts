@@ -14,16 +14,22 @@ import SendEmail from "../../middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
 import { JwtStrategyService } from "../strategies/jwt/jwt.strategy.service";
 import { GoogleStrategyService } from "../strategies/google/google.strategy.service";
+import { RedisModule, RedisService } from "@liaoliaots/nestjs-redis";
 
 describe("AuthController", () => {
+  jest.useFakeTimers();
+
+  let module: TestingModule;
+
   let controller: AuthController;
   let service: AuthService;
   let jwt: JwtService;
   let prisma: PrismaService;
   let jwtStrategy: JwtStrategyService;
+  let redisService: RedisService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         AuthService,
@@ -35,7 +41,20 @@ describe("AuthController", () => {
         SendEmail,
         SESClient,
         JwtStrategyService,
-        GoogleStrategyService
+        GoogleStrategyService,
+      ],
+      imports: [
+        RedisModule.forRoot(
+          {
+            readyLog: true,
+            config: {
+              host: process.env.REDIS_HOST,
+              port: Number(process.env.REDIS_PORT),
+              password: process.env.REDIS_PASSWORD,
+            },
+          },
+          true,
+        ),
       ],
     }).compile();
 
@@ -44,6 +63,12 @@ describe("AuthController", () => {
     jwt = module.get<JwtService>(JwtService);
     prisma = module.get<PrismaService>(PrismaService);
     jwtStrategy = module.get<JwtStrategyService>(JwtStrategyService);
+    redisService = module.get<RedisService>(RedisService);
+  });
+
+  afterAll(async () => {
+    await redisService.getClient().quit();
+    await module.close();
   });
 
   describe("regenerate refreshtoken", () => {
@@ -96,7 +121,7 @@ describe("AuthController", () => {
 
       await expect(
         async () => await controller.verifyToken(request),
-      ).rejects.toThrowError(new NotFoundException("존재하지 않는 유저"));
+      ).rejects.toThrow(new NotFoundException("존재하지 않는 유저"));
     });
 
     it("[500] Internal Server Error - Bearer Token 양식 위반", async () => {
@@ -105,7 +130,7 @@ describe("AuthController", () => {
 
       await expect(
         async () => await controller.verifyToken(request),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         new InternalServerErrorException("jwt must be provided"),
       );
     });
@@ -120,7 +145,7 @@ describe("AuthController", () => {
 
       await expect(
         async () => await controller.verifyToken(request),
-      ).rejects.toThrowError(new InternalServerErrorException());
+      ).rejects.toThrow(new InternalServerErrorException());
     });
   });
 });

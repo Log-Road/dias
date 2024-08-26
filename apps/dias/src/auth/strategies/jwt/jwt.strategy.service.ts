@@ -46,6 +46,7 @@ export class JwtStrategyService extends PassportStrategy(Strategy) {
 
     return {
       id: thisUser.id,
+      role: thisUser.role,
       accessToken: accessToken.accessToken,
       expiredAt: accessToken.expiredAt,
       refreshToken: refreshToken.refreshToken,

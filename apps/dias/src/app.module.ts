@@ -9,6 +9,7 @@ import SendEmail from "./middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
 import { AuthUtil } from "./utils/auth.util";
 import { JwtService } from "@nestjs/jwt";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 @Module({
   imports: [
@@ -19,12 +20,23 @@ import { JwtService } from "@nestjs/jwt";
         process.env.NODE_ENV == "prod"
           ? ".env"
           : process.env.NODE_ENV == "dev"
-          ? ".env.dev"
-          : ".env.local",
+            ? ".env.dev"
+            : ".env.local",
     }),
     WinstonModule.forRoot({
       instance: WinstonInstance,
     }),
+    RedisModule.forRoot(
+      {
+        readyLog: true,
+        config: {
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD,
+        },
+      },
+      true,
+    ),
     AuthModule,
     UserModule,
   ],

@@ -30,7 +30,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
             ${{ runner.os }}
-              
+
       - name: Install package
         if: steps.cache.outputs.cache-hit == 'true'
         run: pnpm i --frozen-lockfile
@@ -44,12 +44,20 @@ jobs:
           echo JWT_SECRET=${{secrets.JWT_SECRET}} >> .env
           echo PORT=${{secrets.PORT}} >> .env
           echo SALT=${{secrets.SALT}} >> .env
-          echo ORIGIN=${{ secrets.ORIGIN }} >> .env
-          echo AWS_USER=${{ secrets.PROD_AWS_USER }} >> .env
-          echo AWS_HOST=${{ secrets.PROD_AWS_HOST }} >> .env
+          echo ORIGIN=${{secrets.ORIGIN}} >> .env
           echo GOOGLE_CLIENT_ID=${{secrets.GOOGLE_CLIENT_ID}} >> .env
           echo GOOGLE_SECURE_PASSWORD=${{secrets.GOOGLE_SECURE_PASSWORD}} >> .env
           echo GOOGLE_CALLBACK_URL=${{secrets.GOOGLE_CALLBACK_URL}} >> .env
+          echo LOG_EMAIL=${{secrets.LOG_EMAIL}} >> .env
+          echo AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY}} >> .env
+          echo AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} >> .env
+          echo POSTGRESQL_DB=${{secrets.POSTGRESQL_DB}} >> .env
+          echo EMAIL_HEADER=${{secrets.EMAIL_HEADER}} >> .env
+          echo REDIS_HOST=${{secrets.REDIS_HOST}} >> .env
+          echo REDIS_PORT=${{secrets.REDIS_PORT}} >> .env
+          echo REDIS_PASSWORD=${{secrets.REDIS_PASSWORD}} >> .env
+          echo TESTING_TOKEN=${{secrets.TESTING_TOKEN}} >> .env
+          echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
       - name: prisma set
         run: npx prisma generate

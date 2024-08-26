@@ -35,10 +35,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # ENV
-.env
-.env.local
-.env.dev
-.env.prod
+.env*
 
 # pem
 src/prisma/ap-northeast-2-bundle.pem
@@ -52,3 +49,8 @@ src/prisma/*
 
 # Visual Studio Code
 .vscode/*
+
+# Prisma Client
+apps/asset-server/src/prisma/client
+apps/dias/src/prisma/client
+apps/admin-server/src/prisma/client
