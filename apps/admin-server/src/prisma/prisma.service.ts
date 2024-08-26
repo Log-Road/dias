@@ -185,40 +185,6 @@ export class PrismaService
     }
   }
 
-  async findCompetitionById(competitionId: string) {
-    try {
-      return await this.contests.findUnique({
-        where: {
-          id: competitionId,
-        },
-      });
-    } catch (e) {
-      this.logger.error(e);
-      throw new InternalServerErrorException(e);
-    }
-  }
-
-  async findCompetitionList(page: number) {
-    try {
-      const result = await this.contests.findMany({
-        // page >= 0
-        skip: page * 15,
-        take: 15,
-        select: {
-          id: true,
-          name: true,
-          status: true,
-          start_date: true,
-          end_date: true,
-        },
-      });
-      return result;
-    } catch (e) {
-      this.logger.error(e);
-      throw new InternalServerErrorException(e);
-    }
-  }
-
   async patchClubStatus(clubId: string) {
     try {
       const thisClub = await this.findClub(clubId);
