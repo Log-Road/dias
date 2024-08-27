@@ -116,7 +116,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.PROD_AWS_SSH_KEY }}
           source: "dist/docker-compose.yml"
-          target: "./docker-compose.yml"
+          target: "./"
 
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
