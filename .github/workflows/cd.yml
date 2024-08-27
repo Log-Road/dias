@@ -69,6 +69,7 @@ jobs:
           cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
           cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
           cp package.prod.json dist/package.json
+          cp docker-compose.yml dist/docker-compose.yml
 
       - name: docker
         run: |
