@@ -16,6 +16,8 @@ services:
       - "8001:8001"
     networks:
       - road
+    depends_on:
+      - dias
   admin-server:
     build:
       dockerfile: admin-server.dockerfile
@@ -23,3 +25,5 @@ services:
       - "8002:8002"
     networks:
       - road
+    depends_on:
+      - dias
