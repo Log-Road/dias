@@ -128,10 +128,10 @@ jobs:
           script: |
             groupadd docker
             sudo usermod -aG docker $USER
-            cat ./dist/docker-compose.yml
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker-compose pull -f ./dist/docker-compose.yml
+            docker-compose build -f ./dist/docker-compose.yml
             docker-compose up -d -f ./dist/docker-compose.yml
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
