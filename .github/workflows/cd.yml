@@ -85,8 +85,8 @@ jobs:
       - name: push to Docker Hub
         run: |
           docker push ${{secrets.DOCKERHUB_USERNAME}}/dias:latest
-          docker push ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest
           docker push ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest
 
       - name: Get GitHub Actions IP
         id: ip
@@ -127,6 +127,7 @@ jobs:
             y | docker image prune
 
       - name: Remove Github Actions IP From Security Group
+        continue-on-error: true
         run: |
           aws ec2 revoke-security-group-ingress \
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
