@@ -69,7 +69,7 @@ jobs:
           cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
           cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
           cp package.prod.json dist/package.json
-          cp docker-compose.yml dist/docker-compose.yml
+          cp docker-compose.yml ./docker-compose.yml
 
       - name: docker
         run: |
@@ -122,8 +122,8 @@ jobs:
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" >> ~/my_password.txt
             cat ~/my_password.txt | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker-compose pull
-            docker-compose up -d
+            docker-compose pull -f ./docker-compose.yml
+            docker-compose up -d -f ./docker-compose.yml
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
 
