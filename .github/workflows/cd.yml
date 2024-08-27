@@ -120,8 +120,8 @@ jobs:
             groupadd docker
             sudo usermod -aG docker $USER
             newgrp docker
-            echo "${{ secrets.DOCKERHUB_PASSWORD }}" >> ~/my_password.txt
-            cat ~/my_password.txt | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            ls -a
+            echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker-compose pull -f dist/docker-compose.yml
             docker-compose up -d -f dist/docker-compose.yml
             y | docker rm $(docker ps -a -f status=exited -q)
