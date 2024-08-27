@@ -73,9 +73,9 @@ jobs:
 
       - name: docker
         run: |
-          docker build ./dist/dias -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./dias.dockerfile
-          docker build ./dist/admin-server -t ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest -f ./admin-server.dockerfile
-          docker build ./dist/asset-server -t ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest -f ./asset-server.dockerfile
+          docker build ./dist/apps/dias -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./dias.dockerfile
+          docker build ./dist/apps/admin-server -t ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest -f ./admin-server.dockerfile
+          docker build ./dist/apps/asset-server -t ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest -f ./asset-server.dockerfile
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
