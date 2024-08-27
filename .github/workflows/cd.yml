@@ -68,7 +68,7 @@ jobs:
           cp -r apps/dias/src/prisma/client dist/apps/dias/
           cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
           cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
-          cp package.json dist/package.json
+          cp package.json dist/apps/package.json
 
       - name: docker
         run: |
