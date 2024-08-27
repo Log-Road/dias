@@ -120,10 +120,9 @@ jobs:
             groupadd docker
             sudo usermod -aG docker $USER
             newgrp docker
-            ls -a
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker-compose pull -f dist/docker-compose.yml
-            docker-compose up -d -f dist/docker-compose.yml
+            docker-compose pull -f app/dist/docker-compose.yml
+            docker-compose up -d -f app/dist/docker-compose.yml
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
 
