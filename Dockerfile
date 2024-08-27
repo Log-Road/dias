@@ -24,7 +24,6 @@ RUN corepack enable
 
 FROM base AS build
 COPY . .
-WORKDIR /apps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --no-frozen-lockfile
 RUN pnpm run -r build
 RUN pnpm deploy --filter=asset-server --prod /dist/asset-server
