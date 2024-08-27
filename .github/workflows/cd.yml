@@ -119,8 +119,7 @@ jobs:
           script: |
             groupadd docker
             sudo usermod -aG docker $USER
-            rm -f my_password.txt
-            ls -a /app
+            ls -a
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker-compose pull -f ./docker-compose.yml
