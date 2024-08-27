@@ -128,8 +128,7 @@ jobs:
           script: |
             groupadd docker
             sudo usermod -aG docker $USER
-            sudo apt-get install tree
-            tree -a
+            ls -a ./dist
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker-compose pull -f ./dist/docker-compose.yml
