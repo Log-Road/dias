@@ -15,10 +15,6 @@ COPY . .
 # 빌드 실행
 RUN pnpm build
 
-# 실행 스크립트 복사
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
 EXPOSE 8080 8001 8002
 
 # 컨테이너 내에서 실행할 스크립트 설정
