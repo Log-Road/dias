@@ -73,9 +73,9 @@ jobs:
 
       - name: docker
         run: |
-          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./dias.dockerfile
-          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest -f ./admin-server.dockerfile
-          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest -f ./asset-server.dockerfile
+          docker build ./dist/dias -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./dias.dockerfile
+          docker build ./dist/admin-server -t ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest -f ./admin-server.dockerfile
+          docker build ./dist/asset-server -t ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest -f ./asset-server.dockerfile
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -108,6 +108,15 @@ jobs:
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
           --protocol tcp --port 22 \
           --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
+
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PROD_AWS_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PROD_AWS_SSH_KEY }}
+          source: "dist/docker-compose.yml"
+          target: "./docker-compose.yml"
 
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
