@@ -66,19 +66,27 @@ jobs:
         run: |
           pnpm build
           cp -r apps/dias/src/prisma/client dist/apps/dias/
+          cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
+          cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
           cp package.prod.json dist/package.json
 
       - name: docker
-        run: docker build ./dist -t ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest -f ./Dockerfile
+        run: |
+          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./dias.dockerfile
+          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest -f ./admin-server.dockerfile
+          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest -f ./asset-server.dockerfile
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_PASSWORD}}
 
       - name: push to Docker Hub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+        run: |
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/dias:latest
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest
+          docker push ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest
 
       - name: Get GitHub Actions IP
         id: ip
@@ -113,8 +121,8 @@ jobs:
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" >> ~/my_password.txt
             cat ~/my_password.txt | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
-            docker run -d -p 8080:8080 -p 8001:8001 -p 8002:8002 --env-file .env ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            docker-compose pull
+            docker-compose up -d
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
 
