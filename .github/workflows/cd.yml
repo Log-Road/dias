@@ -126,14 +126,15 @@ jobs:
           port: ${{ secrets.AWS_PORT }}
           username: ubuntu
           script: |
+            rm -rf docker-compose.yml
             groupadd docker
             sudo usermod -aG docker $USER
             sudo apt-get install tree
             tree -a
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker-compose pull -f ./docker-compose.yml
-            docker-compose up -d -f ./docker-compose.yml
+            docker-compose pull -f dist/docker-compose.yml
+            docker-compose up -d -f dist/docker-compose.yml
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
 
