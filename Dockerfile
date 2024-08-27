@@ -5,7 +5,6 @@ RUN corepack enable
 
 FROM base AS build
 COPY . .
-WORKDIR /dist
 RUN ls -a
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --no-frozen-lockfile
 RUN pnpm run -r build
