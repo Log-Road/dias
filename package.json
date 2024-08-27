@@ -7,7 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "npx prisma generate --schema=apps/dias/src/prisma/schema.prisma && npx prisma generate --schema=apps/admin-server/src/prisma/schema.prisma && npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma && nest build dias && nest build admin-server && nest build asset-server",
-    "start:dist" : "node dist/"
+    "start:dist" : "node dist/",
+    "test:prod" : "jest",
+    "test:e2e" : ""
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.620.0",
