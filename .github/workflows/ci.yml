@@ -79,4 +79,6 @@ jobs:
         run: |
           pnpm build
           timeout ${{vars.SLEEP}} nohup node dist/apps/dias/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+          timeout ${{vars.SLEEP}} nohup node dist/apps/asset-server/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+          timeout ${{vars.SLEEP}} nohub node dist/apps/admin-server/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
           cat app.log

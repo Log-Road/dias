@@ -6,23 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "npx prisma generate && nest build",
-    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-    "start": "export NODE_ENV=dev && dotenv -e .env.dev nest build && cp -r src/prisma/client dist/prisma/client && node dist/main.js",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "export NODE_ENV=prod && dotenv -e .env nest start",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "dotenv -e .env.dev -- jest -i",
-    "test:prod": "dotenv -e .env -- jest -i --detectOpenHandles",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/dias/test/jest-e2e.json",
-    "migrate:local": "dotenv -e .env.local -- npx prisma migrate dev",
-    "migrate:dev": "dotenv -e .env.dev -- npx prisma migrate dev",
-    "migrate:prod": "dotenv -e .env -- npx prisma migrate deploy",
-    "migrate:hotfix": "dotenv -e .env -- npx prisma migrate resolve",
-    "prisma:generate": "npx prisma generate"
+    "build": "npx prisma generate --schema=apps/dias/src/prisma/schema.prisma && npx prisma generate --schema=apps/admin-server/src/prisma/schema.prisma && npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma && nest build dias && nest build admin-server && nest build asset-server",
+    "start:dist" : "node dist/"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.620.0",
