@@ -68,6 +68,8 @@ jobs:
           cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
           cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
           cp package.json dist/apps/package.json
+          cp Dockerfile dist/apps/Dockerfile
+          cp supervisord.conf dist/apps/supervisord.conf
 
       - name: Build Docker image
         run: docker build -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./Dockerfile .
