@@ -104,33 +104,6 @@ jobs:
           --protocol tcp --port 22 \
           --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
 
-      - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.PROD_AWS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.PROD_AWS_SSH_KEY }}
-          source: "./docker-compose.yml"
-          target: "."
-
-      - name: Copy dockerfile to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.PROD_AWS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.PROD_AWS_SSH_KEY }}
-          source: "./Dockerfile"
-          target: "."
-
-      - name: Copy package.json to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.PROD_AWS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.PROD_AWS_SSH_KEY }}
-          source: "./package.json"
-          target: "."
-
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
         with:
@@ -144,7 +117,7 @@ jobs:
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker build -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest .
-            docker-compose up -d -f docker-compose.yml
+            docker run -d -p 8080:8080 -p 8001:8001 -p 8002:8002 
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
 
