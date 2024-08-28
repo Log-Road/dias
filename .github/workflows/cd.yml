@@ -117,7 +117,7 @@ jobs:
             newgrp docker
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             docker build -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest .
-            docker run -d -p 8080:8080 -p 8001:8001 -p 8002:8002 
+            docker run -d -p 8080:8080 -p 8001:8001 -p 8002:8002 ${{secrets.DOCKERHUB_USERNAME}}/dias:latest
             y | docker rm $(docker ps -a -f status=exited -q)
             y | docker image prune
 
