@@ -110,7 +110,7 @@ jobs:
           source: |
             ./Dockerfile
             ./supervisord.conf
-          target: "/home/ubuntu/"
+          target: "./"
 
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
