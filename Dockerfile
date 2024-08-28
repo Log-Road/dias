@@ -6,8 +6,6 @@ RUN corepack enable
 FROM base AS build
 COPY . .
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm i --no-frozen-lockfile
-RUN pnpm deploy --filter=asset-server --prod /asset-server
-RUN pnpm deploy --filter=admin-server --prod /admin-server
 
 FROM base AS dias
 COPY --from=build /dias /dias
