@@ -113,15 +113,14 @@ jobs:
           source: "./docker-compose.yml"
           target: "."
 
-      - name: Copy start.sh to EC2
+      - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.PROD_AWS_HOST }}
           username: ubuntu
           key: ${{ secrets.PROD_AWS_SSH_KEY }}
-          source: "./start.sh"
+          source: "./Dockerfile"
           target: "."
-
       - name: EC2 Production Server Deploy
         uses: appleboy/ssh-action@master
         with:
