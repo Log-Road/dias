@@ -5,6 +5,11 @@ import { CATEGORY, PROJECT_STATUS } from "../../prisma/client";
 import { CompetitionResponseDto } from "../dto/response/competition/competition.response.dto";
 import { GetProjectResponseDto } from "../dto/response/getProject.response.dto";
 import { SearchResponseDto } from "../dto/response/search.response.dto";
+import { ROLE } from "../../../../dias/src/prisma/client";
+import { JwtService } from "@nestjs/jwt";
+import { PrismaService } from "../../prisma/prisma.service";
+import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
+import { ConfigService } from "@nestjs/config";
 
 describe("RoadController", () => {
   let controller: RoadController;
@@ -23,8 +28,13 @@ describe("RoadController", () => {
             getCompetition: jest.fn(),
             getProjectDetail: jest.fn(),
             searchProject: jest.fn(),
+            writeProject: jest.fn(),
           },
         },
+        JwtService,
+        PrismaService,
+        ConfigService,
+        UserPrismaService,
       ],
     }).compile();
 
@@ -513,6 +523,40 @@ describe("RoadController", () => {
       },
       statusCode: 200,
       statusMsg: "OK",
+    });
+  });
+
+  it("[200] 프젝 등록", async () => {
+    const projectId: Promise<string> = Promise.resolve("1");
+
+    jest.spyOn(service, "writeProject").mockReturnValue(projectId);
+
+    const result = await controller.writeProject({
+      id: "1",
+      name: "ROAD",
+      image: "img URL",
+      auth_category: CATEGORY.TEAM,
+      members: ["1", "2", "3"],
+      skills: ["nestjs", "prisma"],
+      introduction: "RoadProject",
+      video_link: "vidioLink.com",
+      description: "just description",
+      user: {
+        id: "1",
+        userId: "songju",
+        name: "오송주",
+        email: "dhthdwn7920@gmail.com",
+        password: "1000",
+        role: ROLE.Student,
+        number: 2209,
+        provided: "jwt example",
+      },
+    });
+
+    expect(result).toEqual({
+      data: { id: "1" },
+      statusMsg: "Created",
+      statusCode: 201,
     });
   });
 });

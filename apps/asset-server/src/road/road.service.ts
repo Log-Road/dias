@@ -3,6 +3,7 @@ import {
   NotFoundException,
   Inject,
   UnauthorizedException,
+  ConflictException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { NowAndArchiveItemDto } from "./dto/response/mainpage/nowAndArchiveItem.dto";
@@ -18,11 +19,12 @@ import { CompetitionDto } from "./dto/response/getArchive/competition.dto";
 import { ProjectDto } from "./dto/response/common/project.dto";
 import { CompetitionResponseDto } from "./dto/response/competition/competition.response.dto";
 import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
-import { Contests, Like, PROJECT_STATUS, Projects } from "../prisma/client";
+import { PROJECT_STATUS, Projects } from "../prisma/client";
 import { ProjectRequestDto } from "./dto/request/project.request.dto";
 import { GetProjectResponseDto } from "./dto/response/getProject.response.dto";
 import { SearchRequestDto } from "./dto/request/search.request.dto";
 import { SearchResponseDto } from "./dto/response/search.response.dto";
+import { WriteRequestDto } from "./dto/request/write.request.dto";
 
 @Injectable()
 export class RoadService {
@@ -304,5 +306,31 @@ export class RoadService {
     );
 
     return { result };
+  }
+
+  async writeProject(writeDto: WriteRequestDto): Promise<string> {
+    const userId = writeDto.user.userId;
+    const contestId = writeDto.user.id;
+
+    delete writeDto.user;
+    delete writeDto.id;
+
+    const thisContest =
+      await this.prismaService.findOneContestNameAndIdByContestId(contestId);
+    if (!thisContest) {
+      throw new NotFoundException(
+        "해당 id를 가지고 있는 대회가 존재하지 않습니다.",
+      );
+    }
+
+    if (this.prismaService.existByUserIdAndContestId(userId, contestId)) {
+      throw new ConflictException(
+        "이미 해당 유저가 해당 대회에서 참가한 프로젝트가 존재합니다.",
+      );
+    }
+
+    const result = await this.prismaService.saveProject(writeDto, writeDto.id);
+
+    return result.id;
   }
 }

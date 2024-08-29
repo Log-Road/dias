@@ -1,6 +1,17 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  OnModuleDestroy,
+  OnModuleInit,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { CONTEST_STATUS, PrismaClient } from "./client";
+import {
+  CATEGORY,
+  CONTEST_STATUS,
+  PrismaClient,
+  PROJECT_STATUS,
+  Projects,
+} from "./client";
 
 @Injectable()
 export class PrismaService
@@ -137,5 +148,46 @@ export class PrismaService
       skip: (page - 1) * 12,
       take: 12,
     });
+  }
+
+  async saveProject(
+    project: {
+      name: string;
+      image: string;
+      members: string[];
+      skills: string[];
+      auth_category: CATEGORY;
+      introduction: string;
+      description: string;
+      video_link: string;
+    },
+    contest_id: string,
+  ): Promise<Projects> {
+    try {
+      return await this.projects.create({
+        data: {
+          ...project,
+          contest: {
+            connect: { id: contest_id },
+          },
+        },
+      });
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async existByUserIdAndContestId(userId: string, contestId: string) {
+    const projectCnt = this.projects.findFirst({
+      where: {
+        members: {
+          has: userId,
+        },
+        contest_id: contestId,
+      },
+    });
+
+    return Boolean(projectCnt);
   }
 }

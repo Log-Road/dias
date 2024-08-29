@@ -1,12 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { RoadService } from "../road.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import {
-  CATEGORY,
-  Contests,
-  PROJECT_STATUS,
-  Projects,
-} from "../../prisma/client";
+import { CATEGORY, PROJECT_STATUS, Projects } from "../../prisma/client";
 import { ROLE } from "../../../../dias/src/prisma/client";
 import { jest } from "@jest/globals";
 import { GetProjectResponseDto } from "../dto/response/getProject.response.dto";
@@ -36,6 +31,8 @@ describe("RoadService", () => {
             findOneProjectByProjectId: jest.fn(),
             findOneContestNameAndIdByContestId: jest.fn(),
             findAllProjectsContainsKeyword: jest.fn(),
+            existByUserIdAndContestId: jest.fn(),
+            saveProject: jest.fn(),
           },
         },
       ],
@@ -88,7 +85,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
       {
@@ -105,7 +101,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
     ];
@@ -293,7 +288,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
       {
@@ -310,7 +304,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
     ]);
@@ -407,7 +400,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
       {
@@ -424,7 +416,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
     ]);
@@ -496,7 +487,6 @@ describe("RoadService", () => {
       description:
         "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
       video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-      place: "대덕마이스터고",
       created_at: new Date("2024-07-10"),
     };
 
@@ -576,7 +566,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
       {
@@ -593,7 +582,6 @@ describe("RoadService", () => {
         description:
           "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
         video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
-        place: "대덕마이스터고",
         created_at: new Date("2024-07-10"),
       },
     ]);
@@ -653,5 +641,60 @@ describe("RoadService", () => {
         },
       ],
     });
+  });
+
+  it("project write test", async () => {
+    const project: Promise<Projects> = Promise.resolve({
+      id: "1",
+      name: "project1",
+      contest_id: "1",
+      image: "image1",
+      members: ["홍길동", "김아무개", "성이름"],
+      skills: ["Nest.js", "prisma", "React"],
+      status: PROJECT_STATUS.APPROVAL,
+      auth_category: CATEGORY.CLUB,
+      introduction: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      description:
+        "descriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescriptiondescription",
+      video_link: "https://www.youtube.com/watch?v=ufEgjQ_-rJ0",
+      created_at: new Date("2024-07-10"),
+    });
+
+    const contest: Promise<{ name: string; id: string }> = Promise.resolve({
+      id: "1",
+      name: "대해마커고톤",
+    });
+
+    jest
+      .spyOn(prismaService, "findOneContestNameAndIdByContestId")
+      .mockReturnValue(contest);
+    jest
+      .spyOn(prismaService, "existByUserIdAndContestId")
+      .mockReturnValue(undefined);
+    jest.spyOn(prismaService, "saveProject").mockReturnValue(project);
+
+    const result = await service.writeProject({
+      id: "1",
+      name: "ROAD",
+      image: "img URL",
+      auth_category: CATEGORY.TEAM,
+      members: ["1", "2", "3"],
+      skills: ["nestjs", "prisma"],
+      introduction: "RoadProject",
+      video_link: "vidioLink.com",
+      description: "just description",
+      user: {
+        id: "1",
+        userId: "songju",
+        name: "오송주",
+        email: "dhthdwn7920@gmail.com",
+        password: "1000",
+        role: ROLE.Student,
+        number: 2209,
+        provided: "jwt example",
+      },
+    });
+
+    expect(result).toEqual("1");
   });
 });
