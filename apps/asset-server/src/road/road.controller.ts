@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   ParseIntPipe,
+  Post,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -15,8 +16,14 @@ import { GetArchiveRequestDto } from "./dto/request/getArchive.request.dto";
 import { CompetitionRequestDto } from "./dto/request/competition.request.dto";
 import { ProjectRequestDto } from "./dto/request/project.request.dto";
 import { SearchRequestDto } from "./dto/request/search.request.dto";
+import { JwtAuthGuard } from "../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
+import { RoleGuard } from "../../../dias/src/guard/role/role.guard";
+import { Role } from "../../../dias/src/guard/role/role.decorator";
+import { ROLE } from "../../../dias/src/utils/type.util";
+import { WriteRequestDto } from "./dto/request/write.request.dto";
 
 @Controller("road")
+@UseGuards(RoleGuard)
 export class RoadController {
   constructor(private readonly roadService: RoadService) {}
 
@@ -106,6 +113,19 @@ export class RoadController {
       data,
       statusMsg: "OK",
       statusCode: 200,
+    };
+  }
+
+  @Post("/write")
+  @UseGuards(JwtAuthGuard)
+  @Role([ROLE.Student])
+  async writeProject(writeRequestDto: WriteRequestDto) {
+    const id: string = await this.roadService.writeProject(writeRequestDto);
+
+    return {
+      data: { id },
+      statusMsg: "Created",
+      statusCode: 201,
     };
   }
 }

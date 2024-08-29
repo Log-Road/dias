@@ -24,22 +24,21 @@ model Contests {
 }
 
 model Projects {
-  id             String   @id() @default(uuid())
+  id             String         @id() @default(uuid())
   contest_id     String
-  contest        Contests @relation(references: [id], fields: [contest_id])
+  contest        Contests       @relation(references: [id], fields: [contest_id])
   name           String
   image          String
   members        String[]
   skills         String[]
-  status         PROJECT_STATUS
+  status         PROJECT_STATUS @default(PENDING)
   auth_category  CATEGORY
   introduction   String
   description    String
   video_link     String
-  place          String
   Vote           Vote[]
   Like           Like[]
-  created_at      DateTime @default(now())
+  created_at      DateTime      @default(now())
 }
 
 model Awards {

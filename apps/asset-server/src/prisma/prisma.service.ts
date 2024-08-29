@@ -1,13 +1,22 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { CONTEST_STATUS, PrismaClient } from "./client";
+import { CATEGORY, CONTEST_STATUS, PrismaClient, Projects } from "./client";
 
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor(readonly configService: ConfigService) {
+  constructor(
+    readonly configService: ConfigService,
+    private readonly logger: Logger,
+  ) {
     super({
       datasources: {
         db: {
@@ -137,5 +146,46 @@ export class PrismaService
       skip: (page - 1) * 12,
       take: 12,
     });
+  }
+
+  async saveProject(
+    project: {
+      name: string;
+      image: string;
+      members: string[];
+      skills: string[];
+      auth_category: CATEGORY;
+      introduction: string;
+      description: string;
+      video_link: string;
+    },
+    contest_id: string,
+  ): Promise<Projects> {
+    try {
+      return await this.projects.create({
+        data: {
+          ...project,
+          contest: {
+            connect: { id: contest_id },
+          },
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async existByUserIdAndContestId(userId: string, contestId: string) {
+    const projectCnt = await this.projects.findFirst({
+      where: {
+        members: {
+          has: userId,
+        },
+        contest_id: contestId,
+      },
+    });
+
+    return Boolean(projectCnt);
   }
 }
