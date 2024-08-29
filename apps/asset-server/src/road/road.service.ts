@@ -309,27 +309,23 @@ export class RoadService {
   }
 
   async writeProject(writeDto: WriteRequestDto): Promise<string> {
-    const userId = writeDto.user.userId;
-    const contestId = writeDto.user.id;
-
-    delete writeDto.user;
-    delete writeDto.id;
+    const { id, user, ...object } = writeDto;
 
     const thisContest =
-      await this.prismaService.findOneContestNameAndIdByContestId(contestId);
+      await this.prismaService.findOneContestNameAndIdByContestId(id);
     if (!thisContest) {
       throw new NotFoundException(
         "해당 id를 가지고 있는 대회가 존재하지 않습니다.",
       );
     }
 
-    if (this.prismaService.existByUserIdAndContestId(userId, contestId)) {
+    if (this.prismaService.existByUserIdAndContestId(user.id, id)) {
       throw new ConflictException(
         "이미 해당 유저가 해당 대회에서 참가한 프로젝트가 존재합니다.",
       );
     }
 
-    const result = await this.prismaService.saveProject(writeDto, writeDto.id);
+    const result = await this.prismaService.saveProject(object, id);
 
     return result.id;
   }

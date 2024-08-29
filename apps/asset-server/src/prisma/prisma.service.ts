@@ -1,24 +1,22 @@
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   OnModuleDestroy,
   OnModuleInit,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import {
-  CATEGORY,
-  CONTEST_STATUS,
-  PrismaClient,
-  PROJECT_STATUS,
-  Projects,
-} from "./client";
+import { CATEGORY, CONTEST_STATUS, PrismaClient, Projects } from "./client";
 
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor(readonly configService: ConfigService) {
+  constructor(
+    readonly configService: ConfigService,
+    private readonly logger: Logger,
+  ) {
     super({
       datasources: {
         db: {
@@ -173,13 +171,13 @@ export class PrismaService
         },
       });
     } catch (e) {
-      console.log(e);
+      this.logger.error(e);
       throw new InternalServerErrorException(e);
     }
   }
 
   async existByUserIdAndContestId(userId: string, contestId: string) {
-    const projectCnt = this.projects.findFirst({
+    const projectCnt = await this.projects.findFirst({
       where: {
         members: {
           has: userId,
