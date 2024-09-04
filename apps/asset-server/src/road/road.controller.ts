@@ -21,6 +21,7 @@ import { RoleGuard } from "../../../dias/src/guard/role/role.guard";
 import { Role } from "../../../dias/src/guard/role/role.decorator";
 import { ROLE } from "../../../dias/src/utils/type.util";
 import { WriteRequestDto } from "./dto/request/write.request.dto";
+import { TeacherVoteRequestDto } from "./dto/request/teacherVote.request.dto";
 
 @Controller("road")
 @UseGuards(RoleGuard)
@@ -119,13 +120,28 @@ export class RoadController {
   @Post("/write")
   @UseGuards(JwtAuthGuard)
   @Role([ROLE.Student])
-  async writeProject(writeRequestDto: WriteRequestDto) {
+  async writeProject(@Body() writeRequestDto: WriteRequestDto) {
     const id: string = await this.roadService.writeProject(writeRequestDto);
 
     return {
       data: { id },
       statusMsg: "Created",
       statusCode: 201,
+    };
+  }
+
+  @Post("/teacher")
+  @UseGuards(JwtAuthGuard)
+  @Role([ROLE.Teacher])
+  async teacherVote(
+    @Query("id") id: string,
+    requestDto: TeacherVoteRequestDto,
+  ) {
+    await this.roadService.teacherVote(requestDto, id);
+
+    return {
+      statusCode: 201,
+      statusMsg: "Created",
     };
   }
 }

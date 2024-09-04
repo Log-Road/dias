@@ -25,6 +25,7 @@ import { GetProjectResponseDto } from "./dto/response/getProject.response.dto";
 import { SearchRequestDto } from "./dto/request/search.request.dto";
 import { SearchResponseDto } from "./dto/response/search.response.dto";
 import { WriteRequestDto } from "./dto/request/write.request.dto";
+import { TeacherVoteRequestDto } from "./dto/request/teacherVote.request.dto";
 
 @Injectable()
 export class RoadService {
@@ -328,5 +329,16 @@ export class RoadService {
     const result = await this.prismaService.saveProject(object, id);
 
     return result.id;
+  }
+
+  async teacherVote(
+    req: TeacherVoteRequestDto,
+    contestId: string,
+  ): Promise<void> {
+    await Promise.all(
+      req.vote.map(async (projectId) => {
+        await this.prismaService.saveVote(req.user.id, contestId, projectId);
+      }),
+    );
   }
 }

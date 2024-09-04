@@ -188,4 +188,19 @@ export class PrismaService
 
     return Boolean(projectCnt);
   }
+
+  async saveVote(user_id: string, contest_id: string, project_id: string) {
+    try {
+      await this.vote.create({
+        data: {
+          user_id,
+          contest_id,
+          project_id,
+        },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
 }
