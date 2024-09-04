@@ -10,6 +10,17 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../../prisma/prisma.service";
 import { PrismaService as UserPrismaService } from "../../../../dias/src/prisma/prisma.service";
 import { ConfigService } from "@nestjs/config";
+import { ExecutionContext, Logger } from "@nestjs/common";
+import { JwtAuthGuard } from "../../../../dias/src/auth/strategies/jwt/jwt.auth.guard";
+import { JwtValidateGuard } from "../../guard/jwtValidater/jwtValidater.guard";
+
+const mockAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
+    request["user"] = { id: 1 };
+    return true;
+  },
+};
 
 describe("RoadController", () => {
   let controller: RoadController;
@@ -29,12 +40,14 @@ describe("RoadController", () => {
             getProjectDetail: jest.fn(),
             searchProject: jest.fn(),
             writeProject: jest.fn(),
+            teacherVote: jest.fn(),
           },
         },
         JwtService,
         PrismaService,
         ConfigService,
         UserPrismaService,
+        Logger,
       ],
     }).compile();
 
@@ -526,7 +539,7 @@ describe("RoadController", () => {
     });
   });
 
-  it("[200] 프젝 등록", async () => {
+  it("[201] 프젝 등록", async () => {
     const projectId: Promise<string> = Promise.resolve("1");
 
     jest.spyOn(service, "writeProject").mockReturnValue(projectId);
@@ -555,6 +568,27 @@ describe("RoadController", () => {
 
     expect(result).toEqual({
       data: { id: "1" },
+      statusMsg: "Created",
+      statusCode: 201,
+    });
+  });
+
+  it("[201] 프젝 등록", async () => {
+    const result = await controller.teacherVote("1", {
+      vote: ["3", "12", "5"],
+      user: {
+        id: "1",
+        userId: "songju",
+        name: "오송주",
+        email: "dhthdwn7920@gmail.com",
+        password: "1000",
+        role: ROLE.Student,
+        number: 2209,
+        provided: "jwt example",
+      },
+    });
+
+    expect(result).toEqual({
       statusMsg: "Created",
       statusCode: 201,
     });
