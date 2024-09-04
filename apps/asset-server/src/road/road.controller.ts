@@ -4,6 +4,7 @@ import {
   Get,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseGuards,
 } from "@nestjs/common";
@@ -141,6 +142,21 @@ export class RoadController {
 
     return {
       statusCode: 201,
+      statusMsg: "Created",
+    };
+  }
+
+  @Put("/teacher")
+  @UseGuards(JwtAuthGuard)
+  @Role([ROLE.Teacher])
+  async updateTeacherVote(
+    @Query("id") id: string,
+    requestDto: TeacherVoteRequestDto,
+  ) {
+    await this.roadService.updateTeacherVote(requestDto, id);
+
+    return {
+      statusCode: 200,
       statusMsg: "Created",
     };
   }

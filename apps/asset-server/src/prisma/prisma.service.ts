@@ -1,7 +1,9 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
   OnModuleDestroy,
   OnModuleInit,
 } from "@nestjs/common";
@@ -202,5 +204,42 @@ export class PrismaService
       this.logger.error(e);
       throw new InternalServerErrorException(e);
     }
+  }
+
+  async updateVote(user_id: string, project_id: string) {
+    const thisVote = await this.vote.findUnique({
+      where: { project_id_user_id: { project_id, user_id } },
+    });
+
+    if (thisVote) throw new ConflictException("해당 대회에 투표하지 않았음");
+
+    try {
+      await this.vote.update({
+        where: {
+          project_id_user_id: {
+            project_id,
+            user_id,
+          },
+        },
+        data: { project_id },
+      });
+    } catch (e) {
+      this.logger.error(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async existContestByContestId(id: string) {
+    const contest = await this.contests.findUnique({ where: { id } });
+
+    return Boolean(contest);
+  }
+
+  async existVoteByContestIdAndUserId(project_id: string, user_id: string) {
+    const contest = await this.vote.findUnique({
+      where: { project_id_user_id: { project_id, user_id } },
+    });
+
+    return Boolean(contest);
   }
 }
