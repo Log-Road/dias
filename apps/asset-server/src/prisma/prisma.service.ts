@@ -211,7 +211,7 @@ export class PrismaService
       where: { project_id_user_id: { project_id, user_id } },
     });
 
-    if (thisVote) throw new ConflictException("해당 대회에 투표하지 않았음");
+    if (!thisVote) throw new ConflictException("해당 대회에 투표하지 않았음");
 
     try {
       await this.vote.update({
@@ -229,13 +229,13 @@ export class PrismaService
     }
   }
 
-  async existContestByContestId(id: string) {
+  async isExistContestByContestId(id: string) {
     const contest = await this.contests.findUnique({ where: { id } });
 
     return Boolean(contest);
   }
 
-  async existVoteByContestIdAndUserId(project_id: string, user_id: string) {
+  async isExistVoteByContestIdAndUserId(project_id: string, user_id: string) {
     const contest = await this.vote.findUnique({
       where: { project_id_user_id: { project_id, user_id } },
     });

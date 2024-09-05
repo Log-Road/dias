@@ -335,18 +335,19 @@ export class RoadService {
     req: TeacherVoteRequestDto,
     contestId: string,
   ): Promise<void> {
-    if (!(await this.prismaService.existContestByContestId(contestId))) {
+    if (!(await this.prismaService.isExistContestByContestId(contestId))) {
       throw new NotFoundException("존재하지 않는 대회");
     }
 
     await Promise.all(
       req.vote.map(async (projectId) => {
-        const isExists = await this.prismaService.existVoteByContestIdAndUserId(
-          projectId,
-          req.user.id,
-        );
+        const isExists =
+          await this.prismaService.isExistVoteByContestIdAndUserId(
+            projectId,
+            req.user.id,
+          );
 
-        if (isExists) {
+        if (!isExists) {
           throw new NotFoundException("존재하지 않는 대회");
         }
 
@@ -359,7 +360,7 @@ export class RoadService {
     req: TeacherVoteRequestDto,
     contestId: string,
   ): Promise<void> {
-    if (!(await this.prismaService.existContestByContestId(contestId))) {
+    if (!(await this.prismaService.isExistContestByContestId(contestId))) {
       throw new NotFoundException("존재하지 않는 대회");
     }
 
