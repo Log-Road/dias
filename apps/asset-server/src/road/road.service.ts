@@ -342,13 +342,13 @@ export class RoadService {
     await Promise.all(
       req.vote.map(async (projectId) => {
         const isExists =
-          await this.prismaService.isExistVoteByContestIdAndUserId(
+          await this.prismaService.isExistVoteByProjectIdAndUserId(
             projectId,
             req.user.id,
           );
 
         if (!isExists) {
-          throw new NotFoundException("존재하지 않는 대회");
+          throw new NotFoundException("해당 대회에 투표 하지 않았음");
         }
 
         await this.prismaService.saveVote(req.user.id, contestId, projectId);

@@ -235,7 +235,7 @@ export class PrismaService
     return Boolean(contest);
   }
 
-  async isExistVoteByContestIdAndUserId(project_id: string, user_id: string) {
+  async isExistVoteByProjectIdAndUserId(project_id: string, user_id: string) {
     const contest = await this.vote.findUnique({
       where: { project_id_user_id: { project_id, user_id } },
     });
