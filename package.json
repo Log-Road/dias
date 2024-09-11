@@ -88,17 +88,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1",
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
-    },
-    "roots": [
-      "<rootDir>/libs/",
-      "<rootDir>/apps/"
-    ]
+    "testEnvironment": "node"
   },
   "prisma": {
-    "schema": "apps/dias/src/prisma/schema.prisma"
+    "schema": "src/prisma/schema.prisma"
   }
 }
