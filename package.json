@@ -6,11 +6,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "npx prisma generate --schema=apps/dias/src/prisma/schema.prisma && npx prisma generate --schema=apps/admin-server/src/prisma/schema.prisma && npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma && nest build dias && nest build admin-server && nest build asset-server",
+    "generate": "npx prisma generate --schema=./src/prisma/schema.prisma",
+    "build": "npx prisma generate --schema=./src/prisma/schema.prisma && nest build",
+    "start": "npx prisma generate --schema=./src/prisma/schema.prisma && nest start",
     "start:dist": "node dist/",
-    "test:prod": "jest",
-    "test:e2e": "",
-    "test": "jest"
+    "test:unit": "jest",
+    "test:e2e": ""
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.620.0",

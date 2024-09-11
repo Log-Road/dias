@@ -32,11 +32,10 @@ jobs:
             ${{ runner.os }}
 
       - name: Install package
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm i --no-frozen-lockfile
 
       - name: env set
-        working-directory: ./
         run: |
           touch .env
           echo POSTGRESQL_DB_URL=${{secrets.POSTGRESQL_DB_URL}} >> .env
@@ -51,7 +50,6 @@ jobs:
           echo LOG_EMAIL=${{secrets.LOG_EMAIL}} >> .env
           echo AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY}} >> .env
           echo AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} >> .env
-          echo POSTGRESQL_DB=${{secrets.POSTGRESQL_DB}} >> .env
           echo EMAIL_HEADER=${{secrets.EMAIL_HEADER}} >> .env
           echo REDIS_HOST=${{secrets.REDIS_HOST}} >> .env
           echo REDIS_PORT=${{secrets.REDIS_PORT}} >> .env
@@ -59,23 +57,8 @@ jobs:
           echo TESTING_TOKEN=${{secrets.TESTING_TOKEN}} >> .env
           echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
-      - name: prisma set
-        run: npx prisma generate
-
-      - name: build
-        run: |
-          pnpm build
-          cp -r apps/dias/src/prisma/client dist/apps/dias/
-          cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
-          cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
-          cp package.prod.json dist/package.json
-          cp docker-compose.yml dist/docker-compose.yml
-
       - name: docker
-        run: |
-          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./dias.dockerfile
-          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest -f ./admin-server.dockerfile
-          docker build ./dist -t ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest -f ./asset-server.dockerfile
+        run: docker build --cache-from ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest -t ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest -f ./dockerfile ./
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -84,10 +67,7 @@ jobs:
           password: ${{secrets.DOCKERHUB_PASSWORD}}
 
       - name: push to Docker Hub
-        run: |
-          docker push ${{secrets.DOCKERHUB_USERNAME}}/dias:latest
-          docker push ${{secrets.DOCKERHUB_USERNAME}}/asset-server:latest
-          docker push ${{secrets.DOCKERHUB_USERNAME}}/admin-server:latest
+        run: docker push ${{secrets.DOCKERHUB_USERNAME}}/dias:latest
 
       - name: Get GitHub Actions IP
         id: ip
@@ -106,7 +86,7 @@ jobs:
         run: |
           aws ec2 authorize-security-group-ingress \
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
-          --protocol tcp --port 22 \
+          --protocol tcp --port ${{ secrets.AWS_PORT }} \
           --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
 
       - name: EC2 Production Server Deploy
@@ -115,21 +95,20 @@ jobs:
           key: ${{ secrets.PROD_AWS_SSH_KEY }}
           host: ${{ secrets.PROD_AWS_HOST }}
           port: ${{ secrets.AWS_PORT }}
-          username: ubuntu
+          username: ${{ secrets.PROD_AWS_USERNAME }}
           script: |
             groupadd docker
             sudo usermod -aG docker $USER
             newgrp docker
-            echo "${{ secrets.DOCKERHUB_PASSWORD }}" >> ~/my_password.txt
-            cat ~/my_password.txt | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            docker-compose pull
-            docker-compose up -d
-            y | docker rm $(docker ps -a -f status=exited -q)
-            y | docker image prune
+            echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            sudo docker run -d -p ${{ secrets.PORT }}:${{ secrets.PORT }} ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            sudo docker rm -f $(docker ps -a -f status=exited -q)
+            sudo docker image prune -f
 
       - name: Remove Github Actions IP From Security Group
         run: |
           aws ec2 revoke-security-group-ingress \
           --group-id ${{ secrets.AWS_EC2_SG_ID }} \
-          --protocol tcp --port 22 \
+          --protocol tcp --port ${{ secrets.AWS_PORT }} \
           --cidr ${{ steps.ip.outputs.ipv4 }}/32
