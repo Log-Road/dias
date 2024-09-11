@@ -62,6 +62,9 @@ jobs:
           echo TESTING_TOKEN=${{secrets.TESTING_TOKEN}} >> .env
           echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
+      - name: prisma set
+        run: npx prisma generate --schema=src/prisma/schema.prisma
+  
       - name: Test unit
         run: pnpm test:unit
 
