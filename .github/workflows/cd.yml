@@ -100,8 +100,8 @@ jobs:
             sudo groupadd docker
             sudo usermod -aG docker $USER
             echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/admin-server:latest
-            sudo docker run -d -p ${{ secrets.PORT }}:${{ secrets.PORT }} ${{ secrets.DOCKERHUB_USERNAME }}/admin-server:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            sudo docker run -d -p ${{ secrets.PORT }}:${{ secrets.PORT }} ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
             sudo docker rm -f $(sudo docker ps -a -f status=exited -q)
             sudo docker image prune -f
 

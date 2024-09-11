@@ -62,12 +62,6 @@ jobs:
           echo TESTING_TOKEN=${{secrets.TESTING_TOKEN}} >> .env
           echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
-      - name: prisma set
-        run: |
-          npx prisma generate --schema=apps/dias/src/prisma/schema.prisma
-          npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma
-          npx prisma generate --schema=apps/admin-server/src/prisma/schema.prisma
-
       - name: Test unit
         run: pnpm test:prod
 
@@ -77,7 +71,5 @@ jobs:
       - name: test
         run: |
           pnpm build
-          timeout ${{vars.SLEEP}} nohup node dist/apps/dias/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
-          timeout ${{vars.SLEEP}} nohup node dist/apps/asset-server/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
-          timeout ${{vars.SLEEP}} nohup node dist/apps/admin-server/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+          timeout ${{vars.SLEEP}} nohup node dist/main.js > app.log || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
           cat app.log
