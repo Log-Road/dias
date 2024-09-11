@@ -63,7 +63,7 @@ jobs:
           echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
       - name: Test unit
-        run: pnpm test:prod
+        run: pnpm test:unit
 
       # - name: Test E2E
       #   run: pnpm test:e2e
