@@ -36,7 +36,7 @@ jobs:
             ${{ runner.os }}
 
       - name: Install package
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm i --no-frozen-lockfile
 
       - name: env set
