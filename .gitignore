@@ -39,6 +39,7 @@ lerna-debug.log*
 
 # prisma
 src/prisma/client
+src/prisma/migrations
 
 # AWS
 .aws/*
