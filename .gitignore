@@ -37,10 +37,6 @@ lerna-debug.log*
 # ENV
 .env*
 
-# pem
-src/prisma/ap-northeast-2-bundle.pem
-Log-Road-Key.pem
-
 # prisma
 src/prisma/*
 
@@ -51,6 +47,4 @@ src/prisma/*
 .vscode/*
 
 # Prisma Client
-apps/asset-server/src/prisma/client
-apps/dias/src/prisma/client
-apps/admin-server/src/prisma/client
+src/prisma/client
