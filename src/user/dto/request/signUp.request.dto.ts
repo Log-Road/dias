@@ -1,8 +1,6 @@
-import { Optional } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { ROLE } from "../../../utils/type.util";
 import {
-  IsBoolean,
   IsEmail,
   IsEnum,
   IsNumber,

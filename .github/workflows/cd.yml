@@ -32,7 +32,7 @@ jobs:
             ${{ runner.os }}
 
       - name: Install package
-        if: steps.cache.outputs.cache-hit == 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm i --no-frozen-lockfile
 
       - name: env set
@@ -50,7 +50,6 @@ jobs:
           echo LOG_EMAIL=${{secrets.LOG_EMAIL}} >> .env
           echo AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY}} >> .env
           echo AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}} >> .env
-          echo POSTGRESQL_DB=${{secrets.POSTGRESQL_DB}} >> .env
           echo EMAIL_HEADER=${{secrets.EMAIL_HEADER}} >> .env
           echo REDIS_HOST=${{secrets.REDIS_HOST}} >> .env
           echo REDIS_PORT=${{secrets.REDIS_PORT}} >> .env
@@ -58,21 +57,8 @@ jobs:
           echo TESTING_TOKEN=${{secrets.TESTING_TOKEN}} >> .env
           echo TESTING_PASSWORD=${{secrets.TESTING_PASSWORD}} >> .env
 
-      - name: prisma set
-        run: npx prisma generate
-
-      - name: build
-        run: |
-          pnpm build
-          cp -r apps/dias/src/prisma/client dist/apps/dias/
-          cp -r apps/admin-server/src/prisma/client dist/apps/admin-server/
-          cp -r apps/asset-server/src/prisma/client dist/apps/asset-server/
-          cp package.json dist/apps/package.json
-          cp Dockerfile dist/apps/Dockerfile
-          cp supervisord.conf dist/apps/supervisord.conf
-
-      - name: Build Docker image
-        run: docker build -t ${{secrets.DOCKERHUB_USERNAME}}/dias:latest -f ./Dockerfile .
+      - name: docker
+        run: docker build --cache-from ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest -t ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest -f ./dockerfile ./
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -99,9 +85,9 @@ jobs:
           AWS_DEFAULT_REGION: ap-northeast-2
         run: |
           aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.AWS_EC2_SG_ID }} \
-            --protocol tcp --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
+          --group-id ${{ secrets.AWS_EC2_SG_ID }} \
+          --protocol tcp --port ${{ secrets.AWS_PORT }} \
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32 \
 
       - name: Copy dockerfile to EC2
         uses: appleboy/scp-action@master
@@ -118,21 +104,22 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PROD_AWS_HOST }}
-          username: ubuntu
-          key: ${{ secrets.PROD_AWS_SSH_KEY }}
+          port: ${{ secrets.AWS_PORT }}
+          username: ${{ secrets.PROD_AWS_USERNAME }}
           script: |
-            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
-            docker stop dias || true
-            docker rm dias || true
-            docker run -d --name dias -p 8080:8080 -p 8001:8001 -p 8002:8002 \
-              -v /home/ubuntu/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf \
-              ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            groupadd docker
+            sudo usermod -aG docker $USER
+            newgrp docker
+            echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            sudo docker run -d -p ${{ secrets.PORT }}:${{ secrets.PORT }} ${{ secrets.DOCKERHUB_USERNAME }}/dias:latest
+            sudo docker rm -f $(docker ps -a -f status=exited -q)
+            sudo docker image prune -f
 
       - name: Remove Github Actions IP From Security Group
         continue-on-error: true
         run: |
           aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.AWS_EC2_SG_ID }} \
-            --protocol tcp --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          --group-id ${{ secrets.AWS_EC2_SG_ID }} \
+          --protocol tcp --port ${{ secrets.AWS_PORT }} \
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32

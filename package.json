@@ -6,9 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "npx prisma generate --schema=apps/dias/src/prisma/schema.prisma && npx prisma generate --schema=apps/admin-server/src/prisma/schema.prisma && npx prisma generate --schema=apps/asset-server/src/prisma/schema.prisma && nest build dias && nest build admin-server && nest build asset-server",
-    "start:dist": "node dist/apps/dias/main.js && node dist/apps/asset-server/main.js && node dist/apps/admin-server/main.js",
-    "test:prod": "jest",
+    "generate": "npx prisma generate --schema=./src/prisma/schema.prisma",
+    "build": "npx prisma generate --schema=./src/prisma/schema.prisma && nest build",
+    "start": "npx prisma generate --schema=./src/prisma/schema.prisma && nest start",
+    "start:dist": "node dist/",
+    "test:unit": "jest",
     "test:e2e": ""
   },
   "dependencies": {
