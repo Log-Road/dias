@@ -11,7 +11,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 async function bootstrap() {
   configDotenv({
-    path: "../../../.env",
+    path: "../.env"
   });
 
   const app = await NestFactory.create(AppModule, {
@@ -28,7 +28,7 @@ async function bootstrap() {
     }),
     options: {
       package: "dias",
-      url: "localhost:8080",
+      url: `localhost:${ process.env.PORT }`,
       protoPath: "src/proto/dias.proto",
       logger: WinstonModule.createLogger({
         instance: WinstonInstance,
@@ -40,7 +40,7 @@ async function bootstrap() {
     app,
     new DocumentBuilder()
       .setTitle("DIAS")
-      .setVersion("0.5.1")
+      .setVersion("1.0.0")
       .setDescription("DIAS - DSM Integrated Account Solution")
       .addBearerAuth({
         type: "http",
@@ -66,7 +66,7 @@ async function bootstrap() {
 
   app.listen(Number(process.env.PORT ?? "8000"), () => {
     const logger = WinstonModule.createLogger({ instance: WinstonInstance });
-    logger.log(`DIAS RUNNING ON PORT ${process.env.port ?? 8000}`);
+    logger.log(`DIAS RUNNING ON PORT ${process.env.PORT ?? 8000}`);
     logger.log(`                                `);
     logger.log(`                                `);
     logger.log(`               ::               `);

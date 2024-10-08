@@ -14,6 +14,7 @@ COPY package.json ./
 COPY pnpm-lock.yaml ./
 
 RUN pnpm i --no-frozen-lockfile
+RUN pnpm generate:proto
 
 FROM set AS build
 

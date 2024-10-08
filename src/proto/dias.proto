@@ -3,12 +3,31 @@ syntax = "proto3";
 package dias;
 
 service Guard {
-  rpc JwtAuthGuard(JwtGuardRequest) returns (IsValid) {}
-  rpc GoogleAuthGuard(GoogleAuthGuardRequest) returns (IsValid) {}
+  rpc JwtAuthGuard(JwtGuardRequest) returns (isValid) {}
+  rpc GoogleAuthGuard(GoogleAuthGuardRequest) returns (isValid) {}
 }
 
-message IsValid {
-  bool isValid = 1;
+enum ROLE {
+  Student = 0;
+  Teacher = 1;
+  Admin = 2;
+};
+
+message user {
+  int64 number = 1;
+  string id = 2;
+  string userId = 3;
+  string email = 4;
+  string name = 5;
+  ROLE role = 6;
+  string provided = 7;
+}
+
+message isValid {
+  int32 statusCode = 1;
+  string statusMsg = 2;
+  bool isValid = 3;
+  optional user user = 4;
 }
 
 message JwtGuardRequest {

@@ -16,12 +16,7 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV == "prod"
-          ? ".env"
-          : process.env.NODE_ENV == "dev"
-            ? ".env.dev"
-            : ".env.local",
+      envFilePath: ".env"
     }),
     WinstonModule.forRoot({
       instance: WinstonInstance,

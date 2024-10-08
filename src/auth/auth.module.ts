@@ -10,6 +10,7 @@ import { SESClient } from "@aws-sdk/client-ses";
 import { PassportModule } from "@nestjs/passport";
 import { GoogleStrategyService } from "./strategies/google/google.strategy.service";
 import { JwtStrategyService } from "./strategies/jwt/jwt.strategy.service";
+import { JwtAuthGuard } from "./strategies/jwt/jwt.auth.guard";
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { JwtStrategyService } from "./strategies/jwt/jwt.strategy.service";
     SESClient,
     GoogleStrategyService,
     JwtStrategyService,
+    JwtAuthGuard,
   ],
   controllers: [AuthController],
 })

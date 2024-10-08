@@ -6,8 +6,7 @@ on:
       - dev
       - prod
   push:
-    branches:
-      - dev
+    branches: dev
 
 jobs:
   ci-build:

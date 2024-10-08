@@ -36,6 +36,7 @@ import { GoogleSignUpRequestDto } from "./dto/request/googleSignUp.request.dto";
 import { GoogleStrategyService } from "./strategies/google/google.strategy.service";
 import { GoogleAuthGuard } from "./strategies/google/google.auth.guard";
 import { VerificationRequestDto } from "./dto/request/verification.request.dto";
+import { JwtAuthGuard } from "./strategies/jwt/jwt.auth.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -44,8 +45,8 @@ export class AuthController implements IAuthController {
     private service: AuthService,
     @Inject(Logger) private logger: Logger,
     @Inject(JwtStrategyService) private jwtStrategy: JwtStrategyService,
-    @Inject(GoogleStrategyService)
-    private googleStrategy: GoogleStrategyService,
+    @Inject(GoogleStrategyService) private googleStrategy: GoogleStrategyService,
+    @Inject(JwtAuthGuard) private guard: JwtAuthGuard,
   ) {
     this.service = service;
   }
@@ -184,5 +185,16 @@ export class AuthController implements IAuthController {
       statusCode: 200,
       statusMsg: "인증 완료",
     };
+  }
+
+  @Post("/user")
+  async returnUser(@Headers() request) {
+    const data = await this.guard.forHTTP(request);
+
+    return {
+      data,
+      statusCode: 201,
+      statusMsg: ""
+    }
   }
 }
