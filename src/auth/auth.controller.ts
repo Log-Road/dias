@@ -188,6 +188,7 @@ export class AuthController implements IAuthController {
 
   @Post("/user")
   async returnUser(@Headers() request) {
+    this.logger.log("USER CALLED")
     const data = await this.guard.forHTTP(request);
 
     return {
