@@ -15,6 +15,7 @@ import { SESClient } from "@aws-sdk/client-ses";
 import { JwtStrategyService } from "../strategies/jwt/jwt.strategy.service";
 import { GoogleStrategyService } from "../strategies/google/google.strategy.service";
 import { RedisModule, RedisService } from "@liaoliaots/nestjs-redis";
+import { JwtAuthGuard } from "../strategies/jwt/jwt.auth.guard";
 
 describe("AuthController", () => {
   jest.useFakeTimers();
@@ -42,6 +43,7 @@ describe("AuthController", () => {
         SESClient,
         JwtStrategyService,
         GoogleStrategyService,
+        JwtAuthGuard
       ],
       imports: [
         RedisModule.forRoot(

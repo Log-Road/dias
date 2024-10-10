@@ -6,7 +6,6 @@ import {
   Inject,
   Logger,
   Post,
-  Req,
   Request,
   UseGuards,
 } from "@nestjs/common";
