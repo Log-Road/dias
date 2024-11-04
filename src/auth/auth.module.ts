@@ -3,7 +3,7 @@ import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import { PrismaService } from "../prisma/prisma.service";
 import { JwtModule } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthUtil } from "../utils/auth.util";
 import SendEmail from "../middleware/send-email";
 import { SESClient } from "@aws-sdk/client-ses";
@@ -15,6 +15,7 @@ import { JwtAuthGuard } from "./strategies/jwt/jwt.auth.guard";
 @Module({
   imports: [
     JwtModule.registerAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>("JWT_SECRET"),
